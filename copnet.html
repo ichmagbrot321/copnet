@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CopNet – Deutsches Polizeisystem</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg-deepest:#050a14;--bg-dark:#080f1e;--bg-panel:#0d1628;--bg-card:#111e35;--bg-hover:#162340;--border:#1a3050;--border-bright:#1e4080;--accent:#1d6fd8;--accent-bright:#2e8bff;--accent-glow:rgba(45,139,255,0.15);--text:#c8d8f0;--text-bright:#e8f0ff;--text-muted:#4a6080;--text-dim:#2a4060;--red:#c0392b;--red-bright:#e74c3c;--green:#1a8a4a;--green-bright:#27ae60;--yellow:#b8860b;--yellow-bright:#f39c12;--orange:#c0530a;--orange-bright:#e67e22;--sidebar-w:240px;--header-h:56px;--font-mono:'Share Tech Mono',monospace;--font-ui:'Exo 2',sans-serif;--font-head:'Rajdhani',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-ui);background:var(--bg-deepest);color:var(--text);min-height:100vh;overflow:hidden;font-size:14px}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999}
+#loading{position:fixed;inset:0;background:var(--bg-deepest);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;z-index:2000}
+.loading-bar{width:200px;height:2px;background:var(--border);overflow:hidden}
+.loading-bar-inner{height:100%;background:linear-gradient(90deg,transparent,var(--accent-bright),transparent);animation:load 1.2s ease-in-out infinite}
+@keyframes load{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+.loading-text{font-family:var(--font-mono);font-size:10px;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase}
+#login-screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,#0d1e3e 0%,#050a14 70%);z-index:1000}
+.login-bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(29,111,216,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(29,111,216,0.07) 1px,transparent 1px);background-size:40px 40px}
+.login-corner{position:absolute;width:80px;height:80px;border-color:rgba(29,111,216,0.3);border-style:solid}
+.login-corner.tl{top:30px;left:30px;border-width:2px 0 0 2px}
+.login-corner.tr{top:30px;right:30px;border-width:2px 2px 0 0}
+.login-corner.bl{bottom:30px;left:30px;border-width:0 0 2px 2px}
+.login-corner.br{bottom:30px;right:30px;border-width:0 2px 2px 0}
+.login-box{position:relative;background:var(--bg-panel);border:1px solid var(--border-bright);padding:48px 44px;width:420px;box-shadow:0 0 60px rgba(29,111,216,0.2),inset 0 1px 0 rgba(255,255,255,0.05)}
+.login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--accent),var(--accent-bright),var(--accent),transparent)}
+.login-logo{text-align:center;margin-bottom:32px}
+.badge-icon{display:inline-flex;align-items:center;justify-content:center;width:72px;height:72px;border:2px solid var(--accent);border-radius:50%;margin-bottom:16px;font-size:32px;color:var(--accent-bright);box-shadow:0 0 20px rgba(29,111,216,0.4);animation:pg 2s ease-in-out infinite}
+@keyframes pg{0%,100%{box-shadow:0 0 20px rgba(29,111,216,0.4)}50%{box-shadow:0 0 35px rgba(29,111,216,0.7),0 0 60px rgba(29,111,216,0.2)}}
+.login-logo h1{font-family:var(--font-head);font-size:28px;font-weight:700;letter-spacing:6px;color:var(--text-bright);text-transform:uppercase}
+.login-logo .subtitle{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:3px;margin-top:4px}
+.login-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:28px}
+.login-tab{flex:1;padding:10px;text-align:center;font-family:var(--font-head);font-weight:600;letter-spacing:1px;font-size:12px;text-transform:uppercase;cursor:pointer;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s}
+.login-tab.active{color:var(--accent-bright);border-bottom-color:var(--accent-bright)}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--bg-dark);border:1px solid var(--border);color:var(--text-bright);padding:10px 14px;font-family:var(--font-ui);font-size:14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(29,111,216,0.15)}
+.form-group select option{background:var(--bg-panel)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;font-family:var(--font-head);font-weight:600;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;transition:all 0.2s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff;width:100%}
+.btn-primary:hover{background:var(--accent-bright);box-shadow:0 0 20px rgba(29,111,216,0.4)}
+.btn-secondary{background:transparent;border:1px solid var(--border-bright);color:var(--text)}
+.btn-secondary:hover{background:var(--bg-hover);border-color:var(--accent);color:var(--text-bright)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{background:var(--red-bright)}
+.btn-success{background:var(--green);color:#fff}
+.btn-success:hover{background:var(--green-bright)}
+.btn-sm{padding:6px 12px;font-size:11px}
+.login-error{background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.4);color:var(--red-bright);padding:10px 14px;font-size:12px;margin-bottom:14px;font-family:var(--font-mono);display:none}
+.login-footer{margin-top:24px;text-align:center;font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:2px}
+#app{display:none;height:100vh;flex-direction:column}
+#app.visible{display:flex}
+.header{height:var(--header-h);background:var(--bg-panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;position:relative;z-index:100}
+.header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0.5}
+.header-logo{display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-size:20px;font-weight:700;letter-spacing:3px;color:var(--text-bright);text-transform:uppercase;flex-shrink:0}
+.header-logo span{color:var(--accent-bright)}
+.header-divider{width:1px;height:28px;background:var(--border)}
+.header-status{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;color:var(--text-muted)}
+.sdot{width:8px;height:8px;border-radius:50%}
+.sdot.green{background:var(--green-bright);box-shadow:0 0 6px var(--green-bright);animation:blink 1.5s ease-in-out infinite}
+.sdot.gray{background:var(--text-muted)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
+.header-time{font-family:var(--font-mono);font-size:13px;color:var(--accent-bright);letter-spacing:2px;margin-left:auto}
+.header-user{display:flex;align-items:center;gap:10px;padding:6px 12px;border:1px solid var(--border);cursor:pointer;transition:all 0.2s}
+.header-user:hover{border-color:var(--accent);background:var(--accent-glow)}
+.h-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;font-family:var(--font-head)}
+.duty-toggle{display:flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--border);cursor:pointer;font-family:var(--font-head);font-size:11px;letter-spacing:1px;font-weight:600;text-transform:uppercase;transition:all 0.2s;background:transparent}
+.duty-toggle.on{border-color:var(--green-bright);color:var(--green-bright)}
+.duty-toggle.off{border-color:var(--text-muted);color:var(--text-muted)}
+.body-layout{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar-w);background:var(--bg-panel);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:2px}
+.sidebar-section{padding:12px 0;border-bottom:1px solid var(--border)}
+.sidebar-section-label{padding:4px 16px 8px;font-family:var(--font-mono);font-size:9px;letter-spacing:2.5px;color:var(--text-dim);text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;transition:all 0.15s;color:var(--text-muted);font-size:13px;font-weight:500;border-left:2px solid transparent}
+.nav-item:hover{background:var(--bg-hover);color:var(--text);border-left-color:var(--border-bright)}
+.nav-item.active{background:var(--accent-glow);color:var(--accent-bright);border-left-color:var(--accent-bright)}
+.nav-icon{font-size:15px;width:18px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-family:var(--font-mono);padding:1px 6px;border-radius:10px;min-width:20px;text-align:center}
+.main-content{flex:1;overflow-y:auto;padding:24px;background:var(--bg-dark)}
+.main-content::-webkit-scrollbar{width:6px}
+.main-content::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:3px}
+.page{display:none}
+.page.active{display:block}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.page-title{font-family:var(--font-head);font-size:22px;font-weight:700;letter-spacing:2px;color:var(--text-bright);text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.page-subtitle{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:2px;margin-top:4px}
+.card{background:var(--bg-card);border:1px solid var(--border);margin-bottom:16px;position:relative}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent);opacity:0.4}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-title{font-family:var(--font-head);font-size:14px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-bright)}
+.card-body{padding:18px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.stat-card{background:var(--bg-card);border:1px solid var(--border);padding:20px;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;bottom:0;right:0;width:80px;height:80px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);pointer-events:none}
+.stat-label{font-family:var(--font-mono);font-size:9px;letter-spacing:2.5px;color:var(--text-muted);text-transform:uppercase;margin-bottom:8px}
+.stat-value{font-family:var(--font-head);font-size:36px;font-weight:700;color:var(--text-bright);line-height:1;margin-bottom:4px}
+.stat-change{font-size:11px;color:var(--text-muted);font-family:var(--font-mono)}
+.stat-icon{position:absolute;top:18px;right:18px;font-size:24px;opacity:0.2}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{padding:10px 14px;text-align:left;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);border-bottom:1px solid var(--border);background:var(--bg-dark);white-space:nowrap}
+.data-table td{padding:11px 14px;border-bottom:1px solid rgba(26,48,80,0.5);font-size:13px;color:var(--text);vertical-align:middle}
+.data-table tbody tr:hover{background:var(--bg-hover)}
+.data-table tbody tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;font-size:10px;font-family:var(--font-mono);letter-spacing:1px;font-weight:700;text-transform:uppercase;border:1px solid}
+.badge-blue{background:rgba(29,111,216,0.15);border-color:rgba(29,111,216,0.4);color:var(--accent-bright)}
+.badge-green{background:rgba(26,138,74,0.15);border-color:rgba(26,138,74,0.4);color:var(--green-bright)}
+.badge-red{background:rgba(192,57,43,0.15);border-color:rgba(192,57,43,0.4);color:var(--red-bright)}
+.badge-yellow{background:rgba(184,134,11,0.15);border-color:rgba(184,134,11,0.4);color:var(--yellow-bright)}
+.badge-orange{background:rgba(192,83,10,0.15);border-color:rgba(192,83,10,0.4);color:var(--orange-bright)}
+.badge-gray{background:rgba(74,96,128,0.15);border-color:rgba(74,96,128,0.4);color:var(--text-muted)}
+.search-bar{display:flex;align-items:center;background:var(--bg-dark);border:1px solid var(--border);transition:border-color 0.2s}
+.search-bar:focus-within{border-color:var(--accent)}
+.search-bar input{flex:1;background:transparent;border:none;padding:10px 14px;color:var(--text-bright);font-family:var(--font-ui);font-size:13px;outline:none}
+.search-bar input::placeholder{color:var(--text-dim)}
+.search-bar .sbtn{padding:10px 16px;background:var(--accent);border:none;color:#fff;cursor:pointer;font-size:14px;transition:background 0.2s}
+.search-bar .sbtn:hover{background:var(--accent-bright)}
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.filter-select{background:var(--bg-card);border:1px solid var(--border);color:var(--text);padding:8px 12px;font-family:var(--font-ui);font-size:12px;outline:none;cursor:pointer}
+.filter-select:focus{border-color:var(--accent)}
+.filter-select option{background:var(--bg-panel)}
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:1px;background:var(--border-bright)}
+.timeline-item{position:relative;margin-bottom:20px}
+.timeline-dot{position:absolute;left:-24px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--bg-dark);box-shadow:0 0 6px var(--accent)}
+.timeline-time{font-family:var(--font-mono);font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-bottom:4px}
+.timeline-content{background:var(--bg-dark);border:1px solid var(--border);padding:10px 14px;font-size:12px;color:var(--text)}
+.alert-flash{background:rgba(192,57,43,0.1);border:1px solid rgba(192,57,43,0.4);border-left:3px solid var(--red-bright);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;font-size:12px}
+.modal-overlay{position:fixed;inset:0;background:rgba(5,10,20,0.85);display:none;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(2px)}
+.modal-overlay.visible{display:flex}
+.modal{background:var(--bg-panel);border:1px solid var(--border-bright);width:560px;max-width:95vw;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 0 60px rgba(0,0,0,0.8),0 0 30px rgba(29,111,216,0.1)}
+.modal-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg-dark)}
+.modal-title{font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-bright)}
+.modal-close{background:none;border:1px solid var(--border);color:var(--text-muted);width:28px;height:28px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.modal-close:hover{border-color:var(--red);color:var(--red-bright)}
+.modal-body{padding:22px}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.notification{position:fixed;top:70px;right:20px;background:var(--bg-panel);border:1px solid var(--border-bright);border-left:3px solid var(--accent-bright);padding:14px 18px;z-index:1000;min-width:280px;font-size:13px;box-shadow:0 4px 24px rgba(0,0,0,0.5);animation:slidein 0.3s ease;display:none}
+.notification.visible{display:block}
+.notification.success{border-left-color:var(--green-bright)}
+.notification.error{border-left-color:var(--red-bright)}
+@keyframes slidein{from{transform:translateX(30px);opacity:0}to{transform:translateX(0);opacity:1}}
+.law-entry{padding:14px 16px;border:1px solid var(--border);margin-bottom:8px;background:var(--bg-card);transition:all 0.2s;cursor:pointer}
+.law-entry:hover{border-color:var(--accent);background:var(--bg-hover)}
+.law-para{font-family:var(--font-mono);font-size:11px;color:var(--accent-bright);margin-bottom:4px}
+.law-name{font-size:14px;font-weight:600;color:var(--text-bright);margin-bottom:4px}
+.law-meta{display:flex;align-items:center;gap:16px;font-size:11px;color:var(--text-muted);font-family:var(--font-mono)}
+.law-fine{color:var(--yellow-bright);font-weight:700}
+.sev-l{color:var(--yellow-bright)}
+.sev-m{color:var(--orange-bright)}
+.sev-s{color:var(--red-bright)}
+.officer-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);background:var(--bg-card);margin-bottom:8px}
+.o-avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:700;color:#fff;font-size:14px;flex-shrink:0}
+.plate-alert-banner{background:rgba(192,57,43,0.12);border:1px solid rgba(192,57,43,0.5);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.plate-kz{font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--red-bright);letter-spacing:3px}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent-bright);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:48px 24px;color:var(--text-muted)}
+.empty-state .ei{font-size:40px;margin-bottom:12px;opacity:0.3}
+.empty-state p{font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg-deepest)}
+::-webkit-scrollbar-thumb{background:var(--border-bright);border-radius:3px}
+.split{display:grid;grid-template-columns:1fr 320px;gap:16px}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div style="font-family:var(--font-head);font-size:28px;font-weight:700;letter-spacing:6px;color:var(--text-bright)">COP<span style="color:var(--accent-bright)">NET</span></div>
+  <div class="loading-bar"><div class="loading-bar-inner"></div></div>
+  <div class="loading-text" id="loading-text">VERBINDUNG WIRD HERGESTELLT...</div>
+</div>
+
+<div id="login-screen">
+  <div class="login-bg-grid"></div>
+  <div class="login-corner tl"></div><div class="login-corner tr"></div>
+  <div class="login-corner bl"></div><div class="login-corner br"></div>
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="badge-icon">🛡</div>
+      <h1>CopNet</h1>
+      <div class="subtitle">DEUTSCHES POLIZEI INFORMATIONSSYSTEM</div>
+    </div>
+    <div class="login-tabs">
+      <div class="login-tab active" onclick="switchTab('officer')">🎖 Beamter</div>
+      <div class="login-tab" onclick="switchTab('citizen')">👤 Bürger</div>
+    </div>
+    <div class="login-error" id="login-error"></div>
+    <div id="tab-officer">
+      <div class="form-group"><label>Dienstnummer</label><input id="l-dienst" placeholder="z.B. DE-0001"></div>
+      <div class="form-group"><label>Passwort</label><input type="password" id="l-pass" placeholder="Passwort" onkeydown="if(event.key==='Enter')loginOfficer()"></div>
+      <button class="btn btn-primary" onclick="loginOfficer()">🔐 ANMELDEN</button>
+    </div>
+    <div id="tab-citizen" style="display:none;">
+      <div id="cit-login">
+        <div class="form-group"><label>E-Mail</label><input id="c-email" placeholder="ihre@email.de"></div>
+        <div class="form-group"><label>Passwort</label><input type="password" id="c-pass" placeholder="Passwort" onkeydown="if(event.key==='Enter')loginCitizen()"></div>
+        <button class="btn btn-primary" onclick="loginCitizen()">🔐 ANMELDEN</button>
+        <div style="text-align:center;margin-top:14px;"><span style="font-size:12px;color:var(--text-muted)">Noch kein Konto? </span><span style="font-size:12px;color:var(--accent-bright);cursor:pointer;" onclick="showReg()">Registrieren</span></div>
+      </div>
+      <div id="cit-reg" style="display:none;">
+        <div class="form-group"><label>Vollständiger Name</label><input id="r-name" placeholder="Max Mustermann"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Geburtsdatum</label><input type="date" id="r-dob"></div>
+          <div class="form-group"><label>Telefon</label><input id="r-phone" placeholder="+49 30 123456"></div>
+        </div>
+        <div class="form-group"><label>Adresse</label><input id="r-addr" placeholder="Musterstr. 1, 10115 Berlin"></div>
+        <div class="form-group"><label>E-Mail</label><input type="email" id="r-email" placeholder="ihre@email.de"></div>
+        <div class="form-group"><label>Passwort</label><input type="password" id="r-pass" placeholder="Passwort wählen"></div>
+        <button class="btn btn-primary" onclick="registerCitizen()">✅ KONTO ERSTELLEN</button>
+        <div style="text-align:center;margin-top:14px;"><span style="font-size:12px;color:var(--accent-bright);cursor:pointer;" onclick="showLogin()">← Zurück</span></div>
+      </div>
+    </div>
+    <div class="login-footer">BUNDESREPUBLIK DEUTSCHLAND · COPNET v3.0 · SUPABASE CLOUD ✓</div>
+  </div>
+</div>
+
+<div class="notification" id="notif"></div>
+
+<div id="app">
+  <header class="header">
+    <div class="header-logo">🛡 Cop<span>Net</span></div>
+    <div class="header-divider"></div>
+    <div class="header-status"><div class="sdot green"></div><span>SUPABASE VERBUNDEN</span></div>
+    <div class="header-time" id="htime">00:00:00</div>
+    <button class="duty-toggle off" id="duty-btn" onclick="toggleDuty()" style="display:none;">
+      <span class="sdot gray" id="duty-dot"></span><span id="duty-txt">NICHT IM DIENST</span>
+    </button>
+    <div class="header-user" onclick="navigate('profile')">
+      <div class="h-avatar" id="h-avatar">?</div>
+      <div><div style="font-size:12px;font-weight:600;color:var(--text-bright);" id="h-name">—</div><div style="font-size:10px;color:var(--accent-bright);font-family:var(--font-mono);" id="h-rank">—</div></div>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="logout()">⏏ Abmelden</button>
+  </header>
+
+  <div class="body-layout">
+    <nav class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Navigation</div>
+        <div class="nav-item active" onclick="navigate('dashboard')"><span class="nav-icon">📊</span>Dashboard</div>
+        <div class="nav-item" onclick="navigate('officers')"><span class="nav-icon">👮</span>Beamte</div>
+      </div>
+      <div class="sidebar-section" id="police-nav" style="display:none;">
+        <div class="sidebar-section-label">Polizeidatenbank</div>
+        <div class="nav-item" onclick="navigate('citizens-db')"><span class="nav-icon">👥</span>Bürger</div>
+        <div class="nav-item" onclick="navigate('vehicles')"><span class="nav-icon">🚗</span>Fahrzeuge</div>
+        <div class="nav-item" onclick="navigate('plate-alerts')"><span class="nav-icon">🔴</span>Kennz.-Fahndung<span class="nav-badge" id="alert-badge">0</span></div>
+        <div class="nav-item" onclick="navigate('cases')"><span class="nav-icon">📁</span>Aktensystem</div>
+        <div class="nav-item" onclick="navigate('laws')"><span class="nav-icon">⚖</span>Gesetzbuch</div>
+        <div class="nav-item" onclick="navigate('evidence')"><span class="nav-icon">🔍</span>Beweismittel</div>
+      </div>
+      <div class="sidebar-section" id="citizen-nav" style="display:none;">
+        <div class="sidebar-section-label">Mein Bereich</div>
+        <div class="nav-item" onclick="navigate('my-vehicles')"><span class="nav-icon">🚗</span>Meine Fahrzeuge</div>
+        <div class="nav-item" onclick="navigate('complaints')"><span class="nav-icon">📝</span>Beschwerden</div>
+      </div>
+      <div class="sidebar-section" id="admin-nav" style="display:none;">
+        <div class="sidebar-section-label">Administration</div>
+        <div class="nav-item" onclick="navigate('admin')"><span class="nav-icon">⚙</span>Admin Panel</div>
+        <div class="nav-item" onclick="navigate('logs')"><span class="nav-icon">🗂</span>Systemlogs</div>
+      </div>
+      <div style="padding:16px;margin-top:auto;border-top:1px solid var(--border)">
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);letter-spacing:1.5px;line-height:1.8;">COPNET v3.0<br>SUPABASE CLOUD ✓<br>VERSCHLÜSSELT ✓</div>
+      </div>
+    </nav>
+
+    <main class="main-content">
+
+      <div class="page active" id="page-dashboard">
+        <div class="page-header"><div><div class="page-title">📊 Dashboard</div><div class="page-subtitle">LAGEBILD · ECHTZEIT</div></div></div>
+        <div id="dash-alert" style="display:none;" class="alert-flash">
+          <span style="font-size:18px;">🔴</span>
+          <div><strong style="color:var(--red-bright);font-family:var(--font-head);letter-spacing:1px;">FAHNDUNGSALARM</strong><div style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);margin-top:2px;" id="alert-sum"></div></div>
+          <button class="btn btn-danger btn-sm" onclick="navigate('plate-alerts')">ANSEHEN</button>
+        </div>
+        <div class="grid-4" style="margin-bottom:16px;">
+          <div class="stat-card"><div class="stat-label">Aktive Beamte</div><div class="stat-value" id="s-officers">—</div><div class="stat-change">im Dienst</div><div class="stat-icon">👮</div></div>
+          <div class="stat-card"><div class="stat-label">Offene Akten</div><div class="stat-value" id="s-cases">—</div><div class="stat-change">aktiv</div><div class="stat-icon">📁</div></div>
+          <div class="stat-card"><div class="stat-label">Fahndungen</div><div class="stat-value" style="color:var(--red-bright);" id="s-alerts">—</div><div class="stat-change">aktiv</div><div class="stat-icon">🔴</div></div>
+          <div class="stat-card"><div class="stat-label">Bürger</div><div class="stat-value" id="s-citizens">—</div><div class="stat-change">registriert</div><div class="stat-icon">👥</div></div>
+        </div>
+        <div class="split">
+          <div class="card">
+            <div class="card-header"><div class="card-title">🟢 Online Beamte</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--green-bright);display:flex;align-items:center;gap:6px;"><div class="sdot green"></div>LIVE</div></div>
+            <div class="card-body" id="online-list"><div class="spinner"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">⚡ Letzte Aktivitäten</div></div>
+            <div class="card-body" id="recent-logs"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-officers">
+        <div class="page-header">
+          <div><div class="page-title">👮 Beamtenübersicht</div><div class="page-subtitle">DIENSTAKTE · PERSONAL</div></div>
+          <button class="btn btn-primary btn-sm" id="add-off-btn" onclick="openModal('m-add-officer')" style="display:none;">+ Beamter anlegen</button>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Alle Beamten</div>
+            <div class="search-bar" style="width:260px;"><input placeholder="Name oder Dienstnummer..." id="search-off" oninput="loadOfficers()"><button class="sbtn">🔍</button></div>
+          </div>
+          <div class="card-body" style="padding:0;"><table class="data-table"><thead><tr><th>Dienstnummer</th><th>Name</th><th>Rang</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="off-tbody"><tr><td colspan="5" style="text-align:center;padding:24px;"><div class="spinner"></div></td></tr></tbody></table></div>
+        </div>
+      </div>
+
+      <div class="page" id="page-citizens-db">
+        <div class="page-header"><div><div class="page-title">👥 Bürgerdatenbank</div><div class="page-subtitle">EINWOHNERMELDEAMT</div></div></div>
+        <div class="filter-bar">
+          <div class="search-bar" style="flex:1;max-width:400px;"><input placeholder="Name, E-Mail oder Adresse..." id="search-cit" oninput="loadCitizens()"><button class="sbtn">🔍</button></div>
+        </div>
+        <div class="card"><div class="card-body" style="padding:0;"><table class="data-table"><thead><tr><th>Name</th><th>Geburtsdatum</th><th>Adresse</th><th>Telefon</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="cit-tbody"><tr><td colspan="6" style="text-align:center;padding:24px;"><div class="spinner"></div></td></tr></tbody></table></div></div>
+      </div>
+
+      <div class="page" id="page-vehicles">
+        <div class="page-header"><div><div class="page-title">🚗 Fahrzeugdatenbank</div><div class="page-subtitle">KRAFTFAHRZEUGREGISTER</div></div></div>
+        <div class="filter-bar">
+          <div class="search-bar" style="flex:1;max-width:400px;"><input placeholder="Kennzeichen, Marke oder Halter..." id="search-veh" oninput="loadVehicles()"><button class="sbtn">🔍</button></div>
+          <select class="filter-select" id="veh-filter" onchange="loadVehicles()"><option value="">Alle</option><option value="stolen">Gestohlen</option><option value="wanted">Gesucht</option><option value="investigation">Ermittlung</option></select>
+        </div>
+        <div class="card"><div class="card-body" style="padding:0;"><table class="data-table"><thead><tr><th>Kennzeichen</th><th>Marke / Modell</th><th>Farbe</th><th>Halter</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="veh-tbody"><tr><td colspan="6" style="text-align:center;padding:24px;"><div class="spinner"></div></td></tr></tbody></table></div></div>
+      </div>
+
+      <div class="page" id="page-plate-alerts">
+        <div class="page-header">
+          <div><div class="page-title" style="color:var(--red-bright)">🔴 Kennzeichen-Fahndung</div><div class="page-subtitle">FAHNDUNGSSYSTEM · BUNDESWEIT</div></div>
+          <button class="btn btn-danger btn-sm" onclick="openModal('m-add-alert')">+ Fahndung eintragen</button>
+        </div>
+        <div id="alert-banners"></div>
+        <div class="card"><div class="card-body" style="padding:0;"><table class="data-table"><thead><tr><th>Kennzeichen</th><th>Fahrzeug</th><th>Grund</th><th>Beamter</th><th>Datum</th><th>Aktionen</th></tr></thead><tbody id="alerts-tbody"><tr><td colspan="6" style="text-align:center;padding:24px;"><div class="spinner"></div></td></tr></tbody></table></div></div>
+      </div>
+
+      <div class="page" id="page-cases">
+        <div class="page-header">
+          <div><div class="page-title">📁 Aktensystem</div><div class="page-subtitle">FALLAKTEN · ERMITTLUNGEN</div></div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('m-new-case')">+ Neue Akte</button>
+        </div>
+        <div class="filter-bar">
+          <div class="search-bar" style="flex:1;max-width:400px;"><input placeholder="Akten-Nr., Name..." id="search-cases" oninput="loadCases()"><button class="sbtn">🔍</button></div>
+          <select class="filter-select" id="case-filter" onchange="loadCases()"><option value="">Alle Status</option><option value="Offen">Offen</option><option value="Ermittlung">Ermittlung</option><option value="Geschlossen">Geschlossen</option></select>
+        </div>
+        <div class="card"><div class="card-body" style="padding:0;"><table class="data-table"><thead><tr><th>Akten-Nr.</th><th>Datum</th><th>Beamter</th><th>Bürger</th><th>Beschreibung</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="cases-tbody"><tr><td colspan="7" style="text-align:center;padding:24px;"><div class="spinner"></div></td></tr></tbody></table></div></div>
+      </div>
+
+      <div class="page" id="page-laws">
+        <div class="page-header"><div><div class="page-title">⚖ Gesetzbuch</div><div class="page-subtitle">STRAFGESETZBUCH · ORDNUNGSWIDRIGKEITEN</div></div></div>
+        <div class="filter-bar">
+          <div class="search-bar" style="flex:1;max-width:400px;"><input placeholder="Paragraph oder Stichwort..." id="search-laws" oninput="filterLaws()"><button class="sbtn">🔍</button></div>
+          <select class="filter-select" id="law-cat" onchange="filterLaws()"><option value="">Alle Kategorien</option><option>SchwarzArbG</option><option>StGB</option><option>OWiG</option><option>BtMG</option><option>WaffG</option><option>StVO</option></select>
+          <select class="filter-select" id="law-sev" onchange="filterLaws()"><option value="">Alle Schweregrade</option><option>Straftat</option><option>Mittelschwere Straftat</option><option>Schwere Straftat</option></select>
+        </div>
+        <div id="laws-list"></div>
+      </div>
+
+      <div class="page" id="page-evidence">
+        <div class="page-header">
+          <div><div class="page-title">🔍 Beweismittel</div><div class="page-subtitle">ASSERVATE</div></div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('m-evidence')">+ Hochladen</button>
+        </div>
+        <div class="card"><div class="card-body" style="padding:0;"><table class="data-table"><thead><tr><th>ID</th><th>Akte</th><th>Typ</th><th>Beschreibung</th><th>Beamter</th><th>Datum</th></tr></thead><tbody id="ev-tbody"><tr><td colspan="6" style="text-align:center;padding:24px;"><div class="spinner"></div></td></tr></tbody></table></div></div>
+      </div>
+
+      <div class="page" id="page-my-vehicles">
+        <div class="page-header">
+          <div><div class="page-title">🚗 Meine Fahrzeuge</div><div class="page-subtitle">FAHRZEUGREGISTRIERUNG</div></div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('m-reg-veh')">+ Fahrzeug anmelden</button>
+        </div>
+        <div id="my-veh-list"></div>
+      </div>
+
+      <div class="page" id="page-complaints">
+        <div class="page-header"><div><div class="page-title">📝 Beschwerden</div></div><button class="btn btn-primary btn-sm" onclick="openModal('m-complaint')">+ Neue Beschwerde</button></div>
+        <div class="card"><div class="card-body"><div class="empty-state"><div class="ei">📝</div><p>KEINE BESCHWERDEN VORHANDEN</p></div></div></div>
+      </div>
+
+      <div class="page" id="page-admin">
+        <div class="page-header"><div><div class="page-title">⚙ Administration</div><div class="page-subtitle">NUR FÜR FÜHRUNGSKRÄFTE</div></div></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">👮 Neuen Beamten anlegen</div></div>
+            <div class="card-body">
+              <div class="form-group"><label>Dienstnummer</label><input id="a-dienst" placeholder="DE-0042"></div>
+              <div class="form-group"><label>Name</label><input id="a-name" placeholder="Max Mustermann"></div>
+              <div class="form-group"><label>Rang</label>
+                <select id="a-rank">
+                  <option>Streifenpolizist</option><option>Verkehrspolizist</option><option>SEK</option><option>Zivilpolizist</option><option>Ausbilder</option><option>SEK Leitung</option><option>Streifenpolizei Leitung</option><option>Zivil Leitung</option><option>Verkehrspolizei Leitung</option><option>Vize Chef</option><option>Polizei Chef</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Passwort (für den Beamten)</label><input type="password" id="a-pass" placeholder="Temporäres Passwort"></div>
+              <button class="btn btn-primary" onclick="adminCreateOfficer()">✅ Beamter anlegen</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">📋 Beamtenverwaltung</div></div>
+            <div class="card-body" id="admin-off-list"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-logs">
+        <div class="page-header"><div><div class="page-title">🗂 Systemlogs</div><div class="page-subtitle">AUDIT-PROTOKOLL</div></div></div>
+        <div class="card"><div class="card-body" style="padding:0;"><table class="data-table"><thead><tr><th>Zeitstempel</th><th>Benutzer</th><th>Aktion</th><th>Details</th></tr></thead><tbody id="logs-tbody"><tr><td colspan="4" style="text-align:center;padding:24px;"><div class="spinner"></div></td></tr></tbody></table></div></div>
+      </div>
+
+      <div class="page" id="page-profile">
+        <div class="page-header"><div><div class="page-title">👤 Mein Profil</div></div></div>
+        <div class="card"><div class="card-body" id="profile-info"></div></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="m-add-officer">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">👮 Beamter anlegen</div><button class="modal-close" onclick="closeModal('m-add-officer')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><div class="form-group"><label>Dienstnummer</label><input id="n-dienst" placeholder="DE-0001"></div><div class="form-group"><label>Name</label><input id="n-name" placeholder="Max Mustermann"></div></div>
+      <div class="form-group"><label>Rang</label><select id="n-rank"><option>Streifenpolizist</option><option>Verkehrspolizist</option><option>SEK</option><option>Zivilpolizist</option><option>Ausbilder</option><option>SEK Leitung</option><option>Streifenpolizei Leitung</option><option>Zivil Leitung</option><option>Verkehrspolizei Leitung</option><option>Vize Chef</option><option>Polizei Chef</option></select></div>
+      <div class="form-group"><label>Passwort</label><input type="password" id="n-pass" placeholder="Temporäres Passwort"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('m-add-officer')">Abbrechen</button><button class="btn btn-primary" onclick="createOfficer()">✅ Anlegen</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-add-alert">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">🔴 Fahndung eintragen</div><button class="modal-close" onclick="closeModal('m-add-alert')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><div class="form-group"><label>Kennzeichen</label><input id="al-plate" placeholder="B-MK 4821"></div><div class="form-group"><label>Fahrzeug</label><input id="al-veh" placeholder="BMW 3er, Schwarz"></div></div>
+      <div class="form-group"><label>Fahndungsgrund</label><select id="al-reason"><option>Gestohlen</option><option>Gesucht</option><option>Ermittlung</option></select></div>
+      <div class="form-group"><label>Bemerkungen</label><textarea id="al-notes" rows="3" style="width:100%;resize:vertical;background:var(--bg-dark);border:1px solid var(--border);color:var(--text-bright);padding:10px;font-size:13px;outline:none;font-family:var(--font-ui);"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('m-add-alert')">Abbrechen</button><button class="btn btn-danger" onclick="addAlert()">🔴 Fahndung starten</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-new-case">
+  <div class="modal" style="width:640px;">
+    <div class="modal-header"><div class="modal-title">📁 Neue Akte erstellen</div><button class="modal-close" onclick="closeModal('m-new-case')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Template</label><select id="c-tmpl" onchange="fillTmpl()"><option value="">-- Template --</option><option value="verkehr">Verkehrsdelikt</option><option value="beschwerde">Bürgerbeschwerde</option><option value="ermittlung">Ermittlungsbericht</option><option value="vorfall">Vorfallbericht</option><option value="fahrzeug">Fahrzeugdelikt</option></select></div>
+        <div class="form-group"><label>Status</label><select id="c-status"><option>Offen</option><option>Ermittlung</option><option>Geschlossen</option></select></div>
+      </div>
+      <div class="form-row"><div class="form-group"><label>Beteiligter Bürger</label><input id="c-cit" placeholder="Name des Bürgers"></div><div class="form-group"><label>Kennzeichen (optional)</label><input id="c-veh" placeholder="B-XX 1234"></div></div>
+      <div class="form-group"><label>Beschreibung</label><textarea id="c-desc" rows="5" style="width:100%;resize:vertical;background:var(--bg-dark);border:1px solid var(--border);color:var(--text-bright);padding:10px;font-size:13px;outline:none;font-family:var(--font-ui);"></textarea></div>
+      <div class="form-group"><label>Angewandtes Gesetz (optional)</label><select id="c-law"><option value="">-- Kein Gesetz --</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('m-new-case')">Abbrechen</button><button class="btn btn-primary" onclick="createCase()">📁 Akte anlegen</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-evidence">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">🔍 Beweismittel hochladen</div><button class="modal-close" onclick="closeModal('m-evidence')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Akten-Nummer</label><input id="ev-case" placeholder="z.B. 2025-1234"></div>
+      <div class="form-group"><label>Typ</label><select id="ev-type"><option>Bild</option><option>Dokument</option><option>Video</option><option>Sonstiges</option></select></div>
+      <div class="form-group"><label>Beschreibung</label><input id="ev-desc" placeholder="Kurze Beschreibung"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('m-evidence')">Abbrechen</button><button class="btn btn-primary" onclick="uploadEvidence()">⬆ Hochladen</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-reg-veh">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">🚗 Fahrzeug anmelden</div><button class="modal-close" onclick="closeModal('m-reg-veh')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Kennzeichen</label><input id="v-plate" placeholder="B-AB 1234"></div>
+      <div class="form-row"><div class="form-group"><label>Marke</label><input id="v-brand" placeholder="BMW"></div><div class="form-group"><label>Modell</label><input id="v-model" placeholder="3er"></div></div>
+      <div class="form-group"><label>Farbe</label><select id="v-color"><option>Schwarz</option><option>Weiß</option><option>Silber</option><option>Grau</option><option>Blau</option><option>Rot</option><option>Grün</option><option>Gelb</option><option>Sonstige</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('m-reg-veh')">Abbrechen</button><button class="btn btn-primary" onclick="registerVehicle()">✅ Anmelden</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-complaint">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">📝 Beschwerde einreichen</div><button class="modal-close" onclick="closeModal('m-complaint')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Betreff</label><input id="comp-subj" placeholder="Kurze Beschreibung"></div>
+      <div class="form-group"><label>Gegen (Beamter/Dienststelle)</label><input id="comp-against" placeholder="Name oder Dienststelle"></div>
+      <div class="form-group"><label>Beschreibung</label><textarea id="comp-desc" rows="4" style="width:100%;resize:vertical;background:var(--bg-dark);border:1px solid var(--border);color:var(--text-bright);padding:10px;font-size:13px;outline:none;font-family:var(--font-ui);"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('m-complaint')">Abbrechen</button><button class="btn btn-primary" onclick="submitComplaint()">📝 Einreichen</button></div>
+  </div>
+</div>
+
+<script>
+const SB_URL='https://vekozqxmawzatvyofsxq.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZla296cXhtYXd6YXR2eW9mc3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NzIwMDksImV4cCI6MjA4ODU0ODAwOX0.ASzxEi8Tmnv7AFd5vFV4Hw12FxzA8ysjEoTlXDLMYaE';
+const db=supabase.createClient(SB_URL,SB_KEY);
+
+const RL={'Polizei Chef':10,'Vize Chef':9,'Verkehrspolizei Leitung':8,'Zivil Leitung':7,'Streifenpolizei Leitung':6,'SEK Leitung':5,'Ausbilder':4,'Zivilpolizist':3,'SEK':3,'Verkehrspolizist':2,'Streifenpolizist':1};
+const TMPLS={verkehr:'Verkehrsdelikt\n\nDatum: \nOrt: \nKennzeichen: \nVerstoß: \nBußgeld: \n\nSachverhalt:\n',beschwerde:'Bürgerbeschwerde\n\nEingangsdatum: \nBeschwerdeführer: \nGegen: \n\nSachverhalt:\n\nMaßnahmen:\n',ermittlung:'Ermittlungsbericht\n\nAktenzeichen: \nErmittlungsgegenstand: \nVerdächtige: \n\nBeweise:\n\nFortschritt:\n',vorfall:'Vorfallbericht\n\nDatum/Uhrzeit: \nOrt: \nBeteiligte: \n\nSachverhalt:\n\nMaßnahmen:\n',fahrzeug:'Fahrzeugdelikt\n\nKennzeichen: \nFahrzeug: \nHalter: \nVerstoß:\n\nSachverhalt:\n'};
+const LAWS=[
+  {para:'§1 SchwarzArbG',name:'Beauftragung von Schwarzarbeit',cat:'SchwarzArbG',desc:'Wer eine andere Person beauftragt, Dienst- oder Werkleistungen ohne sozialversicherungsrechtliche Anmeldung zu erbringen.',fine:2500,sev:'Straftat'},
+  {para:'§2 SchwarzArbG',name:'Annahme von Schwarzarbeit',cat:'SchwarzArbG',desc:'Wer Dienst- oder Werkleistungen annimmt und weiß, dass der Auftragnehmer seinen Meldepflichten nicht nachkommt.',fine:1500,sev:'Straftat'},
+  {para:'§3 SchwarzArbG',name:'Gründung bandenmäßiger Schwarzarbeit',cat:'SchwarzArbG',desc:'Wer eine Vereinigung gründet, die auf fortgesetzte Schwarzarbeit ausgerichtet ist.',fine:3500,sev:'Mittelschwere Straftat'},
+  {para:'§4 SchwarzArbG',name:'Teilnahme an bandenmäßiger Schwarzarbeit',cat:'SchwarzArbG',desc:'Wer als Mitglied einer solchen Vereinigung Schwarzarbeit begeht oder fördert.',fine:2250,sev:'Mittelschwere Straftat'},
+  {para:'§5 SchwarzArbG',name:'Gründung schwer krimineller Schwarzarbeit',cat:'SchwarzArbG',desc:'Wer eine kriminelle Organisation zur systematischen Schwarzarbeit gründet.',fine:5000,sev:'Schwere Straftat'},
+  {para:'§6 SchwarzArbG',name:'Teilnahme an schwer krimineller Schwarzarbeit',cat:'SchwarzArbG',desc:'Wer sich an einer solchen Organisation beteiligt und aktiv mitwirkt.',fine:3500,sev:'Schwere Straftat'},
+  {para:'§242 StGB',name:'Diebstahl',cat:'StGB',desc:'Wer eine fremde bewegliche Sache einem anderen wegnimmt, um sie sich rechtswidrig zuzueignen.',fine:4000,sev:'Mittelschwere Straftat'},
+  {para:'§263 StGB',name:'Betrug',cat:'StGB',desc:'Wer durch Vorspiegelung falscher Tatsachen einen Vermögensschaden herbeiführt.',fine:5000,sev:'Schwere Straftat'},
+  {para:'§223 StGB',name:'Körperverletzung',cat:'StGB',desc:'Wer eine andere Person körperlich misshandelt oder an der Gesundheit schädigt.',fine:3000,sev:'Mittelschwere Straftat'},
+  {para:'§29 BtMG',name:'Unerlaubter Betäubungsmittelbesitz',cat:'BtMG',desc:'Wer Betäubungsmittel ohne Erlaubnis besitzt oder in Verkehr bringt.',fine:6000,sev:'Schwere Straftat'},
+  {para:'§51 WaffG',name:'Unerlaubter Waffenbesitz',cat:'WaffG',desc:'Wer eine erlaubnispflichtige Schusswaffe ohne Erlaubnis besitzt.',fine:5500,sev:'Schwere Straftat'},
+  {para:'§24 StVO',name:'Rotlichtverstoß',cat:'StVO',desc:'Wer bei rotem Ampelsignal in eine Kreuzung einfährt.',fine:200,sev:'Straftat'},
+  {para:'§21a StVO',name:'Fahren ohne Sicherheitsgurt',cat:'StVO',desc:'Wer als Fahrzeugführer keinen Sicherheitsgurt angelegt hat.',fine:30,sev:'Straftat'},
+];
+
+let U=null;
+setInterval(()=>{document.getElementById('htime').textContent=new Date().toLocaleTimeString('de-DE')},1000);
+
+function notify(msg,type='info'){const e=document.getElementById('notif');e.textContent=msg;e.className='notification visible '+type;setTimeout(()=>e.className='notification',3500)}
+function showErr(m){const e=document.getElementById('login-error');e.textContent=m;e.style.display='block'}
+function hideErr(){document.getElementById('login-error').style.display='none'}
+function switchTab(t){document.querySelectorAll('.login-tab').forEach((x,i)=>x.classList.toggle('active',(i===0&&t==='officer')||(i===1&&t==='citizen')));document.getElementById('tab-officer').style.display=t==='officer'?'block':'none';document.getElementById('tab-citizen').style.display=t==='citizen'?'block':'none';hideErr()}
+function showReg(){document.getElementById('cit-login').style.display='none';document.getElementById('cit-reg').style.display='block';hideErr()}
+function showLogin(){document.getElementById('cit-login').style.display='block';document.getElementById('cit-reg').style.display='none';hideErr()}
+
+async function loginOfficer(){
+  hideErr();
+  const dienst=document.getElementById('l-dienst').value.trim().toUpperCase();
+  const pass=document.getElementById('l-pass').value;
+  if(!dienst||!pass){showErr('Bitte alle Felder ausfüllen.');return}
+  const{data,error}=await db.from('officers').select('*').eq('dienst',dienst).single();
+  if(error||!data){showErr('Dienstnummer nicht gefunden.');return}
+  if(data.password!==pass){showErr('Falsches Passwort.');return}
+  if(data.suspended){showErr('Ihr Konto ist suspendiert. Bitte wenden Sie sich an die Leitung.');return}
+  U={type:'officer',...data};
+  await log('LOGIN','Beamter angemeldet: '+data.name);
+  startApp();
+}
+
+async function loginCitizen(){
+  hideErr();
+  const email=document.getElementById('c-email').value.trim().toLowerCase();
+  const pass=document.getElementById('c-pass').value;
+  if(!email||!pass){showErr('Bitte alle Felder ausfüllen.');return}
+  const{data,error}=await db.from('citizens').select('*').eq('email',email).single();
+  if(error||!data){showErr('E-Mail nicht gefunden.');return}
+  if(data.password!==pass){showErr('Falsches Passwort.');return}
+  if(data.status==='Gesperrt'){showErr('Ihr Konto wurde gesperrt.');return}
+  U={type:'citizen',...data};
+  await log('LOGIN','Bürger angemeldet: '+data.name);
+  startApp();
+}
+
+async function registerCitizen(){
+  hideErr();
+  const name=document.getElementById('r-name').value.trim();
+  const dob=document.getElementById('r-dob').value;
+  const phone=document.getElementById('r-phone').value.trim();
+  const address=document.getElementById('r-addr').value.trim();
+  const email=document.getElementById('r-email').value.trim().toLowerCase();
+  const password=document.getElementById('r-pass').value;
+  if(!name||!dob||!phone||!address||!email||!password){showErr('Bitte alle Felder ausfüllen.');return}
+  const{data,error}=await db.from('citizens').insert([{name,dob,phone,address,email,password,status:'Aktiv'}]).select().single();
+  if(error){showErr('Fehler: E-Mail bereits registriert.');return}
+  U={type:'citizen',...data};
+  await log('REGISTRIERUNG','Bürger registriert: '+name);
+  notify('✅ Konto erstellt!','success');
+  startApp();
+}
+
+function startApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('h-name').textContent=U.name;
+  document.getElementById('h-rank').textContent=U.type==='officer'?U.rank+' · '+U.dienst:'Bürger';
+  document.getElementById('h-avatar').textContent=U.name[0].toUpperCase();
+  const isOff=U.type==='officer';
+  const lvl=RL[U.rank]||0;
+  const isHigh=isOff&&lvl>=6;
+  document.getElementById('police-nav').style.display=isOff?'block':'none';
+  document.getElementById('citizen-nav').style.display=!isOff?'block':'none';
+  document.getElementById('admin-nav').style.display=isHigh?'block':'none';
+  document.getElementById('duty-btn').style.display=isOff?'flex':'none';
+  if(isHigh)document.getElementById('add-off-btn').style.display='inline-flex';
+  populateLawSel();
+  navigate('dashboard');
+  loadDash();
+}
+
+async function logout(){
+  if(U&&U.type==='officer'&&U.status==='on')await db.from('officers').update({status:'off'}).eq('id',U.id);
+  if(U)await log('LOGOUT','Abgemeldet: '+U.name);
+  U=null;
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('login-screen').style.display='flex';
+}
+
+async function toggleDuty(){
+  if(!U||U.type!=='officer')return;
+  const ns=U.status==='on'?'off':'on';
+  await db.from('officers').update({status:ns}).eq('id',U.id);
+  U.status=ns;
+  const btn=document.getElementById('duty-btn');
+  const dot=document.getElementById('duty-dot');
+  const txt=document.getElementById('duty-txt');
+  if(ns==='on'){btn.className='duty-toggle on';dot.className='sdot green';txt.textContent='IM DIENST'}
+  else{btn.className='duty-toggle off';dot.className='sdot gray';txt.textContent='NICHT IM DIENST'}
+  await log('DIENST',ns==='on'?'Dienstbeginn':'Dienstende');
+  notify(ns==='on'?'✅ Dienst begonnen.':'⏹ Dienst beendet.',ns==='on'?'success':'info');
+  loadDash();
+}
+
+function navigate(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  const el=document.getElementById('page-'+p);
+  if(el)el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')?.includes("'"+p+"'"))n.classList.add('active')});
+  if(p==='dashboard')loadDash();
+  if(p==='officers')loadOfficers();
+  if(p==='citizens-db')loadCitizens();
+  if(p==='vehicles')loadVehicles();
+  if(p==='plate-alerts')loadAlerts();
+  if(p==='cases')loadCases();
+  if(p==='laws')filterLaws();
+  if(p==='evidence')loadEvidence();
+  if(p==='my-vehicles')loadMyVeh();
+  if(p==='admin')loadAdminOff();
+  if(p==='logs')loadLogs();
+  if(p==='profile')renderProfile();
+}
+
+function openModal(id){document.getElementById(id).classList.add('visible')}
+function closeModal(id){document.getElementById(id).classList.remove('visible')}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('visible')}));
+
+async function loadDash(){
+  const[a,b,c,d]=await Promise.all([
+    db.from('officers').select('*').eq('status','on'),
+    db.from('cases').select('*').neq('status','Geschlossen'),
+    db.from('alerts').select('*'),
+    db.from('citizens').select('id'),
+  ]);
+  document.getElementById('s-officers').textContent=a.data?.length||0;
+  document.getElementById('s-cases').textContent=b.data?.length||0;
+  document.getElementById('s-alerts').textContent=c.data?.length||0;
+  document.getElementById('s-citizens').textContent=d.data?.length||0;
+  document.getElementById('alert-badge').textContent=c.data?.length||0;
+  if(c.data?.length>0){document.getElementById('dash-alert').style.display='flex';document.getElementById('alert-sum').textContent=c.data.length+' Fahrzeuge zur Fahndung · '+c.data.map(x=>x.plate).join(', ')}
+
+  const ol=document.getElementById('online-list');
+  if(!a.data?.length){ol.innerHTML='<div class="empty-state"><div class="ei">👮</div><p>KEINE BEAMTEN IM DIENST</p></div>'}
+  else ol.innerHTML=a.data.map(o=>`<div class="officer-card"><div class="o-avatar">${o.name[0]}</div><div style="flex:1;"><div style="font-weight:600;font-size:13px;">${o.name}</div><div style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">${o.rank} · ${o.dienst}</div></div><span class="badge badge-green">IM DIENST</span></div>`).join('');
+
+  const{data:logs}=await db.from('logs').select('*').order('created_at',{ascending:false}).limit(5);
+  const rl=document.getElementById('recent-logs');
+  if(!logs?.length){rl.innerHTML='<div class="empty-state"><div class="ei">🗂</div><p>KEINE AKTIVITÄTEN</p></div>';return}
+  rl.innerHTML='<div class="timeline">'+logs.map(l=>`<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-time">${new Date(l.created_at).toLocaleString('de-DE')}</div><div class="timeline-content"><strong>${l.username}</strong> – ${l.detail}</div></div>`).join('')+'</div>';
+}
+
+async function loadOfficers(){
+  const s=(document.getElementById('search-off')?.value||'').toLowerCase();
+  const{data}=await db.from('officers').select('*').order('level',{ascending:false});
+  const list=s?data?.filter(o=>o.name.toLowerCase().includes(s)||o.dienst.toLowerCase().includes(s)):data;
+  const tb=document.getElementById('off-tbody');
+  const myLvl=RL[U?.rank]||0;
+  if(!list?.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-muted);">Keine Beamten gefunden.</td></tr>';return}
+  tb.innerHTML=list.map(o=>`<tr>
+    <td><span style="font-family:var(--font-mono);color:var(--accent-bright);">${o.dienst}</span></td>
+    <td><strong>${o.name}</strong></td>
+    <td>${rb(o.rank)}</td>
+    <td><span class="badge ${o.status==='on'?'badge-green':'badge-gray'}">${o.status==='on'?'🟢 IM DIENST':'⚫ FREI'}</span>${o.suspended?'<span class="badge badge-red" style="margin-left:4px;">SUSPENDIERT</span>':''}</td>
+    <td>${myLvl>=6&&!o.suspended&&(RL[o.rank]||0)<myLvl?`<button class="btn btn-danger btn-sm" onclick="suspendOff('${o.id}','${o.name}')">Suspendieren</button>`:''}${myLvl>=6&&o.suspended?`<button class="btn btn-success btn-sm" onclick="unsuspendOff('${o.id}','${o.name}')">Reaktivieren</button>`:''}</td>
+  </tr>`).join('');
+}
+
+async function suspendOff(id,name){await db.from('officers').update({suspended:true,status:'off'}).eq('id',id);await log('SUSPENDIERUNG',name+' suspendiert');notify('⚠ '+name+' suspendiert.','error');loadOfficers()}
+async function unsuspendOff(id,name){await db.from('officers').update({suspended:false}).eq('id',id);await log('REAKTIVIERUNG',name+' reaktiviert');notify('✅ '+name+' reaktiviert.','success');loadOfficers()}
+
+async function createOfficer(){
+  const dienst=document.getElementById('n-dienst').value.trim().toUpperCase();
+  const name=document.getElementById('n-name').value.trim();
+  const rank=document.getElementById('n-rank').value;
+  const password=document.getElementById('n-pass').value;
+  if(!dienst||!name||!rank||!password){notify('Alle Felder ausfüllen.','error');return}
+  const{error}=await db.from('officers').insert([{dienst,name,rank,level:RL[rank]||1,password,status:'off',suspended:false}]);
+  if(error){notify('Fehler: Dienstnummer bereits vergeben.','error');return}
+  await log('BEAMTER_ANGELEGT',name+' ('+dienst+') Rang: '+rank);
+  notify('✅ Beamter '+name+' angelegt.','success');
+  closeModal('m-add-officer');
+  ['n-dienst','n-name','n-pass'].forEach(id=>document.getElementById(id).value='');
+  loadOfficers();
+}
+
+async function adminCreateOfficer(){
+  const dienst=document.getElementById('a-dienst').value.trim().toUpperCase();
+  const name=document.getElementById('a-name').value.trim();
+  const rank=document.getElementById('a-rank').value;
+  const password=document.getElementById('a-pass').value;
+  if(!dienst||!name||!rank||!password){notify('Alle Felder ausfüllen.','error');return}
+  const{error}=await db.from('officers').insert([{dienst,name,rank,level:RL[rank]||1,password,status:'off',suspended:false}]);
+  if(error){notify('Fehler: Dienstnummer bereits vergeben.','error');return}
+  await log('BEAMTER_ANGELEGT',name+' ('+dienst+')');
+  notify('✅ Beamter '+name+' angelegt.','success');
+  ['a-dienst','a-name','a-pass'].forEach(id=>document.getElementById(id).value='');
+  loadAdminOff();
+}
+
+async function loadAdminOff(){
+  const{data}=await db.from('officers').select('*').order('level',{ascending:false});
+  const el=document.getElementById('admin-off-list');
+  const myLvl=RL[U?.rank]||0;
+  if(!data?.length){el.innerHTML='<div style="color:var(--text-muted);font-family:var(--font-mono);font-size:11px;">Keine Beamten.</div>';return}
+  el.innerHTML=data.map(o=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+    <div style="flex:1;"><div style="font-size:13px;font-weight:600;">${o.name}</div><div style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono);">${o.dienst} · ${o.rank}</div></div>
+    ${o.suspended?'<span class="badge badge-red">SUSP.</span>':''}
+    ${myLvl>=6&&(RL[o.rank]||0)<myLvl?`<button class="btn ${o.suspended?'btn-success':'btn-danger'} btn-sm" onclick="${o.suspended?`unsuspendOff('${o.id}','${o.name}')`:`suspendOff('${o.id}','${o.name}')`}">${o.suspended?'Reaktiv.':'Suspend.'}</button>`:''}
+  </div>`).join('');
+}
+
+async function loadCitizens(){
+  const s=(document.getElementById('search-cit')?.value||'').toLowerCase();
+  const{data}=await db.from('citizens').select('*').order('name');
+  const list=s?data?.filter(c=>c.name.toLowerCase().includes(s)||c.email?.toLowerCase().includes(s)||c.address?.toLowerCase().includes(s)):data;
+  const tb=document.getElementById('cit-tbody');
+  const myLvl=RL[U?.rank]||0;
+  if(!list?.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted);">Keine Bürger gefunden.</td></tr>';return}
+  tb.innerHTML=list.map(c=>`<tr>
+    <td><strong>${c.name}</strong></td>
+    <td style="font-family:var(--font-mono);font-size:12px;">${c.dob||'—'}</td>
+    <td style="font-size:12px;">${c.address||'—'}</td>
+    <td style="font-family:var(--font-mono);">${c.phone||'—'}</td>
+    <td><span class="badge ${c.status==='Aktiv'?'badge-green':'badge-red'}">${c.status}</span></td>
+    <td>${myLvl>=4?`<button class="btn ${c.status==='Aktiv'?'btn-danger':'btn-success'} btn-sm" onclick="toggleCit('${c.id}','${c.status}','${c.name}')">${c.status==='Aktiv'?'Sperren':'Entsperren'}</button>`:''}</td>
+  </tr>`).join('');
+}
+
+async function toggleCit(id,status,name){
+  const ns=status==='Aktiv'?'Gesperrt':'Aktiv';
+  await db.from('citizens').update({status:ns}).eq('id',id);
+  await log('BÜRGER_STATUS',name+' → '+ns);
+  notify('✅ '+name+': '+ns,'success');
+  loadCitizens();
+}
+
+async function loadVehicles(){
+  const s=(document.getElementById('search-veh')?.value||'').toLowerCase();
+  const sf=document.getElementById('veh-filter')?.value||'';
+  let q=db.from('vehicles').select('*').order('created_at',{ascending:false});
+  if(sf)q=q.eq('status',sf);
+  const{data}=await q;
+  let list=data||[];
+  if(s)list=list.filter(v=>v.plate?.toLowerCase().includes(s)||v.brand?.toLowerCase().includes(s)||v.owner_name?.toLowerCase().includes(s));
+  const tb=document.getElementById('veh-tbody');
+  if(!list.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted);">Keine Fahrzeuge gefunden.</td></tr>';return}
+  tb.innerHTML=list.map(v=>`<tr>
+    <td><span style="font-family:var(--font-mono);font-size:15px;letter-spacing:2px;color:${v.status!=='ok'?'var(--red-bright)':'var(--text-bright)'};">${v.plate}</span></td>
+    <td><strong>${v.brand}</strong> ${v.model}</td>
+    <td>${v.color}</td>
+    <td>${v.owner_name||'—'}</td>
+    <td>${vbadge(v.status)}</td>
+    <td><button class="btn btn-${v.status==='stolen'?'success':'danger'} btn-sm" onclick="markStolen('${v.id}','${v.plate}','${v.status}')">${v.status==='stolen'?'✅ Freigeben':'🔴 Gestohlen'}</button></td>
+  </tr>`).join('');
+}
+
+function vbadge(s){const m={ok:['badge-green','OK'],stolen:['badge-red','GESTOHLEN'],wanted:['badge-orange','GESUCHT'],investigation:['badge-yellow','ERMITTLUNG']};const[c,l]=m[s]||['badge-gray',s];return`<span class="badge ${c}">${l}</span>`}
+
+async function markStolen(id,plate,cs){
+  const ns=cs==='stolen'?'ok':'stolen';
+  await db.from('vehicles').update({status:ns}).eq('id',id);
+  await log('FAHRZEUG_STATUS',plate+' → '+ns);
+  notify(`${plate}: ${ns==='stolen'?'Als gestohlen markiert.':'Freigegeben.'}`,ns==='stolen'?'error':'success');
+  loadVehicles();
+}
+
+async function loadAlerts(){
+  const{data}=await db.from('alerts').select('*').order('created_at',{ascending:false});
+  const bans=document.getElementById('alert-banners');
+  const tb=document.getElementById('alerts-tbody');
+  document.getElementById('alert-badge').textContent=data?.length||0;
+  if(!data?.length){bans.innerHTML='';tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted);">Keine aktiven Fahndungen.</td></tr>';return}
+  bans.innerHTML=data.map(a=>`<div class="plate-alert-banner"><span style="font-size:24px;color:var(--red-bright);">🚨</span><div style="flex:1;"><div class="plate-kz">${a.plate}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;font-family:var(--font-mono);">${a.vehicle||''} · ${a.reason} · ${a.notes||''}</div></div>${abadge(a.reason)}</div>`).join('');
+  tb.innerHTML=data.map(a=>`<tr>
+    <td><span style="font-family:var(--font-mono);font-size:16px;letter-spacing:3px;color:var(--red-bright);">${a.plate}</span></td>
+    <td>${a.vehicle||'—'}</td>
+    <td>${abadge(a.reason)}</td>
+    <td>${a.officer_name||'—'}</td>
+    <td style="font-family:var(--font-mono);font-size:11px;">${new Date(a.created_at).toLocaleDateString('de-DE')}</td>
+    <td><button class="btn btn-danger btn-sm" onclick="removeAlert('${a.id}','${a.plate}')">Aufheben</button></td>
+  </tr>`).join('');
+}
+
+function abadge(r){const m={'Gestohlen':'badge-red','Gesucht':'badge-orange','Ermittlung':'badge-yellow'};return`<span class="badge ${m[r]||'badge-gray'}">${(r||'').toUpperCase()}</span>`}
+
+async function addAlert(){
+  const plate=document.getElementById('al-plate').value.trim().toUpperCase();
+  const vehicle=document.getElementById('al-veh').value.trim();
+  const reason=document.getElementById('al-reason').value;
+  const notes=document.getElementById('al-notes').value.trim();
+  if(!plate){notify('Kennzeichen eingeben.','error');return}
+  await db.from('alerts').insert([{plate,vehicle,reason,notes,officer_name:U?.name}]);
+  await log('FAHNDUNG',plate+' → '+reason);
+  notify('🔴 Fahndung für '+plate+' eingetragen.','error');
+  closeModal('m-add-alert');
+  ['al-plate','al-veh','al-notes'].forEach(id=>document.getElementById(id).value='');
+  loadAlerts();
+}
+
+async function removeAlert(id,plate){
+  await db.from('alerts').delete().eq('id',id);
+  await log('FAHNDUNG_AUFGEHOBEN',plate);
+  notify('✅ Fahndung für '+plate+' aufgehoben.','success');
+  loadAlerts();
+}
+
+async function loadCases(){
+  const s=(document.getElementById('search-cases')?.value||'').toLowerCase();
+  const sf=document.getElementById('case-filter')?.value||'';
+  let q=db.from('cases').select('*').order('created_at',{ascending:false});
+  if(sf)q=q.eq('status',sf);
+  const{data}=await q;
+  let list=data||[];
+  if(s)list=list.filter(c=>c.case_number?.toLowerCase().includes(s)||c.citizen_name?.toLowerCase().includes(s)||c.description?.toLowerCase().includes(s));
+  const tb=document.getElementById('cases-tbody');
+  if(!list.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted);">Keine Akten gefunden.</td></tr>';return}
+  tb.innerHTML=list.map(c=>`<tr>
+    <td><span style="font-family:var(--font-mono);color:var(--accent-bright);">#${c.case_number}</span></td>
+    <td style="font-family:var(--font-mono);font-size:11px;">${new Date(c.created_at).toLocaleDateString('de-DE')}</td>
+    <td>${c.officer_name||'—'}</td>
+    <td>${c.citizen_name||'—'}</td>
+    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(c.description||'').replace(/"/g,"'")}">  ${c.description||'—'}</td>
+    <td>${cbadge(c.status)}</td>
+    <td><button class="btn btn-secondary btn-sm" onclick="cycleCase('${c.id}','${c.status}')">Status →</button></td>
+  </tr>`).join('');
+}
+
+function cbadge(s){const m={'Offen':'badge-yellow','Ermittlung':'badge-orange','Geschlossen':'badge-green'};return`<span class="badge ${m[s]||'badge-gray'}">${(s||'').toUpperCase()}</span>`}
+
+async function cycleCase(id,status){
+  const order=['Offen','Ermittlung','Geschlossen'];
+  const ns=order[(order.indexOf(status)+1)%order.length];
+  await db.from('cases').update({status:ns}).eq('id',id);
+  await log('AKTE_STATUS','#'+id+' → '+ns);
+  notify('Akte → '+ns,'success');
+  loadCases();
+}
+
+function fillTmpl(){const t=document.getElementById('c-tmpl').value;if(TMPLS[t])document.getElementById('c-desc').value=TMPLS[t]}
+
+async function createCase(){
+  const citizen=document.getElementById('c-cit').value.trim();
+  const desc=document.getElementById('c-desc').value.trim();
+  const status=document.getElementById('c-status').value;
+  const vehicle_plate=document.getElementById('c-veh').value.trim()||null;
+  const law_ref=document.getElementById('c-law').value||null;
+  if(!citizen||!desc){notify('Bürger und Beschreibung sind Pflicht.','error');return}
+  const case_number=new Date().getFullYear()+'-'+String(Math.floor(Math.random()*9000)+1000);
+  await db.from('cases').insert([{case_number,citizen_name:citizen,description:desc,status,vehicle_plate,law_ref,officer_name:U?.name}]);
+  await log('AKTE_ERSTELLT','Akte #'+case_number+' angelegt');
+  notify('✅ Akte #'+case_number+' angelegt.','success');
+  closeModal('m-new-case');
+  ['c-cit','c-desc','c-veh'].forEach(id=>document.getElementById(id).value='');
+  loadCases();
+}
+
+function filterLaws(){
+  const s=(document.getElementById('search-laws')?.value||'').toLowerCase();
+  const cat=document.getElementById('law-cat')?.value||'';
+  const sev=document.getElementById('law-sev')?.value||'';
+  let list=LAWS;
+  if(s)list=list.filter(l=>l.para.toLowerCase().includes(s)||l.name.toLowerCase().includes(s)||l.desc.toLowerCase().includes(s));
+  if(cat)list=list.filter(l=>l.cat===cat);
+  if(sev)list=list.filter(l=>l.sev===sev);
+  const el=document.getElementById('laws-list');
+  if(!list.length){el.innerHTML='<div class="empty-state"><div class="ei">⚖</div><p>KEINE ERGEBNISSE</p></div>';return}
+  el.innerHTML=list.map(l=>`<div class="law-entry">
+    <div class="law-para">${l.para} · ${l.cat}</div>
+    <div class="law-name">${l.name}</div>
+    <div style="font-size:12px;color:var(--text-muted);margin:6px 0 8px;">${l.desc}</div>
+    <div class="law-meta">
+      <span class="law-fine">💶 ${l.fine.toLocaleString('de-DE')}€</span>
+      <span class="${l.sev==='Schwere Straftat'?'sev-s':l.sev==='Mittelschwere Straftat'?'sev-m':'sev-l'}">⚠ ${l.sev}</span>
+      ${l.sev==='Schwere Straftat'?'<span style="color:var(--red-bright);font-size:10px;">📞 STAATSANWALTSCHAFT KONTAKTIEREN</span>':''}
+    </div>
+  </div>`).join('');
+}
+
+function populateLawSel(){
+  const sel=document.getElementById('c-law');
+  sel.innerHTML='<option value="">-- Kein Gesetz --</option>'+LAWS.map(l=>`<option value="${l.para}">${l.para} – ${l.name} – ${l.fine}€</option>`).join('');
+}
+
+async function loadEvidence(){
+  const{data}=await db.from('evidence').select('*').order('created_at',{ascending:false});
+  const tb=document.getElementById('ev-tbody');
+  if(!data?.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted);">Keine Beweismittel vorhanden.</td></tr>';return}
+  tb.innerHTML=data.map((e,i)=>`<tr>
+    <td style="font-family:var(--font-mono);color:var(--accent-bright);">BM-${String(i+1).padStart(3,'0')}</td>
+    <td>#${e.case_number||'—'}</td>
+    <td><span class="badge badge-blue">${(e.type||'').toUpperCase()}</span></td>
+    <td>${e.description||'—'}</td>
+    <td>${e.officer_name||'—'}</td>
+    <td style="font-family:var(--font-mono);font-size:11px;">${new Date(e.created_at).toLocaleDateString('de-DE')}</td>
+  </tr>`).join('');
+}
+
+async function uploadEvidence(){
+  const case_number=document.getElementById('ev-case').value.trim();
+  const type=document.getElementById('ev-type').value;
+  const description=document.getElementById('ev-desc').value.trim();
+  if(!description){notify('Beschreibung eingeben.','error');return}
+  await db.from('evidence').insert([{case_number,type,description,officer_name:U?.name}]);
+  await log('BEWEISMITTEL','Hochgeladen für Akte #'+case_number);
+  notify('✅ Beweismittel hochgeladen.','success');
+  closeModal('m-evidence');
+  ['ev-case','ev-desc'].forEach(id=>document.getElementById(id).value='');
+  loadEvidence();
+}
+
+async function loadMyVeh(){
+  if(!U)return;
+  const{data}=await db.from('vehicles').select('*').eq('owner_name',U.name);
+  const el=document.getElementById('my-veh-list');
+  if(!data?.length){el.innerHTML='<div class="card"><div class="card-body"><div class="empty-state"><div class="ei">🚗</div><p>KEINE FAHRZEUGE REGISTRIERT</p></div></div></div>';return}
+  el.innerHTML=data.map(v=>`<div class="card" style="margin-bottom:12px;"><div class="card-body"><div style="display:flex;align-items:center;gap:20px;"><div style="font-family:var(--font-mono);font-size:22px;letter-spacing:3px;color:var(--text-bright);border:2px solid var(--border);padding:8px 16px;">${v.plate}</div><div><div style="font-weight:600;font-size:15px;">${v.brand} ${v.model}</div><div style="color:var(--text-muted);font-size:12px;margin-top:2px;">Farbe: ${v.color}</div></div><div style="margin-left:auto;">${vbadge(v.status)}</div></div></div></div>`).join('');
+}
+
+async function registerVehicle(){
+  const plate=document.getElementById('v-plate').value.trim().toUpperCase();
+  const brand=document.getElementById('v-brand').value.trim();
+  const model=document.getElementById('v-model').value.trim();
+  const color=document.getElementById('v-color').value;
+  if(!plate||!brand||!model){notify('Alle Felder ausfüllen.','error');return}
+  const{error}=await db.from('vehicles').insert([{plate,brand,model,color,owner_name:U?.name,status:'ok'}]);
+  if(error){notify('Fehler: Kennzeichen bereits registriert.','error');return}
+  await log('FAHRZEUG_ANGEMELDET',plate+' von '+U?.name);
+  notify('✅ Fahrzeug '+plate+' angemeldet.','success');
+  closeModal('m-reg-veh');
+  ['v-plate','v-brand','v-model'].forEach(id=>document.getElementById(id).value='');
+  loadMyVeh();
+}
+
+async function submitComplaint(){
+  const subject=document.getElementById('comp-subj').value.trim();
+  const desc=document.getElementById('comp-desc').value.trim();
+  if(!subject||!desc){notify('Alle Felder ausfüllen.','error');return}
+  await log('BESCHWERDE',U?.name+': '+subject);
+  notify('✅ Beschwerde eingereicht.','success');
+  closeModal('m-complaint');
+}
+
+async function log(action,detail){await db.from('logs').insert([{username:U?.name||'System',action,detail}])}
+
+async function loadLogs(){
+  const{data}=await db.from('logs').select('*').order('created_at',{ascending:false}).limit(100);
+  const tb=document.getElementById('logs-tbody');
+  if(!data?.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-muted);">Keine Logs.</td></tr>';return}
+  tb.innerHTML=data.map(l=>`<tr><td style="font-family:var(--font-mono);font-size:11px;white-space:nowrap;">${new Date(l.created_at).toLocaleString('de-DE')}</td><td>${l.username||'—'}</td><td><span class="badge badge-blue">${l.action||''}</span></td><td style="font-size:12px;">${l.detail||'—'}</td></tr>`).join('');
+}
+
+function rb(rank){const lvl=RL[rank]||1;const cls=lvl>=8?'badge-red':lvl>=5?'badge-orange':lvl>=3?'badge-blue':'badge-gray';return`<span class="badge ${cls}">${rank||'—'}</span>`}
+
+function renderProfile(){
+  if(!U)return;
+  const rows=U.type==='officer'
+    ?[['Dienstnummer',U.dienst],['Name',U.name],['Rang',rb(U.rank)],['Dienststatus',U.status==='on'?'<span class="badge badge-green">IM DIENST</span>':'<span class="badge badge-gray">FREI</span>'],['Konto',U.suspended?'<span class="badge badge-red">SUSPENDIERT</span>':'<span class="badge badge-green">AKTIV</span>']]
+    :[['Name',U.name],['E-Mail',U.email],['Geburtsdatum',U.dob||'—'],['Adresse',U.address||'—'],['Telefon',U.phone||'—'],['Status',U.status==='Aktiv'?'<span class="badge badge-green">AKTIV</span>':'<span class="badge badge-red">GESPERRT</span>']];
+  document.getElementById('profile-info').innerHTML=rows.map(([l,v])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);"><span style="font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;color:var(--text-muted);text-transform:uppercase;">${l}</span><span style="font-weight:500;color:var(--text-bright);">${v||'—'}</span></div>`).join('');
+}
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.getElementById('loading-text').textContent='SYSTEM BEREIT';
+    setTimeout(()=>{document.getElementById('loading').style.display='none';document.getElementById('login-screen').style.display='flex'},400);
+  },1600);
+});
+</script>
+</body>
+</html>
