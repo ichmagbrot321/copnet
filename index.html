@@ -468,8 +468,14 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
 .law-fine{font-weight:700;color:#e65100;font-size:12px}
 .law-extra{font-size:10px;color:#d32f2f}
 
-/* TASKBAR APP INDICATOR */
-.tb-indicator{width:3px;height:3px;border-radius:50%;background:#0078d4;margin:0 auto;margin-top:2px}
+/* VIEW MODE BUTTONS (PC/Tablet/Panel) */
+.view-btn{
+  padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;
+  border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);border-radius:3px;
+  transition:all .15s;background:rgba(255,255,255,.07)
+}
+.view-btn:hover{background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.5)}
+.view-btn.active{background:rgba(0,120,212,.6);border-color:#0078d4;color:#fff}
 
 /* CONTEXT MENU */
 .ctx-menu{
@@ -493,7 +499,9 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
 
 <!-- ═══════════ BOOT ═══════════ -->
 <div id="boot">
-  <div class="boot-logo" id="boot-wappen"></div>
+  <img src="https://i.postimg.cc/q0mHK7V1/Screenshot-2026-03-08-22-27-27.png"
+       class="boot-logo" alt=""
+       onerror="this.style.display='none'">
   <div class="boot-title">CopNet <span style="color:#f0a500">BW</span></div>
   <div class="boot-sub">Polizeiinformationssystem Baden-Württemberg</div>
   <div class="boot-bar"><div class="boot-fill"></div></div>
@@ -503,15 +511,30 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
 
 <!-- ═══════════ LOGIN ═══════════ -->
 <div id="login-screen" style="display:none">
-  <div class="login-wappen-bg" id="login-wappen-bg"></div>
-  <div style="position:relative;z-index:1;margin-bottom:18px;text-align:center">
-    <div style="color:#fff;font-size:13px;font-weight:300;letter-spacing:6px;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,.5)">Polizei Baden-Württemberg</div>
+  <!-- Wappen Hintergrund groß zentriert -->
+  <img src="https://i.postimg.cc/q0mHK7V1/Screenshot-2026-03-08-22-27-27.png"
+       style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+              width:520px;max-width:72vw;opacity:.09;pointer-events:none;z-index:0"
+       alt="" onerror="this.style.display='none'">
+
+  <div style="position:relative;z-index:1;margin-bottom:12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px">
+    <img src="https://i.postimg.cc/q0mHK7V1/Screenshot-2026-03-08-22-27-27.png"
+         style="width:56px;filter:drop-shadow(0 2px 14px rgba(0,0,0,.8))"
+         alt="" onerror="this.style.display='none'">
+    <div style="color:#fff;font-size:12px;font-weight:300;letter-spacing:5px;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,.6)">Polizei Baden-Württemberg</div>
   </div>
+
   <div class="login-box">
     <div class="login-head">
-      <div style="width:72px" id="login-wappen"></div>
       <h1>CopNet <span style="color:#0078d4">BW</span></h1>
       <div class="login-head-sub">POLIZEIINFORMATIONSSYSTEM · NUR FÜR BEFUGTE</div>
+      <!-- PC / Tablet / Panel Auswahl wie copnet.li -->
+      <div style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;justify-content:center">
+        <div class="view-btn active" id="vbtn-pc" onclick="setViewMode('pc')">🖥 PC</div>
+        <div class="view-btn" id="vbtn-tablet" onclick="setViewMode('tablet')">📱 Tablet</div>
+        <div class="view-btn" id="vbtn-panel" onclick="setViewMode('panel')">🪟 Panel</div>
+        <div class="view-btn" id="vbtn-design" onclick="cycleDesign()">🎨 Design</div>
+      </div>
     </div>
     <div class="login-body">
       <div class="login-tabs">
@@ -552,7 +575,11 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
 
 <!-- ═══════════ DESKTOP ═══════════ -->
 <div id="desktop">
-  <div class="desk-wappen" id="desk-wappen"></div>
+  <!-- Wappen zentriert im Hintergrund -->
+  <img src="https://i.postimg.cc/q0mHK7V1/Screenshot-2026-03-08-22-27-27.png"
+       style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+              width:400px;max-width:55vw;opacity:.07;pointer-events:none;z-index:0"
+       alt="" onerror="this.style.display='none'">
   <div class="icons-grid" id="icons-grid"></div>
 </div>
 
@@ -564,7 +591,12 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
   </div>
   <div class="tb-apps" id="tb-apps"></div>
   <div class="tb-right">
-    <div class="tb-status"><div class="dot-g"></div><span>Online</span></div>
+    <!-- Abmelden Button immer sichtbar -->
+    <div class="tb-app" id="tb-logout-btn" onclick="doLogout()" title="Abmelden"
+         style="background:rgba(211,47,47,.25);border-color:rgba(211,47,47,.5);color:#ff8a80;cursor:pointer">
+      🔓 Abmelden
+    </div>
+    <div class="tb-status"><div class="dot-g"></div><span id="tb-username-disp">—</span></div>
     <div class="tb-time" id="tb-time-disp"></div>
   </div>
 </div>
@@ -770,11 +802,55 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
   </div>
 </div>
 
+<!-- PRÄSIDENT EINSTELLUNGEN (Level 10 only) -->
+<div class="win" id="win-president" style="top:50px;left:80px;width:700px;height:500px">
+  <div class="win-titlebar" id="tb-president" style="background:linear-gradient(180deg,#7b1fa2,#4a0072)">
+    <span class="win-icon">👑</span><span class="win-title">Präsident-Einstellungen – Nur Polizei Chef</span>
+    <div class="win-btns"><div class="win-btn" onclick="minimizeWin('president')">─</div><div class="win-btn" onclick="maximizeWin('president')">□</div><div class="win-btn close" onclick="closeWin('president')">✕</div></div>
+  </div>
+  <div class="win-body">
+    <div class="wc" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <!-- Eigene Zugangsdaten ändern -->
+      <div class="wcard">
+        <div class="wcard-head" style="background:linear-gradient(90deg,rgba(123,31,162,.1),transparent)">🔑 Meine Zugangsdaten ändern</div>
+        <div class="wcard-body">
+          <div class="fg"><label>Neue Dienstnummer</label><input id="pres-new-dienst" placeholder="DE-0001"></div>
+          <div class="fg"><label>Neues Passwort</label><input type="password" id="pres-new-pass" placeholder="Neues Passwort"></div>
+          <div class="fg"><label>Passwort bestätigen</label><input type="password" id="pres-new-pass2" placeholder="Wiederholen"></div>
+          <button class="btn bfull" style="background:#7b1fa2;color:#fff;border-color:#4a0072" onclick="presidentChangeOwn()">💾 Eigene Daten speichern</button>
+        </div>
+      </div>
+      <!-- Anderen Beamten Zugangsdaten ändern -->
+      <div class="wcard">
+        <div class="wcard-head" style="background:linear-gradient(90deg,rgba(123,31,162,.1),transparent)">⚙ Beamten-Zugangsdaten ändern</div>
+        <div class="wcard-body">
+          <div class="fg"><label>Beamter (Dienstnummer)</label><select id="pres-off-sel" style="background:#fff;border:1px solid #ccc;color:#333;padding:8px 10px;width:100%;border-radius:3px;outline:none"><option value="">-- Beamten wählen --</option></select></div>
+          <div class="fg"><label>Neue Dienstnummer</label><input id="pres-change-dienst" placeholder="DE-0001"></div>
+          <div class="fg"><label>Neues Passwort (leer = unverändert)</label><input type="password" id="pres-change-pass" placeholder="Leer lassen = keine Änderung"></div>
+          <button class="btn bfull" style="background:#7b1fa2;color:#fff;border-color:#4a0072" onclick="presidentChangeOther()">💾 Beamten-Daten speichern</button>
+        </div>
+      </div>
+      <!-- Systemeinstellungen -->
+      <div class="wcard" style="grid-column:1/-1">
+        <div class="wcard-head">🌐 System & Ansicht</div>
+        <div class="wcard-body" style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn bs bsm" onclick="setViewMode('pc')">🖥 PC Modus</button>
+          <button class="btn bs bsm" onclick="setViewMode('tablet')">📱 Tablet Modus</button>
+          <button class="btn bs bsm" onclick="setViewMode('panel')">🪟 Panel Modus</button>
+          <button class="btn bs bsm" onclick="cycleDesign()">🎨 Design wechseln</button>
+          <button class="btn bd bsm" style="margin-left:auto" onclick="if(confirm('Alle Beamten vom Dienst abmelden?'))presidentKickAll()">⚡ Alle abmelden</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- SHARE VIEW -->
 <div id="share-view" style="display:none;position:fixed;inset:0;z-index:10000;background:#f0f0f0;overflow-y:auto;padding:24px">
   <div style="max-width:700px;margin:0 auto">
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #0078d4">
-      <div style="width:44px" id="share-wappen"></div>
+      <img src="https://i.postimg.cc/q0mHK7V1/Screenshot-2026-03-08-22-27-27.png"
+           style="width:44px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.3))" alt="" onerror="this.style.display='none'">
       <div>
         <div style="font-size:20px;font-weight:700;color:#1a1a1a">Polizei Baden-Württemberg</div>
         <div style="font-family:var(--mono);font-size:9px;color:#888;letter-spacing:1.5px;margin-top:2px">AKTENANSICHT · SCHREIBGESCHÜTZT · VERTRAULICH</div>
@@ -933,6 +1009,7 @@ const ICONS_ALL = [
   {id:'my-akte',     emoji:'📋', label:'Meine Akte',       role:'citizen'},
   {id:'my-vehicles', emoji:'🚗', label:'Meine Fahrzeuge',  role:'citizen'},
   {id:'profile',     emoji:'👤', label:'Mein Profil',      role:'both'},
+  {id:'president',   emoji:'👑', label:'Präs.-Einstellungen', role:'president'},
 ];
 
 // ═══════════════════════════════════════
@@ -1135,14 +1212,10 @@ function nextBoot() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  injectWappen('boot-wappen');
-  injectWappen('login-wappen');
-  injectWappen('login-wappen-bg');
-  injectWappen('share-wappen');
-  injectWappen('desk-wappen');
   setTimeout(nextBoot, 500);
   // Init draggable for all windows
   ICONS_ALL.forEach(ic => makeDraggable(ic.id));
+  makeDraggable('president');
 });
 
 // ═══════════════════════════════════════
@@ -1241,12 +1314,18 @@ function startDesktop() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('desktop').classList.add('show');
   document.getElementById('taskbar').style.display = 'flex';
+  // Show username in taskbar
+  const udisp = document.getElementById('tb-username-disp');
+  if (udisp) udisp.textContent = U.name + (U.type==='officer' ? ' · '+U.rank : '');
   buildIcons();
   if (U.type==='officer' && RL[U.rank]>=6) document.getElementById('add-off-btn').style.display = 'inline-flex';
   populateLawSel();
+  makeDraggable('president');
   // Auto-open dashboard
   openWin('dashboard');
   notify('👋 Willkommen, '+U.name+'!','ok');
+  // If president, load officer list for select
+  if (U.type==='officer' && RL[U.rank]>=10) loadPresidentOffSelect();
 }
 
 function buildIcons() {
@@ -1255,10 +1334,12 @@ function buildIcons() {
   const isOff = U.type==='officer';
   const lvl = RL[U.rank]||0;
   const isAdmin = isOff && lvl>=6;
+  const isPresident = isOff && lvl>=10;
   ICONS_ALL.forEach(ic => {
     if (ic.role==='officer' && !isOff) return;
     if (ic.role==='citizen' && isOff) return;
     if (ic.role==='admin' && !isAdmin) return;
+    if (ic.role==='president' && !isPresident) return;
     const div = document.createElement('div');
     div.className = 'desk-icon';
     div.innerHTML = `<div class="icon-img">${ic.emoji}</div><div class="icon-label">${ic.label}</div>`;
@@ -1269,7 +1350,6 @@ function buildIcons() {
     });
     grid.appendChild(div);
   });
-  // Also show duty toggle icon for officers
   if (isOff) {
     const duty = document.createElement('div');
     duty.className = 'desk-icon';
@@ -1277,12 +1357,6 @@ function buildIcons() {
     duty.innerHTML = `<div class="icon-img">⏱</div><div class="icon-label" id="duty-label-txt">${U.status==='on'?'Dienst Ende':'Dienst Start'}</div>`;
     duty.addEventListener('dblclick', toggleDuty);
     grid.appendChild(duty);
-    // Logout
-    const logout = document.createElement('div');
-    logout.className = 'desk-icon';
-    logout.innerHTML = `<div class="icon-img">🔓</div><div class="icon-label">Abmelden</div>`;
-    logout.addEventListener('dblclick', doLogout);
-    grid.appendChild(logout);
   }
 }
 
@@ -1828,8 +1902,110 @@ async function loadLogs(){
 }
 
 // ═══════════════════════════════════════
-//  PROFILE
+//  VIEW MODE (PC / TABLET / PANEL)
 // ═══════════════════════════════════════
+let currentDesign = 0;
+const DESIGNS = [
+  {bg:'linear-gradient(160deg,#1e3f7a 0%,#16325e 40%,#0f2347 100%)',taskbar:'linear-gradient(180deg,#0d2244 0%,#081833 100%)'},
+  {bg:'linear-gradient(160deg,#1a3a1a 0%,#0f2b0f 40%,#091a09 100%)',taskbar:'linear-gradient(180deg,#0d2210 0%,#081508 100%)'},
+  {bg:'linear-gradient(160deg,#3a1a1a 0%,#2b0f0f 40%,#1a0909 100%)',taskbar:'linear-gradient(180deg,#220d0d 0%,#150808 100%)'},
+  {bg:'linear-gradient(160deg,#1a1a3a 0%,#0f0f2b 40%,#09091a 100%)',taskbar:'linear-gradient(180deg,#0d0d22 0%,#080815 100%)'},
+];
+
+function setViewMode(mode) {
+  // Update active button
+  ['pc','tablet','panel','design'].forEach(m => {
+    const b = document.getElementById('vbtn-'+m);
+    if (b) b.classList.remove('active');
+  });
+  const btn = document.getElementById('vbtn-'+mode);
+  if (btn) btn.classList.add('active');
+
+  const lb = document.querySelector('.login-box');
+  if (!lb) return;
+  if (mode === 'pc') {
+    lb.style.width = '380px';
+    lb.style.maxWidth = '';
+  } else if (mode === 'tablet') {
+    lb.style.width = '340px';
+    lb.style.maxWidth = '98vw';
+  } else if (mode === 'panel') {
+    lb.style.width = '300px';
+    lb.style.maxWidth = '99vw';
+  }
+  // Also after login — change windows layout
+  if (mode === 'tablet' || mode === 'panel') {
+    document.querySelectorAll('.win').forEach(w => {
+      w.style.width = '98vw';
+      w.style.left = '1vw';
+    });
+  }
+}
+
+function cycleDesign() {
+  currentDesign = (currentDesign + 1) % DESIGNS.length;
+  const d = DESIGNS[currentDesign];
+  document.getElementById('desktop').style.background = d.bg;
+  document.getElementById('taskbar').style.background = d.taskbar;
+  notify('🎨 Design gewechselt.','ok');
+}
+
+// ═══════════════════════════════════════
+//  PRÄSIDENT FUNKTIONEN
+// ═══════════════════════════════════════
+async function loadPresidentOffSelect() {
+  const {data} = await db.from('officers').select('id,name,dienst,rank').order('level',{ascending:false});
+  const sel = document.getElementById('pres-off-sel');
+  if (!sel||!data) return;
+  sel.innerHTML = '<option value="">-- Beamten wählen --</option>' +
+    data.filter(o => o.id !== U.id).map(o => `<option value="${o.id}" data-dienst="${o.dienst}">${o.dienst} – ${o.name} (${o.rank})</option>`).join('');
+}
+
+async function presidentChangeOwn() {
+  if (!U || RL[U.rank] < 10) { notify('Nur Polizei Chef.','err'); return; }
+  const newDienst = document.getElementById('pres-new-dienst').value.trim().toUpperCase();
+  const newPass = document.getElementById('pres-new-pass').value;
+  const newPass2 = document.getElementById('pres-new-pass2').value;
+  if (!newDienst && !newPass) { notify('Bitte mindestens ein Feld ausfüllen.','err'); return; }
+  if (newPass && newPass !== newPass2) { notify('Passwörter stimmen nicht überein.','err'); return; }
+  const upd = {};
+  if (newDienst) upd.dienst = newDienst;
+  if (newPass) upd.password = newPass;
+  const {error} = await db.from('officers').update(upd).eq('id', U.id);
+  if (error) { notify('Fehler beim Speichern: '+error.message,'err'); return; }
+  if (newDienst) U.dienst = newDienst;
+  await logDB('PRÄSIDENT_ÄNDERUNG', 'Eigene Zugangsdaten geändert');
+  notify('✅ Eigene Daten erfolgreich geändert.','ok');
+  ['pres-new-dienst','pres-new-pass','pres-new-pass2'].forEach(x => document.getElementById(x).value='');
+}
+
+async function presidentChangeOther() {
+  if (!U || RL[U.rank] < 10) { notify('Nur Polizei Chef.','err'); return; }
+  const offId = document.getElementById('pres-off-sel').value;
+  const newDienst = document.getElementById('pres-change-dienst').value.trim().toUpperCase();
+  const newPass = document.getElementById('pres-change-pass').value;
+  if (!offId) { notify('Beamten auswählen.','err'); return; }
+  if (!newDienst && !newPass) { notify('Mindestens Dienstnummer oder Passwort angeben.','err'); return; }
+  const upd = {};
+  if (newDienst) upd.dienst = newDienst;
+  if (newPass) upd.password = newPass;
+  const {error} = await db.from('officers').update(upd).eq('id', offId);
+  if (error) { notify('Fehler: '+error.message,'err'); return; }
+  const sel = document.getElementById('pres-off-sel');
+  const selText = sel.options[sel.selectedIndex]?.text || offId;
+  await logDB('PRÄSIDENT_ÄNDERUNG', 'Zugangsdaten geändert für: '+selText);
+  notify('✅ Daten von '+selText+' erfolgreich geändert.','ok');
+  ['pres-change-dienst','pres-change-pass'].forEach(x => document.getElementById(x).value='');
+  document.getElementById('pres-off-sel').value = '';
+}
+
+async function presidentKickAll() {
+  await db.from('officers').update({status:'off'}).neq('id', U.id);
+  await logDB('PRÄSIDENT_KICK', 'Alle Beamten vom Dienst abgemeldet');
+  notify('⚡ Alle Beamten wurden vom Dienst abgemeldet.','ok');
+  if (openWindows.has('dashboard')) loadDash();
+}
+
 function renderProfile(){
   if(!U)return;const isOff=U.type==='officer';
   const rows=isOff
