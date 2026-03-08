@@ -1055,7 +1055,7 @@ function switchTab(t){document.querySelectorAll('.ltab').forEach((x,i)=>x.classL
 function showReg(){document.getElementById('cit-log').style.display='none';document.getElementById('cit-reg').style.display='block';hideErr()}
 function showLog(){document.getElementById('cit-log').style.display='block';document.getElementById('cit-reg').style.display='none';hideErr()}
 
-let U=null;
+let U1=null;
 
 function tick(){const n=new Date();const el=document.getElementById('htime');const dl=document.getElementById('hdate');if(el)el.textContent=n.toLocaleTimeString('de-DE');if(dl)dl.textContent=n.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});}
 setInterval(tick,1000);tick();
