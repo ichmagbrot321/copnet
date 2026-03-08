@@ -1036,7 +1036,7 @@ function openM(id){document.getElementById(id).classList.add('open')}
 function closeM(id){document.getElementById(id).classList.remove('open')}
 document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 /* BOOT */
-const BL=['BIOS OK','CPU 8 Cores aktiv','RAM 32 GB OK','Netzwerk verbunden','Supabase Cloud: Online','AES-256: Aktiv','Zugangskontrolle: Aktiv','Datenbank: Geladen','CopNet BW v5.0 – Betriebsbereit'];
+const BL2=['BIOS OK','CPU 8 Cores aktiv','RAM 32 GB OK','Netzwerk verbunden','Supabase Cloud: Online','AES-256: Aktiv','Zugangskontrolle: Aktiv','Datenbank: Geladen','CopNet BW v5.0 – Betriebsbereit'];
 let bI=0;
 function nB(){if(bI>=BL.length){setTimeout(()=>{document.getElementById('boot').style.display='none';checkShare()},300);return}const el=document.createElement('div');el.className='bline';el.textContent='▸ '+BL[bI++];if(bI===BL.length)el.style.color='var(--green)';document.getElementById('boot-lines').appendChild(el);document.getElementById('boot-stat').textContent=BL[bI-1];setTimeout(nB,160);}
 setTimeout(nB,500);
