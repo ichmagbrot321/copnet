@@ -2,511 +2,763 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CopNet BW – Polizeiinformationssystem</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{
-  --bg0:#030710;--bg1:#060d1c;--bg2:#091525;--bg3:#0d1e34;--bg4:#122440;
-  --border:#162d4a;--border2:#1e3d66;--border3:#255080;
-  --acc:#1565c0;--acc2:#1976d2;--acc3:#2196f3;--acc4:#42a5f5;
-  --glow:rgba(33,150,243,0.10);--glow2:rgba(33,150,243,0.22);
-  --text:#b0c8e0;--text2:#cce0f5;--text3:#e6f4ff;--textd:#2a4060;--textm:#4a6a8a;
-  --red:#b71c1c;--red2:#c62828;--red3:#e53935;--red4:#ef5350;
-  --green:#1b5e20;--green2:#2e7d32;--green3:#43a047;--green4:#66bb6a;
-  --yellow:#e65100;--yellow2:#f57c00;--yellow3:#ff9800;--yellow4:#ffb74d;
-  --purple:#4a148c;--purple2:#6a1b9a;--purple3:#8e24aa;
-  --gold:#f9a825;--gold2:#fdd835;
-  --font-mono:'Share Tech Mono',monospace;
-  --font-ui:'Exo 2',sans-serif;
-  --font-head:'Rajdhani',sans-serif;
-  --sw:255px;--hh:60px;
-}
+/* ═══════════ RESET & ROOT ═══════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{font-family:var(--font-ui);background:var(--bg0);color:var(--text);font-size:13px}
-body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,5,20,0.07) 3px,rgba(0,5,20,0.07) 4px);pointer-events:none;z-index:9998}
+:root{
+  --bg:     #0f1117;
+  --bg1:    #141720;
+  --bg2:    #191d28;
+  --bg3:    #1e2330;
+  --bg4:    #242a38;
+  --bg5:    #2a3040;
+  --border: #252b3b;
+  --bord2:  #2e3649;
+  --bord3:  #38445a;
+  --blue:   #2563eb;
+  --blue2:  #1d4ed8;
+  --blue3:  #3b82f6;
+  --blue4:  #60a5fa;
+  --blue5:  #93c5fd;
+  --text:   #e6eaf0;
+  --text2:  #a8b4c4;
+  --text3:  #6b7b94;
+  --text4:  #3a4558;
+  --red:    #ef4444;
+  --red2:   #dc2626;
+  --green:  #22c55e;
+  --green2: #16a34a;
+  --yellow: #f59e0b;
+  --gold:   #f9a825;
+  --font:   'Inter', sans-serif;
+  --mono:   'JetBrains Mono', monospace;
+  --sw:     260px;
+  --hh:     62px;
+  --r:      8px;
+  --rs:     5px;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
 
-/* BOOT */
-#boot{position:fixed;inset:0;background:var(--bg0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:9000}
-.b-logo{display:flex;flex-direction:column;align-items:center;gap:12px}
-.b-title{font-family:var(--font-head);font-size:30px;font-weight:700;letter-spacing:8px;color:var(--text3);text-transform:uppercase}
-.b-sub{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--textm);text-transform:uppercase}
-.b-bar{width:280px;height:2px;background:var(--border);overflow:hidden}
-.b-bar-inner{height:100%;background:linear-gradient(90deg,transparent,var(--acc3),var(--acc4),transparent);animation:bb 1.3s ease-in-out infinite}
-@keyframes bb{0%{transform:translateX(-100%)}100%{transform:translateX(220%)}}
-.b-status{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--textm);text-transform:uppercase}
-.b-lines{display:flex;flex-direction:column;gap:3px;width:280px}
-.b-line{font-family:var(--font-mono);font-size:9px;color:var(--textd);opacity:0;animation:fi 0.25s forwards}
+/* scrollbars */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bord2);border-radius:3px}
+
+/* ═══════════ BOOT ═══════════ */
+#boot{position:fixed;inset:0;z-index:9000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+.bw{animation:wgl 2.5s ease-in-out infinite}
+@keyframes wgl{0%,100%{filter:drop-shadow(0 0 16px rgba(249,168,37,.45))}50%{filter:drop-shadow(0 0 40px rgba(249,168,37,.85))}}
+.bt{font-size:28px;font-weight:800;letter-spacing:9px;color:var(--text);text-transform:uppercase}
+.bs{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--text3);text-transform:uppercase}
+.bbar{width:300px;height:2px;background:var(--border);overflow:hidden;border-radius:1px}
+.bbar-i{height:100%;background:linear-gradient(90deg,transparent,var(--blue3),var(--blue4),transparent);animation:bscr 1.3s ease-in-out infinite}
+@keyframes bscr{0%{transform:translateX(-100%)}100%{transform:translateX(220%)}}
+.bstat{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--text3);text-transform:uppercase}
+.blines{width:320px;display:flex;flex-direction:column;gap:3px}
+.bline{font-family:var(--mono);font-size:11px;color:var(--text4);opacity:0;animation:fi .2s forwards}
 @keyframes fi{to{opacity:1}}
 
-/* LOGIN */
-#login{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--bg0);z-index:8000}
-.login-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%,rgba(21,101,192,0.07) 0%,transparent 65%)}
-.login-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(21,101,192,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(21,101,192,0.04) 1px,transparent 1px);background-size:44px 44px}
-.lc{position:absolute;width:55px;height:55px;border-color:rgba(33,150,243,0.2);border-style:solid}
-.lc.tl{top:20px;left:20px;border-width:1px 0 0 1px}
-.lc.tr{top:20px;right:20px;border-width:1px 1px 0 0}
-.lc.bl{bottom:20px;left:20px;border-width:0 0 1px 1px}
-.lc.br{bottom:20px;right:20px;border-width:0 1px 1px 0}
-/* BIG CENTER WAPPEN (watermark) */
-.login-watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.03;pointer-events:none}
+/* ═══════════ SHARE VIEW ═══════════ */
+#share-view{position:fixed;inset:0;display:none;z-index:10000;background:var(--bg);overflow-y:auto;padding:28px}
 
-.lbox{position:relative;background:rgba(9,21,37,0.97);border:1px solid var(--border2);width:430px;box-shadow:0 0 80px rgba(21,101,192,0.12),inset 0 1px 0 rgba(255,255,255,0.03)}
-.lbox::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--acc),var(--acc3),var(--acc),transparent)}
-.lhead{padding:30px 34px 20px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:10px}
-.lhead-wappen{filter:drop-shadow(0 0 14px rgba(33,150,243,0.45));animation:wg 3s ease-in-out infinite}
-@keyframes wg{0%,100%{filter:drop-shadow(0 0 14px rgba(33,150,243,0.45))}50%{filter:drop-shadow(0 0 24px rgba(33,150,243,0.75))}}
-.lhead h1{font-family:var(--font-head);font-size:21px;font-weight:700;letter-spacing:5px;color:var(--text3);text-transform:uppercase}
-.lhead .ls{font-family:var(--font-mono);font-size:8px;color:var(--textm);letter-spacing:2.5px}
-.lbody{padding:26px 34px}
-.ltabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:22px}
-.ltab{flex:1;padding:9px;text-align:center;font-family:var(--font-head);font-weight:600;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;color:var(--textm);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s}
-.ltab.active{color:var(--acc4);border-bottom-color:var(--acc4)}
-.lerr{background:rgba(183,28,28,0.12);border:1px solid rgba(229,57,53,0.3);color:var(--red4);padding:9px 12px;font-size:11px;margin-bottom:14px;font-family:var(--font-mono);display:none}
-.lfoot{padding:14px 34px;border-top:1px solid var(--border);background:rgba(3,7,15,0.4);font-family:var(--font-mono);font-size:7px;color:var(--textd);letter-spacing:2px;text-align:center}
+/* ═══════════ LOGIN ═══════════ */
+#login{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--bg);z-index:8000}
+/* Grid bg */
+#login::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(37,99,235,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.04) 1px,transparent 1px);background-size:50px 50px}
+/* Big watermark wappen */
+.login-wappen-bg{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-58%);
+  width:680px;opacity:.04;pointer-events:none;z-index:0
+}
+/* Corner brackets */
+.lbr{position:absolute;width:52px;height:52px;border-color:rgba(37,99,235,.2);border-style:solid}
+.lbr.tl{top:18px;left:18px;border-width:2px 0 0 2px}
+.lbr.tr{top:18px;right:18px;border-width:2px 2px 0 0}
+.lbr.bl{bottom:18px;left:18px;border-width:0 0 2px 2px}
+.lbr.br{bottom:18px;right:18px;border-width:0 2px 2px 0}
+/* Login card */
+.lbox{
+  position:relative;z-index:1;
+  background:var(--bg2);border:1px solid var(--bord2);
+  border-radius:var(--r);width:460px;max-width:96vw;
+  box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.025)
+}
+.lbox::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue2),var(--blue3),var(--blue2),transparent);border-radius:var(--r) var(--r) 0 0}
+.lhead{padding:32px 38px 22px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:12px}
+.lhead h1{font-size:24px;font-weight:800;letter-spacing:6px;color:var(--text);text-transform:uppercase}
+.lhead-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:2px;text-align:center}
+.lbody{padding:26px 38px}
+.ltabs{display:flex;gap:3px;background:var(--bg1);border-radius:var(--rs);padding:4px;margin-bottom:20px}
+.ltab{flex:1;padding:10px;text-align:center;font-size:14px;font-weight:600;cursor:pointer;color:var(--text3);border-radius:calc(var(--rs) - 2px);transition:all .2s}
+.ltab.active{background:var(--bg4);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.lerr{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#fca5a5;padding:10px 14px;font-size:14px;margin-bottom:14px;border-radius:var(--rs);display:none}
+.lfoot{padding:13px 38px;border-top:1px solid var(--border);font-family:var(--mono);font-size:9px;color:var(--text4);letter-spacing:1.5px;text-align:center}
 
-/* FORM */
-.fg{margin-bottom:13px}
-.fg label{display:block;font-family:var(--font-mono);font-size:8px;letter-spacing:2px;color:var(--textm);text-transform:uppercase;margin-bottom:5px}
-.fg input,.fg select,.fg textarea{width:100%;background:rgba(3,7,15,0.7);border:1px solid var(--border);color:var(--text2);padding:9px 12px;font-family:var(--font-ui);font-size:13px;outline:none;transition:border-color 0.2s,box-shadow 0.2s}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--acc2);box-shadow:0 0 0 2px rgba(21,101,192,0.1)}
+/* ═══════════ FORMS ═══════════ */
+.fg{margin-bottom:15px}
+.fg label{display:block;font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
+.fg input,.fg select,.fg textarea{
+  width:100%;background:var(--bg1);border:1px solid var(--bord2);
+  color:var(--text);padding:11px 13px;font-family:var(--font);font-size:15px;
+  outline:none;transition:all .2s;border-radius:var(--rs)
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue3);box-shadow:0 0 0 3px rgba(59,130,246,.1);background:var(--bg2)}
 .fg select option{background:var(--bg3)}
-.fg textarea{resize:vertical;font-size:12px;line-height:1.5}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 16px;font-family:var(--font-head);font-weight:600;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;transition:all 0.2s;white-space:nowrap;outline:none}
-.bp{background:var(--acc);color:#fff;width:100%}
-.bp:hover{background:var(--acc2);box-shadow:0 0 14px rgba(21,101,192,0.4)}
-.bs{background:transparent;border:1px solid var(--border2);color:var(--text)}
-.bs:hover{background:rgba(21,101,192,0.07);border-color:var(--acc2);color:var(--text2)}
-.bd{background:var(--red);color:#fff}
-.bd:hover{background:var(--red2)}
-.bg{background:var(--green2);color:#fff}
-.bg:hover{background:var(--green3)}
-.by{background:var(--yellow);color:#fff}
-.by:hover{background:var(--yellow2)}
-.bsm{padding:5px 10px;font-size:10px}
-.bxs{padding:3px 8px;font-size:9px}
+.fg textarea{resize:vertical;line-height:1.6}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ═══════════ BUTTONS ═══════════ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;font-family:var(--font);font-weight:600;font-size:14px;cursor:pointer;border:none;transition:all .2s;white-space:nowrap;outline:none;border-radius:var(--rs)}
+.bp{background:var(--blue2);color:#fff}
+.bp:hover{background:var(--blue3);box-shadow:0 4px 18px rgba(37,99,235,.3)}
+.bs{background:var(--bg4);border:1px solid var(--bord2);color:var(--text2)}
+.bs:hover{background:var(--bg5);border-color:var(--bord3);color:var(--text)}
+.bd{background:var(--red2);color:#fff}
+.bd:hover{background:var(--red);box-shadow:0 4px 14px rgba(220,38,38,.3)}
+.bg2b{background:var(--green2);color:#fff}
+.bg2b:hover{background:var(--green)}
+.bwarn{background:#b45309;color:#fff}
+.bwarn:hover{background:var(--yellow)}
+.bsm{padding:7px 14px;font-size:13px}
+.bxs{padding:4px 9px;font-size:12px}
 .bfull{width:100%}
 
-/* APP */
+/* ═══════════ APP LAYOUT ═══════════ */
 #app{display:none;height:100vh;flex-direction:column}
 #app.on{display:flex}
 
 /* HEADER */
-.hdr{height:var(--hh);background:linear-gradient(180deg,var(--bg3) 0%,var(--bg2) 100%);border-bottom:1px solid var(--border2);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;position:relative;z-index:200}
-.hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--acc2) 15%,var(--acc4) 50%,var(--acc2) 85%,transparent);opacity:0.55}
-.hdr-logo{display:flex;align-items:center;gap:9px;flex-shrink:0;text-decoration:none}
-.hdr-logo-title{font-family:var(--font-head);font-size:17px;font-weight:700;letter-spacing:3px;color:var(--text3);text-transform:uppercase;line-height:1}
-.hdr-logo-sub{font-family:var(--font-mono);font-size:7px;color:var(--textm);letter-spacing:2px;margin-top:1px}
-.hdiv{width:1px;height:28px;background:var(--border2);flex-shrink:0}
-.hsys{display:flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:9px;color:var(--textm)}
-.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.dot-g{background:var(--green4);box-shadow:0 0 4px var(--green4);animation:blink 1.5s ease-in-out infinite}
-.dot-r{background:var(--red4);box-shadow:0 0 4px var(--red4)}
-.dot-y{background:var(--yellow4);box-shadow:0 0 4px var(--yellow4)}
-.dot-gr{background:var(--textm)}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-.htime{font-family:var(--font-mono);font-size:14px;color:var(--acc4);letter-spacing:2px;margin-left:auto;flex-shrink:0}
-.hdate{font-family:var(--font-mono);font-size:8px;color:var(--textm);letter-spacing:1px;text-align:right;line-height:1.5;margin-left:4px}
-.duty-btn{display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid var(--border2);cursor:pointer;font-family:var(--font-head);font-size:10px;letter-spacing:1.5px;font-weight:600;text-transform:uppercase;transition:all 0.2s;background:transparent}
-.duty-btn.on{border-color:var(--green4);color:var(--green4);background:rgba(67,160,71,0.07)}
-.duty-btn.off{border-color:var(--textm);color:var(--textm)}
-.huser{display:flex;align-items:center;gap:8px;padding:5px 9px;border:1px solid var(--border);cursor:pointer;transition:all 0.2s}
-.huser:hover{border-color:var(--acc2);background:var(--glow)}
-.hav{width:28px;height:28px;background:var(--acc);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:700;color:#fff;font-size:13px;flex-shrink:0;clip-path:polygon(14% 0%,86% 0%,100% 14%,100% 86%,86% 100%,14% 100%,0% 86%,0% 14%)}
-.hname{font-size:11px;font-weight:600;color:var(--text3);font-family:var(--font-head);letter-spacing:0.5px;line-height:1.2}
-.hrank{font-size:8px;color:var(--acc4);font-family:var(--font-mono);letter-spacing:1px}
+.hdr{
+  height:var(--hh);background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 18px;gap:14px;
+  flex-shrink:0;position:relative;z-index:200
+}
+.hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--blue2) 20%,var(--blue3) 50%,var(--blue2) 80%,transparent);opacity:.45}
+.hbrand{display:flex;align-items:center;gap:11px;flex-shrink:0}
+.htitle{font-size:19px;font-weight:800;color:var(--text);letter-spacing:.5px}
+.hsubtitle{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1.5px;margin-top:1px}
+.hdiv{width:1px;height:30px;background:var(--bord2);flex-shrink:0;margin:0 2px}
+.hstatus{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text3)}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dotg{background:var(--green);box-shadow:0 0 7px var(--green);animation:blink 2s ease-in-out infinite}
+.dotr{background:var(--red);box-shadow:0 0 7px var(--red)}
+.doty{background:var(--yellow);box-shadow:0 0 7px var(--yellow)}
+.dotgr{background:var(--text3)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hright{margin-left:auto;display:flex;align-items:center;gap:11px}
+.htime{font-family:var(--mono);font-size:18px;color:var(--blue4);letter-spacing:2px}
+.hdate{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:right;line-height:1.4}
+.duty-btn{display:flex;align-items:center;gap:8px;padding:7px 15px;border-radius:var(--rs);border:1px solid var(--bord2);cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;background:transparent}
+.duty-btn.on{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.07)}
+.duty-btn.off{border-color:var(--bord2);color:var(--text3)}
+.duty-btn.off:hover{border-color:var(--green2);color:#4ade80}
+.uchip{display:flex;align-items:center;gap:10px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;transition:all .2s}
+.uchip:hover{border-color:var(--blue3);background:rgba(37,99,235,.07)}
+.uav{width:34px;height:34px;border-radius:var(--rs);background:var(--blue2);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:15px;flex-shrink:0}
+.uname{font-size:14px;font-weight:600;color:var(--text);line-height:1.2}
+.urank{font-family:var(--mono);font-size:10px;color:var(--blue4)}
 
-/* BODY */
-.body-wrap{display:flex;flex:1;overflow:hidden}
+/* BODY WRAP */
+.bwrap{display:flex;flex:1;overflow:hidden}
 
-/* SIDEBAR */
-.sidebar{width:var(--sw);background:linear-gradient(180deg,var(--bg2) 0%,var(--bg1) 100%);border-right:1px solid var(--border2);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;overflow-x:hidden}
-.sidebar::-webkit-scrollbar{width:3px}
-.sidebar::-webkit-scrollbar-thumb{background:var(--border2)}
-.sw-logo{display:flex;flex-direction:column;align-items:center;padding:16px 14px 12px;border-bottom:1px solid var(--border);gap:8px;position:relative}
-.sw-logo::after{content:'POLIZEI BADEN-WÜRTTEMBERG';position:absolute;bottom:10px;font-family:var(--font-mono);font-size:7px;letter-spacing:1.5px;color:var(--textd);text-align:center;width:100%}
-.sw-logo svg{filter:drop-shadow(0 0 8px rgba(33,150,243,0.3))}
-.sw-logo-text{font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:4px;color:var(--text3);text-transform:uppercase}
-.sb-sec{padding:7px 0;border-bottom:1px solid rgba(22,45,74,0.5)}
-.sb-label{padding:4px 13px 6px;font-family:var(--font-mono);font-size:7px;letter-spacing:2.5px;color:var(--textd);text-transform:uppercase}
-.nav{display:flex;align-items:center;gap:8px;padding:7px 13px;cursor:pointer;transition:all 0.15s;color:var(--textm);font-size:12px;font-weight:500;border-left:2px solid transparent;position:relative}
-.nav:hover{background:rgba(21,101,192,0.05);color:var(--text);border-left-color:var(--border2)}
-.nav.active{background:rgba(33,150,243,0.07);color:var(--acc4);border-left-color:var(--acc4)}
-.nav-ic{font-size:13px;width:16px;text-align:center;flex-shrink:0}
-.nbadge{margin-left:auto;background:var(--red2);color:#fff;font-size:8px;font-family:var(--font-mono);padding:1px 5px;min-width:16px;text-align:center}
-.nbadge.blue{background:var(--acc)}
-.sbfooter{padding:11px 13px;margin-top:auto;border-top:1px solid var(--border)}
-.sbfooter-info{font-family:var(--font-mono);font-size:7px;color:var(--textd);letter-spacing:1.5px;line-height:2.2}
+/* ═══════════ SIDEBAR ═══════════ */
+.sidebar{
+  width:var(--sw);background:var(--bg1);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  flex-shrink:0;overflow-y:auto;overflow-x:hidden
+}
+/* Wappen section */
+.sw{
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px 16px 16px;border-bottom:1px solid var(--border);gap:9px
+}
+.sw-wappen{animation:wgl 3s ease-in-out infinite}
+.sw-title{font-size:14px;font-weight:800;letter-spacing:2px;color:var(--text);text-transform:uppercase}
+.sw-sub{font-family:var(--mono);font-size:9px;color:var(--text4);letter-spacing:1.5px;text-align:center}
+.sec{padding:8px 0}
+.slbl{padding:6px 16px 5px;font-size:10px;font-weight:700;color:var(--text4);text-transform:uppercase;letter-spacing:1.5px}
+.nav{
+  display:flex;align-items:center;gap:10px;padding:10px 16px;
+  cursor:pointer;font-size:14px;font-weight:500;color:var(--text3);
+  border-left:3px solid transparent;transition:all .15s
+}
+.nav:hover{background:var(--bg2);color:var(--text2);border-left-color:var(--bord3)}
+.nav.active{background:rgba(37,99,235,.1);color:var(--blue4);border-left-color:var(--blue3)}
+.nav-ic{font-size:15px;width:19px;text-align:center;flex-shrink:0}
+.nbadge{margin-left:auto;background:var(--red2);color:#fff;font-size:10px;font-family:var(--mono);padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
+.sbfoot{padding:14px 16px;margin-top:auto;border-top:1px solid var(--border)}
+.sbfoot p{font-family:var(--mono);font-size:10px;color:var(--text4);letter-spacing:1px;line-height:2}
 
-/* MAIN */
-.main{flex:1;overflow-y:auto;background:var(--bg1)}
-.main::-webkit-scrollbar{width:4px}
-.main::-webkit-scrollbar-thumb{background:var(--border2)}
-.content{padding:18px}
+/* ═══════════ MAIN ═══════════ */
+.main{flex:1;overflow-y:auto;background:var(--bg)}
+.content{padding:22px}
 .page{display:none}
 .page.active{display:block}
 
 /* PAGE HEADER */
-.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border2)}
-.ph-title{font-family:var(--font-head);font-size:19px;font-weight:700;letter-spacing:2px;color:var(--text3);text-transform:uppercase;display:flex;align-items:center;gap:9px}
-.ph-sub{font-family:var(--font-mono);font-size:8px;color:var(--textm);letter-spacing:2px;margin-top:3px}
-.ph-actions{display:flex;align-items:center;gap:7px}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.ph-title{font-size:21px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:10px}
+.ph-sub{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:1px;margin-top:3px}
 
-/* CARD */
-.card{background:linear-gradient(160deg,var(--bg3) 0%,rgba(9,21,37,0.85) 100%);border:1px solid var(--border);margin-bottom:13px;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--acc2),transparent);opacity:0.4}
-.ch{padding:10px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(3,7,15,0.35)}
-.ct{font-family:var(--font-head);font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text2)}
-.cb{padding:15px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px}
+.ch{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ct{font-size:14px;font-weight:700;color:var(--text2)}
+.cb{padding:16px}
 
-/* STATS */
-.stat{background:linear-gradient(135deg,var(--bg3) 0%,var(--bg2) 100%);border:1px solid var(--border2);padding:16px;position:relative;overflow:hidden}
-.stat::after{content:'';position:absolute;bottom:-8px;right:-8px;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle,var(--glow2) 0%,transparent 70%)}
-.stat-lbl{font-family:var(--font-mono);font-size:7px;letter-spacing:2.5px;color:var(--textm);text-transform:uppercase;margin-bottom:5px}
-.stat-val{font-family:var(--font-head);font-size:30px;font-weight:700;color:var(--text3);line-height:1;margin-bottom:2px}
-.stat-sub{font-size:10px;color:var(--textm);font-family:var(--font-mono)}
-.stat-ico{position:absolute;top:12px;right:12px;font-size:20px;opacity:0.13}
-.stat-bar{height:2px;background:var(--border);margin-top:9px;overflow:hidden}
-.stat-bar-f{height:100%;background:var(--acc3);transition:width 1s}
+/* STAT CARDS */
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue2),var(--blue4));border-radius:var(--r) var(--r) 0 0}
+.stat-lbl{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.stat-val{font-size:36px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px}
+.stat-sub{font-size:13px;color:var(--text3)}
+.stat-ico{position:absolute;top:15px;right:15px;font-size:24px;opacity:.1}
+.stat-bar{height:3px;background:var(--border);margin-top:12px;overflow:hidden;border-radius:2px}
+.stat-barf{height:100%;background:var(--blue3);border-radius:2px;transition:width 1s}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.gdash{display:grid;grid-template-columns:1fr 285px;gap:14px}
 
 /* TABLE */
+.twrap{overflow-x:auto}
 .tbl{width:100%;border-collapse:collapse}
-.tbl th{padding:8px 11px;text-align:left;font-family:var(--font-mono);font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--textm);border-bottom:1px solid var(--border2);background:rgba(3,7,15,0.5);white-space:nowrap}
-.tbl td{padding:8px 11px;border-bottom:1px solid rgba(22,45,74,0.5);font-size:12px;color:var(--text);vertical-align:middle}
-.tbl tbody tr:hover{background:rgba(21,101,192,0.04)}
+.tbl th{padding:11px 13px;text-align:left;font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--bord2);background:var(--bg3);white-space:nowrap}
+.tbl td{padding:12px 13px;border-bottom:1px solid var(--border);font-size:14px;color:var(--text2);vertical-align:middle}
+.tbl tbody tr:hover{background:rgba(37,99,235,.03)}
 .tbl tbody tr:last-child td{border-bottom:none}
-.tbl-wrap{overflow-x:auto}
 
-/* BADGE */
-.b{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;font-size:8px;font-family:var(--font-mono);letter-spacing:1px;font-weight:700;text-transform:uppercase;border:1px solid;white-space:nowrap}
-.bb{background:rgba(33,150,243,0.09);border-color:rgba(33,150,243,0.3);color:var(--acc4)}
-.bg2{background:rgba(67,160,71,0.09);border-color:rgba(67,160,71,0.3);color:var(--green4)}
-.br{background:rgba(183,28,28,0.09);border-color:rgba(229,57,53,0.3);color:var(--red4)}
-.by2{background:rgba(230,81,0,0.09);border-color:rgba(255,152,0,0.3);color:var(--yellow4)}
-.bo{background:rgba(245,124,0,0.09);border-color:rgba(245,124,0,0.3);color:#ffcc80}
-.bgr{background:rgba(74,106,138,0.09);border-color:rgba(74,106,138,0.25);color:var(--textm)}
-.bpu{background:rgba(142,36,170,0.09);border-color:rgba(142,36,170,0.25);color:#ce93d8}
+/* BADGES */
+.b{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;font-size:11px;font-weight:700;text-transform:uppercase;border-radius:4px;white-space:nowrap}
+.bbl{background:rgba(37,99,235,.15);color:var(--blue4)}
+.bgr{background:rgba(22,163,74,.15);color:#4ade80}
+.brd{background:rgba(220,38,38,.15);color:#fca5a5}
+.byl{background:rgba(217,119,6,.15);color:#fcd34d}
+.bor{background:rgba(234,88,12,.15);color:#fb923c}
+.bgy{background:rgba(107,114,128,.15);color:var(--text3)}
+.bpu{background:rgba(147,51,234,.15);color:#c084fc}
 
-/* SEARCH */
-.sbar{display:flex;align-items:center;background:rgba(3,7,15,0.6);border:1px solid var(--border);transition:border-color 0.2s}
-.sbar:focus-within{border-color:var(--acc2)}
-.sbar input{flex:1;background:transparent;border:none;padding:7px 11px;color:var(--text2);font-family:var(--font-ui);font-size:12px;outline:none}
-.sbar input::placeholder{color:var(--textd)}
-.sbar .sbtn{padding:7px 12px;background:var(--acc);border:none;color:#fff;cursor:pointer;font-size:12px;flex-shrink:0}
-.sbar .sbtn:hover{background:var(--acc2)}
-.fbar{display:flex;align-items:center;gap:7px;margin-bottom:13px;flex-wrap:wrap}
-.fsel{background:rgba(3,7,15,0.6);border:1px solid var(--border);color:var(--text);padding:6px 9px;font-family:var(--font-ui);font-size:11px;outline:none;cursor:pointer}
-.fsel:focus{border-color:var(--acc2)}
+/* FILTER BAR */
+.fbar{display:flex;align-items:center;gap:9px;margin-bottom:14px;flex-wrap:wrap}
+.sbox{display:flex;align-items:center;background:var(--bg2);border:1px solid var(--bord2);border-radius:var(--rs);overflow:hidden;transition:all .2s}
+.sbox:focus-within{border-color:var(--blue3);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.sbox input{flex:1;background:transparent;border:none;padding:9px 13px;color:var(--text);font-size:14px;outline:none}
+.sbox input::placeholder{color:var(--text4)}
+.sbtn{padding:9px 13px;background:var(--blue2);border:none;color:#fff;cursor:pointer;font-size:14px;flex-shrink:0}
+.sbtn:hover{background:var(--blue3)}
+.fsel{background:var(--bg2);border:1px solid var(--bord2);color:var(--text2);padding:9px 12px;font-size:14px;outline:none;cursor:pointer;border-radius:var(--rs);transition:all .2s}
+.fsel:focus{border-color:var(--blue3)}
 .fsel option{background:var(--bg3)}
 
 /* MODAL */
-.mo{position:fixed;inset:0;background:rgba(3,7,15,0.9);display:none;align-items:center;justify-content:center;z-index:700;backdrop-filter:blur(3px)}
-.mo.on{display:flex}
-.modal{background:linear-gradient(160deg,var(--bg3) 0%,var(--bg2) 100%);border:1px solid var(--border2);width:560px;max-width:96vw;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 0 80px rgba(0,0,0,0.8)}
-.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--acc),var(--acc3),var(--acc),transparent)}
-.modal-lg{width:700px}
-.mh{padding:14px 19px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(3,7,15,0.4)}
-.mht{font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3)}
-.mhc{background:none;border:1px solid var(--border);color:var(--textm);width:24px;height:24px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
-.mhc:hover{border-color:var(--red3);color:var(--red4)}
-.mb{padding:18px}
-.mf{padding:12px 19px;border-top:1px solid var(--border);display:flex;gap:7px;justify-content:flex-end;background:rgba(3,7,15,0.3)}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:700;backdrop-filter:blur(5px)}
+.mo.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--bord2);border-radius:var(--r);width:580px;max-width:96vw;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.75)}
+.mlg{width:700px}
+.mh{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mht{font-size:16px;font-weight:700;color:var(--text)}
+.mhc{background:var(--bg4);border:1px solid var(--bord2);color:var(--text3);width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;border-radius:var(--rs)}
+.mhc:hover{border-color:var(--red);color:#fca5a5;background:rgba(220,38,38,.1)}
+.mbody{padding:20px}
+.mfoot{padding:13px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--bg1);border-radius:0 0 var(--r) var(--r)}
 
-/* NOTIF */
-.notif{position:fixed;top:68px;right:14px;background:var(--bg3);border:1px solid var(--border2);border-left:3px solid var(--acc4);padding:11px 15px;z-index:900;min-width:240px;font-size:12px;box-shadow:0 4px 28px rgba(0,0,0,0.6);animation:ni 0.3s ease;display:none;font-family:var(--font-ui)}
-.notif.on{display:block}
-.notif.ok{border-left-color:var(--green4)}
-.notif.err{border-left-color:var(--red4)}
-.notif.warn{border-left-color:var(--yellow4)}
-@keyframes ni{from{transform:translateX(18px);opacity:0}to{transform:translateX(0);opacity:1}}
+/* TOAST */
+.toast{position:fixed;top:72px;right:16px;background:var(--bg3);border:1px solid var(--bord2);border-left:4px solid var(--blue3);padding:13px 16px;z-index:900;min-width:265px;font-size:14px;box-shadow:0 8px 32px rgba(0,0,0,.5);animation:tin .3s ease;display:none;border-radius:var(--r)}
+.toast.show{display:block}
+.toast.ok{border-left-color:var(--green)}
+.toast.err{border-left-color:var(--red)}
+.toast.warn{border-left-color:var(--yellow)}
+@keyframes tin{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
 
-/* TIMELINE */
-.tl{position:relative;padding-left:22px}
-.tl::before{content:'';position:absolute;left:5px;top:0;bottom:0;width:1px;background:var(--border2)}
-.tl-item{position:relative;margin-bottom:14px}
-.tl-dot{position:absolute;left:-19px;top:3px;width:8px;height:8px;border-radius:50%;background:var(--acc);border:2px solid var(--bg1);box-shadow:0 0 4px var(--acc)}
-.tl-time{font-family:var(--font-mono);font-size:7px;color:var(--textm);letter-spacing:1px;margin-bottom:2px}
-.tl-body{background:rgba(3,7,15,0.45);border:1px solid var(--border);padding:7px 10px;font-size:11px;color:var(--text)}
-
-/* ALERT BANNER */
-.abanner{background:rgba(183,28,28,0.07);border:1px solid rgba(229,57,53,0.28);border-left:3px solid var(--red4);padding:9px 13px;margin-bottom:9px;display:flex;align-items:center;gap:9px;font-size:11px;animation:ap 2s ease-in-out infinite}
-@keyframes ap{0%,100%{border-left-color:var(--red4)}50%{border-left-color:var(--red2)}}
-
-/* OFFICER CARD */
-.ocard{display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid var(--border);background:rgba(3,7,15,0.28);margin-bottom:5px;transition:background 0.15s}
-.ocard:hover{background:rgba(21,101,192,0.04)}
-.oav{width:32px;height:32px;background:var(--acc);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:700;color:#fff;font-size:13px;flex-shrink:0;clip-path:polygon(14% 0%,86% 0%,100% 14%,100% 86%,86% 100%,14% 100%,0% 86%,0% 14%)}
-
-/* PLATE */
-.plate{font-family:var(--font-mono);letter-spacing:3px;font-size:13px;border:1px solid var(--border2);padding:2px 7px;display:inline-block}
-.plate-lg{font-size:18px;padding:5px 14px;letter-spacing:4px}
-
-.spin{display:inline-block;width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--acc4);border-radius:50%;animation:sp 0.6s linear infinite}
+/* MISC */
+.spin{display:inline-block;width:18px;height:18px;border:2px solid var(--bord2);border-top-color:var(--blue4);border-radius:50%;animation:sp .6s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.lc-cell{text-align:center;padding:28px;color:var(--textm)}
-
-.empty{text-align:center;padding:40px 18px;color:var(--textm)}
-.empty-ic{font-size:32px;margin-bottom:8px;opacity:0.22}
-.empty p{font-family:var(--font-mono);font-size:8px;letter-spacing:2px;text-transform:uppercase}
-
-.split{display:grid;grid-template-columns:1fr 290px;gap:13px}
-.split3{display:grid;grid-template-columns:1fr 1fr 260px;gap:13px}
-
-/* AKTE FIELD */
-.af{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(22,45,74,0.35)}
-.af:last-child{border-bottom:none}
-.af-lbl{font-family:var(--font-mono);font-size:7px;letter-spacing:2px;color:var(--textm);text-transform:uppercase}
-.af-val{font-weight:500;color:var(--text2);font-size:11px}
-
-/* NOTE */
-.note-item{background:rgba(3,7,15,0.45);border:1px solid var(--border);border-left:2px solid var(--acc2);padding:9px 12px;margin-bottom:7px}
-.note-meta{font-family:var(--font-mono);font-size:7px;color:var(--textm);margin-bottom:4px}
-.note-text{font-size:11px;color:var(--text);line-height:1.55}
-.note-type-Beschwerde{border-left-color:var(--red4)}
-.note-type-Lob{border-left-color:var(--green4)}
-.note-type-Disziplinareintrag{border-left-color:var(--yellow4)}
-.note-type-Verweis{border-left-color:var(--yellow3)}
-
-/* SHARE VIEW */
-#share-view{position:fixed;inset:0;background:var(--bg0);display:none;z-index:10000;overflow-y:auto;padding:20px}
-
-.sev-l{color:var(--yellow4)}
-.sev-m{color:#ffcc80}
-.sev-s{color:var(--red4)}
-
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:var(--bg0)}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.lc{text-align:center;padding:36px;color:var(--text3)}
+.empty{text-align:center;padding:52px 20px;color:var(--text3)}
+.empty-ic{font-size:40px;margin-bottom:12px;opacity:.2}
+.empty p{font-size:12px;text-transform:uppercase;letter-spacing:1.5px}
+.abanner{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-left:4px solid var(--red);padding:11px 15px;margin-bottom:10px;display:flex;align-items:center;gap:12px;font-size:14px;border-radius:0 var(--rs) var(--rs) 0;animation:ap 2s ease-in-out infinite}
+@keyframes ap{0%,100%{border-left-color:var(--red)}50%{border-left-color:var(--red2)}}
+.plate{font-family:var(--mono);letter-spacing:3px;font-size:14px;border:1px solid var(--bord2);padding:3px 9px;border-radius:4px;display:inline-block}
+.platelg{font-size:22px;padding:7px 17px;letter-spacing:4px}
+.aff{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.aff:last-child{border-bottom:none}
+.afl{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.afv{font-size:14px;font-weight:500;color:var(--text2)}
+.tl{position:relative;padding-left:24px}
+.tl::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1px;background:var(--bord2)}
+.tli{position:relative;margin-bottom:14px}
+.tld{position:absolute;left:-20px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--blue3);border:2px solid var(--bg1)}
+.tlt{font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:3px}
+.tlb{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;font-size:14px}
+.ni{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--blue2);padding:10px 13px;margin-bottom:8px;border-radius:0 var(--rs) var(--rs) 0}
+.ni.note-Beschwerde{border-left-color:var(--red)}
+.ni.note-Lob{border-left-color:var(--green)}
+.ni.note-Disziplinareintrag{border-left-color:var(--yellow)}
+.ni.note-Verweis{border-left-color:var(--yellow)}
+.nm{font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:5px}
+.nt{font-size:14px;color:var(--text2);line-height:1.6}
+.orow{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:7px;transition:background .15s}
+.orow:hover{background:var(--bg4)}
+.oav{width:36px;height:36px;border-radius:var(--rs);background:var(--blue2);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:15px;flex-shrink:0}
 </style>
 </head>
 <body>
 
-<!-- BOOT SCREEN -->
+<!-- ══ BOOT ══ -->
 <div id="boot">
-  <div class="b-logo">
-    <svg width="80" height="80" viewBox="0 0 200 240">
-      <defs>
-        <linearGradient id="shieldG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c62828"/><stop offset="100%" stop-color="#8b0000"/></linearGradient>
-        <linearGradient id="goldG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdd835"/><stop offset="100%" stop-color="#f9a825"/></linearGradient>
-      </defs>
-      <!-- Shield outline -->
-      <path d="M100 10 L185 40 L185 130 Q185 200 100 230 Q15 200 15 130 L15 40 Z" fill="url(#shieldG)" stroke="#f9a825" stroke-width="3"/>
-      <!-- Gold border inner -->
-      <path d="M100 20 L175 46 L175 128 Q175 192 100 220 Q25 192 25 128 L25 46 Z" fill="none" stroke="#fdd83580" stroke-width="1.5"/>
-      <!-- Black/gold stripes BW style - left half black, right half gold -->
-      <clipPath id="sh"><path d="M100 20 L175 46 L175 128 Q175 192 100 220 Q25 192 25 128 L25 46 Z"/></clipPath>
-      <rect x="25" y="20" width="75" height="210" fill="#1a1a1a" clip-path="url(#sh)"/>
-      <rect x="100" y="20" width="75" height="210" fill="#f9a825" clip-path="url(#sh)"/>
-      <!-- Stag silhouette -->
-      <g clip-path="url(#sh)">
-        <!-- Body -->
-        <ellipse cx="100" cy="155" rx="28" ry="22" fill="#c62828"/>
-        <!-- Head -->
-        <ellipse cx="100" cy="122" rx="13" ry="14" fill="#c62828"/>
-        <!-- Antlers left -->
-        <path d="M90 112 L82 88 M82 88 L75 78 M82 88 L88 80 M82 88 L78 96" stroke="#c62828" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <!-- Antlers right -->
-        <path d="M110 112 L118 88 M118 88 L125 78 M118 88 L112 80 M118 88 L122 96" stroke="#c62828" stroke-width="4" stroke-linecap="round" fill="none"/>
-        <!-- Legs -->
-        <line x1="85" y1="175" x2="82" y2="200" stroke="#c62828" stroke-width="5" stroke-linecap="round"/>
-        <line x1="92" y1="176" x2="90" y2="202" stroke="#c62828" stroke-width="5" stroke-linecap="round"/>
-        <line x1="108" y1="176" x2="110" y2="202" stroke="#c62828" stroke-width="5" stroke-linecap="round"/>
-        <line x1="115" y1="175" x2="118" y2="200" stroke="#c62828" stroke-width="5" stroke-linecap="round"/>
-      </g>
-      <!-- Crown top -->
-      <path d="M72 50 L78 36 L84 46 L100 30 L116 46 L122 36 L128 50 Z" fill="url(#goldG)" stroke="#e65100" stroke-width="1"/>
-      <!-- Crown dots -->
-      <circle cx="84" cy="44" r="3" fill="#fff8e1"/>
-      <circle cx="100" cy="29" r="4" fill="#fff8e1"/>
-      <circle cx="116" cy="44" r="3" fill="#fff8e1"/>
-    </svg>
-    <div class="b-title">CopNet <span style="color:var(--acc4)">BW</span></div>
-    <div class="b-sub">Polizeiinformationssystem Baden-Württemberg</div>
-  </div>
-  <div class="b-bar"><div class="b-bar-inner"></div></div>
-  <div class="b-status" id="boot-stat">SYSTEM WIRD GESTARTET...</div>
-  <div class="b-lines" id="boot-lines"></div>
+  <div class="bw" style="width:105px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" style="display:block">
+  <defs>
+    <clipPath id="wc">
+      <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z"/>
+    </clipPath>
+  </defs>
+  <!-- Gold border/background -->
+  <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z" fill="#c8a000" stroke="#8b6914" stroke-width="2.5"/>
+  <!-- Left half: BLACK -->
+  <rect x="7" y="5" width="93" height="260" fill="#111" clip-path="url(#wc)"/>
+  <!-- Right half: GOLD -->
+  <rect x="100" y="5" width="93" height="260" fill="#f9a825" clip-path="url(#wc)"/>
+  <!-- Center dividing line -->
+  <line x1="100" y1="5" x2="100" y2="255" stroke="#8b6914" stroke-width="1.5"/>
+
+  <!-- LEFT STAG: gold on black -->
+  <g clip-path="url(#wc)" fill="#f9a825">
+    <!-- body -->
+    <ellipse cx="55" cy="178" rx="27" ry="21"/>
+    <!-- neck -->
+    <rect x="46" y="150" width="18" height="30" rx="4"/>
+    <!-- head -->
+    <ellipse cx="55" cy="148" rx="13" ry="11"/>
+    <!-- antler left branch -->
+    <path d="M47 138 L38 112 L30 96 M38 112 L44 98 M38 118 L30 112" stroke="#f9a825" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <!-- antler right branch -->
+    <path d="M63 138 L72 112 L80 96 M72 112 L66 98 M72 118 L80 112" stroke="#f9a825" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <!-- legs -->
+    <rect x="38" y="196" width="8" height="38" rx="3"/>
+    <rect x="48" y="198" width="8" height="38" rx="3"/>
+    <rect x="59" y="198" width="8" height="38" rx="3"/>
+    <rect x="69" y="196" width="8" height="38" rx="3"/>
+  </g>
+
+  <!-- RIGHT STAG: black on gold -->
+  <g clip-path="url(#wc)" fill="#111">
+    <ellipse cx="145" cy="178" rx="27" ry="21"/>
+    <rect x="136" y="150" width="18" height="30" rx="4"/>
+    <ellipse cx="145" cy="148" rx="13" ry="11"/>
+    <path d="M137 138 L128 112 L120 96 M128 112 L134 98 M128 118 L120 112" stroke="#111" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <path d="M153 138 L162 112 L170 96 M162 112 L156 98 M162 118 L170 112" stroke="#111" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <rect x="128" y="196" width="8" height="38" rx="3"/>
+    <rect x="138" y="198" width="8" height="38" rx="3"/>
+    <rect x="149" y="198" width="8" height="38" rx="3"/>
+    <rect x="159" y="196" width="8" height="38" rx="3"/>
+  </g>
+
+  <!-- CROWN -->
+  <path d="M66 54 L75 34 L86 50 L100 32 L114 50 L125 34 L134 54 Z" fill="#f9a825" stroke="#8b6914" stroke-width="1"/>
+  <circle cx="86" cy="48" r="3.5" fill="#fffde7"/>
+  <circle cx="100" cy="31" r="4.5" fill="#fffde7"/>
+  <circle cx="114" cy="48" r="3.5" fill="#fffde7"/>
+
+  <!-- Outer shield border -->
+  <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z" fill="none" stroke="#f9a825" stroke-width="2.5"/>
+</svg></div>
+  <div class="bt">CopNet <span style="color:var(--blue4)">BW</span></div>
+  <div class="bs">Polizeiinformationssystem Baden-Württemberg</div>
+  <div class="bbar"><div class="bbar-i"></div></div>
+  <div class="bstat" id="boot-stat">SYSTEM WIRD GESTARTET...</div>
+  <div class="blines" id="boot-lines"></div>
 </div>
 
-<!-- SHARE VIEW (public) -->
+<!-- ══ SHARE VIEW ══ -->
 <div id="share-view">
-  <div style="max-width:680px;margin:0 auto;">
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border2);">
-      <svg width="44" height="44" viewBox="0 0 200 240">
-        <path d="M100 10 L185 40 L185 130 Q185 200 100 230 Q15 200 15 130 L15 40 Z" fill="#c62828" stroke="#f9a825" stroke-width="3"/>
-        <rect x="25" y="20" width="75" height="210" fill="#1a1a1a" clip-path="url(#sh)"/>
-        <rect x="100" y="20" width="75" height="210" fill="#f9a825" clip-path="url(#sh)"/>
-      </svg>
+  <div style="max-width:720px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:18px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+      <div style="width:52px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" style="display:block">
+  <defs>
+    <clipPath id="wc">
+      <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z"/>
+    </clipPath>
+  </defs>
+  <!-- Gold border/background -->
+  <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z" fill="#c8a000" stroke="#8b6914" stroke-width="2.5"/>
+  <!-- Left half: BLACK -->
+  <rect x="7" y="5" width="93" height="260" fill="#111" clip-path="url(#wc)"/>
+  <!-- Right half: GOLD -->
+  <rect x="100" y="5" width="93" height="260" fill="#f9a825" clip-path="url(#wc)"/>
+  <!-- Center dividing line -->
+  <line x1="100" y1="5" x2="100" y2="255" stroke="#8b6914" stroke-width="1.5"/>
+
+  <!-- LEFT STAG: gold on black -->
+  <g clip-path="url(#wc)" fill="#f9a825">
+    <!-- body -->
+    <ellipse cx="55" cy="178" rx="27" ry="21"/>
+    <!-- neck -->
+    <rect x="46" y="150" width="18" height="30" rx="4"/>
+    <!-- head -->
+    <ellipse cx="55" cy="148" rx="13" ry="11"/>
+    <!-- antler left branch -->
+    <path d="M47 138 L38 112 L30 96 M38 112 L44 98 M38 118 L30 112" stroke="#f9a825" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <!-- antler right branch -->
+    <path d="M63 138 L72 112 L80 96 M72 112 L66 98 M72 118 L80 112" stroke="#f9a825" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <!-- legs -->
+    <rect x="38" y="196" width="8" height="38" rx="3"/>
+    <rect x="48" y="198" width="8" height="38" rx="3"/>
+    <rect x="59" y="198" width="8" height="38" rx="3"/>
+    <rect x="69" y="196" width="8" height="38" rx="3"/>
+  </g>
+
+  <!-- RIGHT STAG: black on gold -->
+  <g clip-path="url(#wc)" fill="#111">
+    <ellipse cx="145" cy="178" rx="27" ry="21"/>
+    <rect x="136" y="150" width="18" height="30" rx="4"/>
+    <ellipse cx="145" cy="148" rx="13" ry="11"/>
+    <path d="M137 138 L128 112 L120 96 M128 112 L134 98 M128 118 L120 112" stroke="#111" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <path d="M153 138 L162 112 L170 96 M162 112 L156 98 M162 118 L170 112" stroke="#111" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <rect x="128" y="196" width="8" height="38" rx="3"/>
+    <rect x="138" y="198" width="8" height="38" rx="3"/>
+    <rect x="149" y="198" width="8" height="38" rx="3"/>
+    <rect x="159" y="196" width="8" height="38" rx="3"/>
+  </g>
+
+  <!-- CROWN -->
+  <path d="M66 54 L75 34 L86 50 L100 32 L114 50 L125 34 L134 54 Z" fill="#f9a825" stroke="#8b6914" stroke-width="1"/>
+  <circle cx="86" cy="48" r="3.5" fill="#fffde7"/>
+  <circle cx="100" cy="31" r="4.5" fill="#fffde7"/>
+  <circle cx="114" cy="48" r="3.5" fill="#fffde7"/>
+
+  <!-- Outer shield border -->
+  <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z" fill="none" stroke="#f9a825" stroke-width="2.5"/>
+</svg></div>
       <div>
-        <div style="font-family:var(--font-head);font-size:18px;font-weight:700;letter-spacing:3px;color:var(--text3);text-transform:uppercase;">Polizei Baden-Württemberg</div>
-        <div style="font-family:var(--font-mono);font-size:8px;color:var(--textm);letter-spacing:2px;margin-top:2px;">AKTENANSICHT · SCHREIBGESCHÜTZT · VERTRAULICH</div>
+        <div style="font-size:22px;font-weight:800;color:var(--text)">Polizei Baden-Württemberg</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:2px;margin-top:3px">AKTENANSICHT · SCHREIBGESCHÜTZT · VERTRAULICH</div>
       </div>
     </div>
     <div id="share-content"></div>
-    <div style="margin-top:18px;padding:9px;border:1px solid var(--border);font-family:var(--font-mono);font-size:7px;color:var(--textm);text-align:center;letter-spacing:2px;">COPNET v4.0 · POLIZEI BW · DIESE ANSICHT IST SCHREIBGESCHÜTZT</div>
+    <div style="margin-top:20px;padding:10px;border:1px solid var(--border);border-radius:var(--r);font-family:var(--mono);font-size:10px;color:var(--text4);text-align:center;letter-spacing:2px">COPNET BW v5.0 · SCHREIBGESCHÜTZTE ANSICHT</div>
   </div>
 </div>
 
-<!-- LOGIN -->
+<!-- ══ LOGIN ══ -->
 <div id="login">
-  <div class="login-bg"></div>
-  <div class="login-grid"></div>
-  <div class="lc tl"></div><div class="lc tr"></div>
-  <div class="lc bl"></div><div class="lc br"></div>
-  <div class="login-watermark">
-    <svg width="420" height="500" viewBox="0 0 200 240">
-      <path d="M100 10 L185 40 L185 130 Q185 200 100 230 Q15 200 15 130 L15 40 Z" fill="white" stroke="white" stroke-width="2"/>
-    </svg>
-  </div>
+  <div class="login-wappen-bg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" style="display:block">
+  <defs>
+    <clipPath id="wc">
+      <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z"/>
+    </clipPath>
+  </defs>
+  <!-- Gold border/background -->
+  <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z" fill="#c8a000" stroke="#8b6914" stroke-width="2.5"/>
+  <!-- Left half: BLACK -->
+  <rect x="7" y="5" width="93" height="260" fill="#111" clip-path="url(#wc)"/>
+  <!-- Right half: GOLD -->
+  <rect x="100" y="5" width="93" height="260" fill="#f9a825" clip-path="url(#wc)"/>
+  <!-- Center dividing line -->
+  <line x1="100" y1="5" x2="100" y2="255" stroke="#8b6914" stroke-width="1.5"/>
+
+  <!-- LEFT STAG: gold on black -->
+  <g clip-path="url(#wc)" fill="#f9a825">
+    <!-- body -->
+    <ellipse cx="55" cy="178" rx="27" ry="21"/>
+    <!-- neck -->
+    <rect x="46" y="150" width="18" height="30" rx="4"/>
+    <!-- head -->
+    <ellipse cx="55" cy="148" rx="13" ry="11"/>
+    <!-- antler left branch -->
+    <path d="M47 138 L38 112 L30 96 M38 112 L44 98 M38 118 L30 112" stroke="#f9a825" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <!-- antler right branch -->
+    <path d="M63 138 L72 112 L80 96 M72 112 L66 98 M72 118 L80 112" stroke="#f9a825" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <!-- legs -->
+    <rect x="38" y="196" width="8" height="38" rx="3"/>
+    <rect x="48" y="198" width="8" height="38" rx="3"/>
+    <rect x="59" y="198" width="8" height="38" rx="3"/>
+    <rect x="69" y="196" width="8" height="38" rx="3"/>
+  </g>
+
+  <!-- RIGHT STAG: black on gold -->
+  <g clip-path="url(#wc)" fill="#111">
+    <ellipse cx="145" cy="178" rx="27" ry="21"/>
+    <rect x="136" y="150" width="18" height="30" rx="4"/>
+    <ellipse cx="145" cy="148" rx="13" ry="11"/>
+    <path d="M137 138 L128 112 L120 96 M128 112 L134 98 M128 118 L120 112" stroke="#111" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <path d="M153 138 L162 112 L170 96 M162 112 L156 98 M162 118 L170 112" stroke="#111" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <rect x="128" y="196" width="8" height="38" rx="3"/>
+    <rect x="138" y="198" width="8" height="38" rx="3"/>
+    <rect x="149" y="198" width="8" height="38" rx="3"/>
+    <rect x="159" y="196" width="8" height="38" rx="3"/>
+  </g>
+
+  <!-- CROWN -->
+  <path d="M66 54 L75 34 L86 50 L100 32 L114 50 L125 34 L134 54 Z" fill="#f9a825" stroke="#8b6914" stroke-width="1"/>
+  <circle cx="86" cy="48" r="3.5" fill="#fffde7"/>
+  <circle cx="100" cy="31" r="4.5" fill="#fffde7"/>
+  <circle cx="114" cy="48" r="3.5" fill="#fffde7"/>
+
+  <!-- Outer shield border -->
+  <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z" fill="none" stroke="#f9a825" stroke-width="2.5"/>
+</svg></div>
+  <div class="lbr tl"></div><div class="lbr tr"></div>
+  <div class="lbr bl"></div><div class="lbr br"></div>
   <div class="lbox">
     <div class="lhead">
-      <svg class="lhead-wappen" width="72" height="86" viewBox="0 0 200 240">
-        <defs>
-          <linearGradient id="sG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c62828"/><stop offset="100%" stop-color="#8b0000"/></linearGradient>
-          <linearGradient id="gG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdd835"/><stop offset="100%" stop-color="#f9a825"/></linearGradient>
-        </defs>
-        <path d="M100 10 L185 40 L185 130 Q185 200 100 230 Q15 200 15 130 L15 40 Z" fill="url(#sG2)" stroke="#f9a825" stroke-width="3"/>
-        <path d="M100 20 L175 46 L175 128 Q175 192 100 220 Q25 192 25 128 L25 46 Z" fill="none" stroke="#fdd83560" stroke-width="1.5"/>
-        <clipPath id="sh2"><path d="M100 20 L175 46 L175 128 Q175 192 100 220 Q25 192 25 128 L25 46 Z"/></clipPath>
-        <rect x="25" y="20" width="75" height="210" fill="#1a1a1a" clip-path="url(#sh2)"/>
-        <rect x="100" y="20" width="75" height="210" fill="#f9a825" clip-path="url(#sh2)"/>
-        <g clip-path="url(#sh2)">
-          <ellipse cx="100" cy="155" rx="28" ry="22" fill="#c62828"/>
-          <ellipse cx="100" cy="122" rx="13" ry="14" fill="#c62828"/>
-          <path d="M90 112 L82 88 M82 88 L75 78 M82 88 L88 80 M82 88 L78 96" stroke="#c62828" stroke-width="4" stroke-linecap="round" fill="none"/>
-          <path d="M110 112 L118 88 M118 88 L125 78 M118 88 L112 80 M118 88 L122 96" stroke="#c62828" stroke-width="4" stroke-linecap="round" fill="none"/>
-          <line x1="85" y1="175" x2="82" y2="200" stroke="#c62828" stroke-width="5" stroke-linecap="round"/>
-          <line x1="92" y1="176" x2="90" y2="202" stroke="#c62828" stroke-width="5" stroke-linecap="round"/>
-          <line x1="108" y1="176" x2="110" y2="202" stroke="#c62828" stroke-width="5" stroke-linecap="round"/>
-          <line x1="115" y1="175" x2="118" y2="200" stroke="#c62828" stroke-width="5" stroke-linecap="round"/>
-        </g>
-        <path d="M72 50 L78 36 L84 46 L100 30 L116 46 L122 36 L128 50 Z" fill="url(#gG2)" stroke="#e65100" stroke-width="1"/>
-        <circle cx="84" cy="44" r="3" fill="#fff8e1"/>
-        <circle cx="100" cy="29" r="4" fill="#fff8e1"/>
-        <circle cx="116" cy="44" r="3" fill="#fff8e1"/>
-      </svg>
+      <div style="width:84px;animation:wgl 3s ease-in-out infinite"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" style="display:block">
+  <defs>
+    <clipPath id="wc">
+      <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z"/>
+    </clipPath>
+  </defs>
+  <!-- Gold border/background -->
+  <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z" fill="#c8a000" stroke="#8b6914" stroke-width="2.5"/>
+  <!-- Left half: BLACK -->
+  <rect x="7" y="5" width="93" height="260" fill="#111" clip-path="url(#wc)"/>
+  <!-- Right half: GOLD -->
+  <rect x="100" y="5" width="93" height="260" fill="#f9a825" clip-path="url(#wc)"/>
+  <!-- Center dividing line -->
+  <line x1="100" y1="5" x2="100" y2="255" stroke="#8b6914" stroke-width="1.5"/>
+
+  <!-- LEFT STAG: gold on black -->
+  <g clip-path="url(#wc)" fill="#f9a825">
+    <!-- body -->
+    <ellipse cx="55" cy="178" rx="27" ry="21"/>
+    <!-- neck -->
+    <rect x="46" y="150" width="18" height="30" rx="4"/>
+    <!-- head -->
+    <ellipse cx="55" cy="148" rx="13" ry="11"/>
+    <!-- antler left branch -->
+    <path d="M47 138 L38 112 L30 96 M38 112 L44 98 M38 118 L30 112" stroke="#f9a825" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <!-- antler right branch -->
+    <path d="M63 138 L72 112 L80 96 M72 112 L66 98 M72 118 L80 112" stroke="#f9a825" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <!-- legs -->
+    <rect x="38" y="196" width="8" height="38" rx="3"/>
+    <rect x="48" y="198" width="8" height="38" rx="3"/>
+    <rect x="59" y="198" width="8" height="38" rx="3"/>
+    <rect x="69" y="196" width="8" height="38" rx="3"/>
+  </g>
+
+  <!-- RIGHT STAG: black on gold -->
+  <g clip-path="url(#wc)" fill="#111">
+    <ellipse cx="145" cy="178" rx="27" ry="21"/>
+    <rect x="136" y="150" width="18" height="30" rx="4"/>
+    <ellipse cx="145" cy="148" rx="13" ry="11"/>
+    <path d="M137 138 L128 112 L120 96 M128 112 L134 98 M128 118 L120 112" stroke="#111" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <path d="M153 138 L162 112 L170 96 M162 112 L156 98 M162 118 L170 112" stroke="#111" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <rect x="128" y="196" width="8" height="38" rx="3"/>
+    <rect x="138" y="198" width="8" height="38" rx="3"/>
+    <rect x="149" y="198" width="8" height="38" rx="3"/>
+    <rect x="159" y="196" width="8" height="38" rx="3"/>
+  </g>
+
+  <!-- CROWN -->
+  <path d="M66 54 L75 34 L86 50 L100 32 L114 50 L125 34 L134 54 Z" fill="#f9a825" stroke="#8b6914" stroke-width="1"/>
+  <circle cx="86" cy="48" r="3.5" fill="#fffde7"/>
+  <circle cx="100" cy="31" r="4.5" fill="#fffde7"/>
+  <circle cx="114" cy="48" r="3.5" fill="#fffde7"/>
+
+  <!-- Outer shield border -->
+  <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z" fill="none" stroke="#f9a825" stroke-width="2.5"/>
+</svg></div>
       <h1>CopNet BW</h1>
-      <div class="ls">POLIZEIINFORMATIONSSYSTEM · ZUGANG NUR FÜR BEFUGTE</div>
+      <div class="lhead-sub">POLIZEIINFORMATIONSSYSTEM · NUR FÜR BEFUGTE</div>
     </div>
     <div class="lbody">
       <div class="ltabs">
-        <div class="ltab active" onclick="switchTab('off')">🎖 Beamter</div>
-        <div class="ltab" onclick="switchTab('cit')">👤 Bürger</div>
+        <div class="ltab active" onclick="switchTab('off')">🎖&nbsp; Beamter</div>
+        <div class="ltab" onclick="switchTab('cit')">👤&nbsp; Bürger</div>
       </div>
       <div class="lerr" id="lerr"></div>
       <div id="tab-off">
         <div class="fg"><label>Dienstnummer</label><input id="l-dienst" placeholder="z.B. DE-0001" onkeydown="if(event.key==='Enter')loginOff()"></div>
         <div class="fg"><label>Passwort</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginOff()"></div>
-        <button class="btn bp" onclick="loginOff()">🔐 ANMELDEN</button>
+        <button class="btn bp bfull" onclick="loginOff()">🔐&nbsp; Anmelden</button>
       </div>
-      <div id="tab-cit" style="display:none;">
+      <div id="tab-cit" style="display:none">
         <div id="cit-log">
           <div class="fg"><label>E-Mail</label><input id="c-mail" placeholder="ihre@email.de" onkeydown="if(event.key==='Enter')loginCit()"></div>
           <div class="fg"><label>Passwort</label><input type="password" id="c-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginCit()"></div>
-          <button class="btn bp" onclick="loginCit()">🔐 ANMELDEN</button>
-          <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--textm)">Noch kein Konto? <span style="color:var(--acc4);cursor:pointer;" onclick="showReg()">Registrieren →</span></div>
+          <button class="btn bp bfull" onclick="loginCit()">🔐&nbsp; Anmelden</button>
+          <div style="text-align:center;margin-top:14px;font-size:14px;color:var(--text3)">Noch kein Konto? <span style="color:var(--blue4);cursor:pointer;font-weight:700" onclick="showReg()">Registrieren →</span></div>
         </div>
-        <div id="cit-reg" style="display:none;">
+        <div id="cit-reg" style="display:none">
           <div class="fg"><label>Vollständiger Name</label><input id="r-name" placeholder="Max Mustermann"></div>
-          <div class="fr">
-            <div class="fg"><label>Geburtsdatum</label><input type="date" id="r-dob"></div>
-            <div class="fg"><label>Telefon</label><input id="r-phone" placeholder="+49 711 123456"></div>
-          </div>
+          <div class="fr"><div class="fg"><label>Geburtsdatum</label><input type="date" id="r-dob"></div><div class="fg"><label>Telefon</label><input id="r-phone" placeholder="+49 711 ..."></div></div>
           <div class="fg"><label>Adresse</label><input id="r-addr" placeholder="Musterstraße 1, 70173 Stuttgart"></div>
           <div class="fg"><label>E-Mail</label><input type="email" id="r-mail" placeholder="ihre@email.de"></div>
           <div class="fg"><label>Passwort</label><input type="password" id="r-pass" placeholder="Passwort wählen"></div>
-          <button class="btn bp" onclick="regCit()">✅ KONTO ERSTELLEN</button>
-          <div style="text-align:center;margin-top:11px;"><span style="font-size:11px;color:var(--acc4);cursor:pointer;" onclick="showLog()">← Zurück zur Anmeldung</span></div>
+          <button class="btn bp bfull" onclick="regCit()">✅&nbsp; Konto erstellen</button>
+          <div style="text-align:center;margin-top:12px"><span style="font-size:14px;color:var(--blue4);cursor:pointer;font-weight:700" onclick="showLog()">← Zurück</span></div>
         </div>
       </div>
     </div>
-    <div class="lfoot">POLIZEI BADEN-WÜRTTEMBERG · COPNET v4.0 · ZUGRIFF PROTOKOLLIERT · ALLE RECHTE VORBEHALTEN</div>
+    <div class="lfoot">POLIZEI BADEN-WÜRTTEMBERG · COPNET v5.0 · ZUGRIFF PROTOKOLLIERT</div>
   </div>
 </div>
 
-<!-- NOTIFICATION -->
-<div class="notif" id="notif"></div>
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
-<!-- ═══════ APP ═══════ -->
+<!-- ══════════ APP ══════════ -->
 <div id="app">
   <header class="hdr">
-    <div class="hdr-logo">
-      <svg width="32" height="38" viewBox="0 0 200 240">
-        <path d="M100 10 L185 40 L185 130 Q185 200 100 230 Q15 200 15 130 L15 40 Z" fill="#c62828" stroke="#f9a825" stroke-width="3"/>
-        <clipPath id="sh3"><path d="M25 46 L175 46 L175 128 Q175 192 100 220 Q25 192 25 128 Z"/></clipPath>
-        <rect x="25" y="46" width="75" height="180" fill="#1a1a1a" clip-path="url(#sh3)"/>
-        <rect x="100" y="46" width="75" height="180" fill="#f9a825" clip-path="url(#sh3)"/>
-        <path d="M72 50 L78 36 L84 46 L100 30 L116 46 L122 36 L128 50 Z" fill="#fdd835"/>
-      </svg>
+    <div class="hbrand">
+      <div style="width:36px;flex-shrink:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" style="display:block">
+  <defs>
+    <clipPath id="wc">
+      <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z"/>
+    </clipPath>
+  </defs>
+  <!-- Gold border/background -->
+  <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z" fill="#c8a000" stroke="#8b6914" stroke-width="2.5"/>
+  <!-- Left half: BLACK -->
+  <rect x="7" y="5" width="93" height="260" fill="#111" clip-path="url(#wc)"/>
+  <!-- Right half: GOLD -->
+  <rect x="100" y="5" width="93" height="260" fill="#f9a825" clip-path="url(#wc)"/>
+  <!-- Center dividing line -->
+  <line x1="100" y1="5" x2="100" y2="255" stroke="#8b6914" stroke-width="1.5"/>
+
+  <!-- LEFT STAG: gold on black -->
+  <g clip-path="url(#wc)" fill="#f9a825">
+    <!-- body -->
+    <ellipse cx="55" cy="178" rx="27" ry="21"/>
+    <!-- neck -->
+    <rect x="46" y="150" width="18" height="30" rx="4"/>
+    <!-- head -->
+    <ellipse cx="55" cy="148" rx="13" ry="11"/>
+    <!-- antler left branch -->
+    <path d="M47 138 L38 112 L30 96 M38 112 L44 98 M38 118 L30 112" stroke="#f9a825" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <!-- antler right branch -->
+    <path d="M63 138 L72 112 L80 96 M72 112 L66 98 M72 118 L80 112" stroke="#f9a825" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <!-- legs -->
+    <rect x="38" y="196" width="8" height="38" rx="3"/>
+    <rect x="48" y="198" width="8" height="38" rx="3"/>
+    <rect x="59" y="198" width="8" height="38" rx="3"/>
+    <rect x="69" y="196" width="8" height="38" rx="3"/>
+  </g>
+
+  <!-- RIGHT STAG: black on gold -->
+  <g clip-path="url(#wc)" fill="#111">
+    <ellipse cx="145" cy="178" rx="27" ry="21"/>
+    <rect x="136" y="150" width="18" height="30" rx="4"/>
+    <ellipse cx="145" cy="148" rx="13" ry="11"/>
+    <path d="M137 138 L128 112 L120 96 M128 112 L134 98 M128 118 L120 112" stroke="#111" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <path d="M153 138 L162 112 L170 96 M162 112 L156 98 M162 118 L170 112" stroke="#111" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <rect x="128" y="196" width="8" height="38" rx="3"/>
+    <rect x="138" y="198" width="8" height="38" rx="3"/>
+    <rect x="149" y="198" width="8" height="38" rx="3"/>
+    <rect x="159" y="196" width="8" height="38" rx="3"/>
+  </g>
+
+  <!-- CROWN -->
+  <path d="M66 54 L75 34 L86 50 L100 32 L114 50 L125 34 L134 54 Z" fill="#f9a825" stroke="#8b6914" stroke-width="1"/>
+  <circle cx="86" cy="48" r="3.5" fill="#fffde7"/>
+  <circle cx="100" cy="31" r="4.5" fill="#fffde7"/>
+  <circle cx="114" cy="48" r="3.5" fill="#fffde7"/>
+
+  <!-- Outer shield border -->
+  <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z" fill="none" stroke="#f9a825" stroke-width="2.5"/>
+</svg></div>
       <div>
-        <div class="hdr-logo-title">CopNet <span style="color:var(--acc4)">BW</span></div>
-        <div class="hdr-logo-sub">POLIZEI BADEN-WÜRTTEMBERG</div>
+        <div class="htitle">CopNet <span style="color:var(--blue4)">BW</span></div>
+        <div class="hsubtitle">POLIZEI BADEN-WÜRTTEMBERG</div>
       </div>
     </div>
     <div class="hdiv"></div>
-    <div class="hsys"><div class="dot dot-g"></div><span>DB VERBUNDEN</span></div>
+    <div class="hstatus"><div class="dot dotg"></div><span>Supabase Online</span></div>
     <div class="hdiv"></div>
-    <div class="hsys" id="hdr-duty" style="display:none;"><div class="dot dot-r" id="hdr-duty-dot"></div><span id="hdr-duty-lbl">AUSSER DIENST</span></div>
-    <div style="margin-left:auto;display:flex;align-items:center;gap:9px;">
-      <div style="text-align:right;">
-        <div class="htime" id="htime"></div>
-        <div class="hdate" id="hdate"></div>
-      </div>
-      <button class="duty-btn off" id="duty-btn" onclick="toggleDuty()" style="display:none;">
-        <span class="dot dot-gr" id="duty-dot"></span><span id="duty-txt">AUSSER DIENST</span>
+    <div class="hstatus" id="hdr-duty" style="display:none"><div class="dot dotr" id="hdr-duty-dot"></div><span id="hdr-duty-lbl">Ausser Dienst</span></div>
+    <div class="hright">
+      <div style="text-align:right"><div class="htime" id="htime"></div><div class="hdate" id="hdate"></div></div>
+      <button class="duty-btn off" id="duty-btn" onclick="toggleDuty()" style="display:none">
+        <span class="dot dotgr" id="duty-dot"></span><span id="duty-txt">Ausser Dienst</span>
       </button>
-      <div class="huser" onclick="navigate('profile')">
-        <div class="hav" id="hav">?</div>
-        <div><div class="hname" id="hname">—</div><div class="hrank" id="hrank">—</div></div>
+      <div class="uchip" onclick="navigate('profile')">
+        <div class="uav" id="hav">?</div>
+        <div><div class="uname" id="hname">—</div><div class="urank" id="hrank">—</div></div>
       </div>
-      <button class="btn bs bsm" onclick="doLogout()">⏏ Abmelden</button>
+      <button class="btn bs bsm" onclick="doLogout()">⏏&nbsp; Abmelden</button>
     </div>
   </header>
 
-  <div class="body-wrap">
+  <div class="bwrap">
     <!-- SIDEBAR -->
     <nav class="sidebar">
-      <div class="sw-logo" style="padding-bottom:30px;">
-        <svg width="60" height="72" viewBox="0 0 200 240">
-          <defs>
-            <linearGradient id="sG3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c62828"/><stop offset="100%" stop-color="#8b0000"/></linearGradient>
-            <linearGradient id="gG3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdd835"/><stop offset="100%" stop-color="#f9a825"/></linearGradient>
-          </defs>
-          <path d="M100 10 L185 40 L185 130 Q185 200 100 230 Q15 200 15 130 L15 40 Z" fill="url(#sG3)" stroke="#f9a825" stroke-width="3"/>
-          <path d="M100 20 L175 46 L175 128 Q175 192 100 220 Q25 192 25 128 L25 46 Z" fill="none" stroke="#fdd83550" stroke-width="1.5"/>
-          <clipPath id="sh4"><path d="M100 20 L175 46 L175 128 Q175 192 100 220 Q25 192 25 128 L25 46 Z"/></clipPath>
-          <rect x="25" y="20" width="75" height="210" fill="#1a1a1a" clip-path="url(#sh4)"/>
-          <rect x="100" y="20" width="75" height="210" fill="#f9a825" clip-path="url(#sh4)"/>
-          <g clip-path="url(#sh4)">
-            <ellipse cx="100" cy="155" rx="28" ry="22" fill="#c62828"/>
-            <ellipse cx="100" cy="122" rx="13" ry="14" fill="#c62828"/>
-            <path d="M90 112 L82 88 M82 88 L75 78 M82 88 L88 80 M82 88 L78 96" stroke="#c62828" stroke-width="4" stroke-linecap="round" fill="none"/>
-            <path d="M110 112 L118 88 M118 88 L125 78 M118 88 L112 80 M118 88 L122 96" stroke="#c62828" stroke-width="4" stroke-linecap="round" fill="none"/>
-            <line x1="85" y1="175" x2="82" y2="200" stroke="#c62828" stroke-width="5" stroke-linecap="round"/>
-            <line x1="92" y1="176" x2="90" y2="202" stroke="#c62828" stroke-width="5" stroke-linecap="round"/>
-            <line x1="108" y1="176" x2="110" y2="202" stroke="#c62828" stroke-width="5" stroke-linecap="round"/>
-            <line x1="115" y1="175" x2="118" y2="200" stroke="#c62828" stroke-width="5" stroke-linecap="round"/>
-          </g>
-          <path d="M72 50 L78 36 L84 46 L100 30 L116 46 L122 36 L128 50 Z" fill="url(#gG3)" stroke="#e65100" stroke-width="1"/>
-          <circle cx="84" cy="44" r="3" fill="#fff8e1"/>
-          <circle cx="100" cy="29" r="4" fill="#fff8e1"/>
-          <circle cx="116" cy="44" r="3" fill="#fff8e1"/>
-        </svg>
-      </div>
+      <div class="sw">
+        <div class="sw-wappen" style="width:66px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" style="display:block">
+  <defs>
+    <clipPath id="wc">
+      <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z"/>
+    </clipPath>
+  </defs>
+  <!-- Gold border/background -->
+  <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z" fill="#c8a000" stroke="#8b6914" stroke-width="2.5"/>
+  <!-- Left half: BLACK -->
+  <rect x="7" y="5" width="93" height="260" fill="#111" clip-path="url(#wc)"/>
+  <!-- Right half: GOLD -->
+  <rect x="100" y="5" width="93" height="260" fill="#f9a825" clip-path="url(#wc)"/>
+  <!-- Center dividing line -->
+  <line x1="100" y1="5" x2="100" y2="255" stroke="#8b6914" stroke-width="1.5"/>
 
-      <div class="sb-sec">
-        <div class="sb-label">Übersicht</div>
+  <!-- LEFT STAG: gold on black -->
+  <g clip-path="url(#wc)" fill="#f9a825">
+    <!-- body -->
+    <ellipse cx="55" cy="178" rx="27" ry="21"/>
+    <!-- neck -->
+    <rect x="46" y="150" width="18" height="30" rx="4"/>
+    <!-- head -->
+    <ellipse cx="55" cy="148" rx="13" ry="11"/>
+    <!-- antler left branch -->
+    <path d="M47 138 L38 112 L30 96 M38 112 L44 98 M38 118 L30 112" stroke="#f9a825" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <!-- antler right branch -->
+    <path d="M63 138 L72 112 L80 96 M72 112 L66 98 M72 118 L80 112" stroke="#f9a825" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <!-- legs -->
+    <rect x="38" y="196" width="8" height="38" rx="3"/>
+    <rect x="48" y="198" width="8" height="38" rx="3"/>
+    <rect x="59" y="198" width="8" height="38" rx="3"/>
+    <rect x="69" y="196" width="8" height="38" rx="3"/>
+  </g>
+
+  <!-- RIGHT STAG: black on gold -->
+  <g clip-path="url(#wc)" fill="#111">
+    <ellipse cx="145" cy="178" rx="27" ry="21"/>
+    <rect x="136" y="150" width="18" height="30" rx="4"/>
+    <ellipse cx="145" cy="148" rx="13" ry="11"/>
+    <path d="M137 138 L128 112 L120 96 M128 112 L134 98 M128 118 L120 112" stroke="#111" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <path d="M153 138 L162 112 L170 96 M162 112 L156 98 M162 118 L170 112" stroke="#111" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <rect x="128" y="196" width="8" height="38" rx="3"/>
+    <rect x="138" y="198" width="8" height="38" rx="3"/>
+    <rect x="149" y="198" width="8" height="38" rx="3"/>
+    <rect x="159" y="196" width="8" height="38" rx="3"/>
+  </g>
+
+  <!-- CROWN -->
+  <path d="M66 54 L75 34 L86 50 L100 32 L114 50 L125 34 L134 54 Z" fill="#f9a825" stroke="#8b6914" stroke-width="1"/>
+  <circle cx="86" cy="48" r="3.5" fill="#fffde7"/>
+  <circle cx="100" cy="31" r="4.5" fill="#fffde7"/>
+  <circle cx="114" cy="48" r="3.5" fill="#fffde7"/>
+
+  <!-- Outer shield border -->
+  <path d="M100 5 L193 38 L193 145 Q193 220 100 255 Q7 220 7 145 L7 38 Z" fill="none" stroke="#f9a825" stroke-width="2.5"/>
+</svg></div>
+        <div class="sw-title">CopNet BW</div>
+        <div class="sw-sub">POLIZEI BADEN-WÜRTTEMBERG</div>
+      </div>
+      <div class="sec">
+        <div class="slbl">Übersicht</div>
         <div class="nav active" onclick="navigate('dashboard')"><span class="nav-ic">📊</span>Dashboard</div>
         <div class="nav" onclick="navigate('officers')"><span class="nav-ic">👮</span>Beamtenübersicht</div>
       </div>
-      <div class="sb-sec" id="sb-police" style="display:none;">
-        <div class="sb-label">Polizeidatenbank</div>
+      <div class="sec" id="sb-police" style="display:none">
+        <div class="slbl">Datenbank</div>
         <div class="nav" onclick="navigate('citizens-db')"><span class="nav-ic">👥</span>Bürgerdatenbank</div>
         <div class="nav" onclick="navigate('citizen-akten')"><span class="nav-ic">📋</span>Bürgerakten</div>
         <div class="nav" onclick="navigate('vehicles')"><span class="nav-ic">🚗</span>Fahrzeugregister</div>
@@ -516,154 +768,106 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <div class="nav" onclick="navigate('evidence')"><span class="nav-ic">🔍</span>Beweismittel</div>
         <div class="nav" onclick="navigate('laws')"><span class="nav-ic">⚖</span>Gesetzbuch BW</div>
       </div>
-      <div class="sb-sec" id="sb-citizen" style="display:none;">
-        <div class="sb-label">Mein Bereich</div>
+      <div class="sec" id="sb-citizen" style="display:none">
+        <div class="slbl">Mein Bereich</div>
         <div class="nav" onclick="navigate('my-akte')"><span class="nav-ic">📋</span>Meine Akte</div>
         <div class="nav" onclick="navigate('my-vehicles')"><span class="nav-ic">🚗</span>Meine Fahrzeuge</div>
         <div class="nav" onclick="navigate('my-complaints')"><span class="nav-ic">📝</span>Beschwerden</div>
       </div>
-      <div class="sb-sec" id="sb-admin" style="display:none;">
-        <div class="sb-label">Administration</div>
+      <div class="sec" id="sb-admin" style="display:none">
+        <div class="slbl">Administration</div>
         <div class="nav" onclick="navigate('admin')"><span class="nav-ic">⚙</span>Admin Panel</div>
         <div class="nav" onclick="navigate('stats')"><span class="nav-ic">📈</span>Statistiken</div>
         <div class="nav" onclick="navigate('logs')"><span class="nav-ic">🗂</span>Systemlogs</div>
       </div>
-      <div class="sbfooter">
-        <div class="sbfooter-info">COPNET v4.0<br>SUPABASE CLOUD ✓<br>AES-256 VERSCHL. ✓<br>BW-INTRANET AKTIV</div>
-      </div>
+      <div class="sbfoot"><p>CopNet v5.0<br>Supabase ✓<br>AES-256 ✓</p></div>
     </nav>
 
-    <!-- MAIN AREA -->
+    <!-- MAIN CONTENT -->
     <div class="main">
       <div class="content">
 
         <!-- DASHBOARD -->
         <div class="page active" id="page-dashboard">
-          <div class="ph">
-            <div><div class="ph-title">📊 Lagebild</div><div class="ph-sub">ECHTZEIT · DIENSTSTELLE · BW</div></div>
-            <div class="ph-actions"><button class="btn bs bsm" onclick="loadDash()">⟳ Refresh</button></div>
-          </div>
+          <div class="ph"><div><div class="ph-title">📊 Lagebild</div><div class="ph-sub">ECHTZEIT · DIENSTSTELLE BW</div></div><button class="btn bs bsm" onclick="loadDash()">↻ Aktualisieren</button></div>
           <div id="dash-alerts"></div>
-          <div class="g4" style="margin-bottom:13px;">
-            <div class="stat"><div class="stat-lbl">Aktive Beamte</div><div class="stat-val" id="ds-off">—</div><div class="stat-sub">Im Dienst</div><div class="stat-ico">👮</div><div class="stat-bar"><div class="stat-bar-f" id="ds-off-bar" style="width:0%"></div></div></div>
-            <div class="stat"><div class="stat-lbl">Offene Fälle</div><div class="stat-val" id="ds-cases">—</div><div class="stat-sub">Aktive Ermittlungen</div><div class="stat-ico">📁</div><div class="stat-bar"><div class="stat-bar-f" style="width:0%;background:var(--yellow3)"></div></div></div>
-            <div class="stat"><div class="stat-lbl">Fahndungen</div><div class="stat-val" style="color:var(--red4)" id="ds-alts">—</div><div class="stat-sub">Kennzeichen aktiv</div><div class="stat-ico">🔴</div><div class="stat-bar"><div class="stat-bar-f" style="width:0%;background:var(--red3)"></div></div></div>
-            <div class="stat"><div class="stat-lbl">Bürger registriert</div><div class="stat-val" id="ds-cits">—</div><div class="stat-sub">Im System</div><div class="stat-ico">👥</div><div class="stat-bar"><div class="stat-bar-f" style="width:0%;background:var(--green3)"></div></div></div>
+          <div class="g4" style="margin-bottom:14px">
+            <div class="stat"><div class="stat-lbl">Aktive Beamte</div><div class="stat-val" id="ds-off">—</div><div class="stat-sub">Im Dienst</div><div class="stat-ico">👮</div><div class="stat-bar"><div class="stat-barf" style="width:0%"></div></div></div>
+            <div class="stat"><div class="stat-lbl">Offene Fälle</div><div class="stat-val" id="ds-cases">—</div><div class="stat-sub">Aktive Ermittlungen</div><div class="stat-ico">📁</div><div class="stat-bar"><div class="stat-barf" style="width:0%;background:var(--yellow)"></div></div></div>
+            <div class="stat"><div class="stat-lbl">Fahndungen</div><div class="stat-val" style="color:var(--red)" id="ds-alts">—</div><div class="stat-sub">Kennzeichen aktiv</div><div class="stat-ico">🔴</div><div class="stat-bar"><div class="stat-barf" style="width:0%;background:var(--red)"></div></div></div>
+            <div class="stat"><div class="stat-lbl">Bürger</div><div class="stat-val" id="ds-cits">—</div><div class="stat-sub">Registriert</div><div class="stat-ico">👥</div><div class="stat-bar"><div class="stat-barf" style="width:0%;background:var(--green)"></div></div></div>
           </div>
-          <div class="split">
+          <div class="gdash">
             <div>
-              <div class="card">
-                <div class="ch"><span class="ct">🟢 Online Beamte</span><span class="b bg2">LIVE</span></div>
-                <div class="cb" id="dash-online"><div class="lc-cell"><div class="spin"></div></div></div>
-              </div>
-              <div class="card">
-                <div class="ch"><span class="ct">🔴 Aktive Fahndungen</span><button class="btn bd bsm" onclick="navigate('plate-alerts')">Alle</button></div>
-                <div class="cb" id="dash-fahn"><div class="lc-cell"><div class="spin"></div></div></div>
-              </div>
+              <div class="card"><div class="ch"><span class="ct">🟢 Online Beamte</span><span class="b bgr">LIVE</span></div><div class="cb" id="dash-online"><div class="lc"><div class="spin"></div></div></div></div>
+              <div class="card"><div class="ch"><span class="ct">🔴 Aktive Fahndungen</span><button class="btn bs bsm" onclick="navigate('plate-alerts')">Alle →</button></div><div class="cb" id="dash-fahn"><div class="lc"><div class="spin"></div></div></div></div>
             </div>
             <div>
-              <div class="card" style="height:calc(100% - 13px)">
-                <div class="ch"><span class="ct">⚡ Aktivitätslog</span></div>
-                <div class="cb" id="dash-log" style="max-height:420px;overflow-y:auto;"><div class="lc-cell"><div class="spin"></div></div></div>
-              </div>
+              <div class="card" style="height:calc(100% - 14px)"><div class="ch"><span class="ct">⚡ Aktivitätslog</span></div><div class="cb" id="dash-log" style="max-height:440px;overflow-y:auto"><div class="lc"><div class="spin"></div></div></div></div>
             </div>
           </div>
         </div>
 
         <!-- OFFICERS -->
         <div class="page" id="page-officers">
-          <div class="ph">
-            <div><div class="ph-title">👮 Beamtenübersicht</div><div class="ph-sub">PERSONAL · DIENSTAKTE · BW</div></div>
-            <button class="btn bp bsm" id="add-off-btn" onclick="openM('m-add-officer')" style="display:none;">+ Beamter anlegen</button>
-          </div>
-          <div class="fbar">
-            <div class="sbar" style="flex:1;max-width:340px;"><input placeholder="Name oder Dienstnummer..." id="s-off" oninput="loadOff()"><button class="sbtn">🔍</button></div>
-            <select class="fsel" id="f-off-rank" onchange="loadOff()"><option value="">Alle Ränge</option><option>Polizei Chef</option><option>Vize Chef</option><option>Verkehrspolizei Leitung</option><option>Zivil Leitung</option><option>Streifenpolizei Leitung</option><option>SEK Leitung</option><option>Ausbilder</option><option>SEK</option><option>Zivilpolizist</option><option>Verkehrspolizist</option><option>Streifenpolizist</option></select>
-            <select class="fsel" id="f-off-st" onchange="loadOff()"><option value="">Alle Status</option><option value="on">Im Dienst</option><option value="off">Frei</option></select>
-          </div>
-          <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Dienstnr.</th><th>Name</th><th>Rang</th><th>Status</th><th>Berichte</th><th>Aktionen</th></tr></thead><tbody id="off-tbody"><tr><td colspan="6" class="lc-cell"><div class="spin"></div></td></tr></tbody></table></div></div>
+          <div class="ph"><div><div class="ph-title">👮 Beamtenübersicht</div><div class="ph-sub">PERSONAL · DIENSTAKTE</div></div><button class="btn bp bsm" id="add-off-btn" onclick="openM('m-add-officer')" style="display:none">+ Beamter anlegen</button></div>
+          <div class="fbar"><div class="sbox" style="flex:1;max-width:380px"><input placeholder="Name oder Dienstnummer..." id="s-off" oninput="loadOff()"><button class="sbtn">🔍</button></div><select class="fsel" id="f-off-rank" onchange="loadOff()"><option value="">Alle Ränge</option><option>Polizei Chef</option><option>Vize Chef</option><option>Verkehrspolizei Leitung</option><option>Zivil Leitung</option><option>Streifenpolizei Leitung</option><option>SEK Leitung</option><option>Ausbilder</option><option>SEK</option><option>Zivilpolizist</option><option>Verkehrspolizist</option><option>Streifenpolizist</option></select><select class="fsel" id="f-off-st" onchange="loadOff()"><option value="">Alle Status</option><option value="on">Im Dienst</option><option value="off">Frei</option></select></div>
+          <div class="card"><div class="twrap"><table class="tbl"><thead><tr><th>Dienstnr.</th><th>Name</th><th>Rang</th><th>Status</th><th>Berichte</th><th>Aktionen</th></tr></thead><tbody id="off-tbody"><tr><td colspan="6" class="lc"><div class="spin"></div></td></tr></tbody></table></div></div>
         </div>
 
         <!-- CITIZENS DB -->
         <div class="page" id="page-citizens-db">
-          <div class="ph"><div><div class="ph-title">👥 Bürgerdatenbank</div><div class="ph-sub">EINWOHNERMELDEAMT · KOPPLUNG</div></div></div>
-          <div class="fbar">
-            <div class="sbar" style="flex:1;max-width:380px;"><input placeholder="Name, E-Mail oder Adresse..." id="s-cit" oninput="loadCits()"><button class="sbtn">🔍</button></div>
-            <select class="fsel" id="f-cit-st" onchange="loadCits()"><option value="">Alle Status</option><option>Aktiv</option><option>Gesperrt</option></select>
-          </div>
-          <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Geb.-Datum</th><th>Adresse</th><th>Telefon</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="cit-tbody"><tr><td colspan="6" class="lc-cell"><div class="spin"></div></td></tr></tbody></table></div></div>
+          <div class="ph"><div><div class="ph-title">👥 Bürgerdatenbank</div><div class="ph-sub">EINWOHNERMELDEAMT</div></div></div>
+          <div class="fbar"><div class="sbox" style="flex:1;max-width:400px"><input placeholder="Name, E-Mail oder Adresse..." id="s-cit" oninput="loadCits()"><button class="sbtn">🔍</button></div><select class="fsel" id="f-cit-st" onchange="loadCits()"><option value="">Alle Status</option><option>Aktiv</option><option>Gesperrt</option></select></div>
+          <div class="card"><div class="twrap"><table class="tbl"><thead><tr><th>Name</th><th>Geburtsdatum</th><th>Adresse</th><th>Telefon</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="cit-tbody"><tr><td colspan="6" class="lc"><div class="spin"></div></td></tr></tbody></table></div></div>
         </div>
 
         <!-- CITIZEN AKTEN -->
         <div class="page" id="page-citizen-akten">
-          <div class="ph"><div><div class="ph-title">📋 Bürgerakten</div><div class="ph-sub">AUTOMATISCHE AKTEN · ALLE BÜRGER</div></div></div>
-          <div class="fbar">
-            <div class="sbar" style="flex:1;max-width:380px;"><input placeholder="Name oder Akten-Nr...." id="s-cak" oninput="loadCitizenAkten()"><button class="sbtn">🔍</button></div>
-          </div>
-          <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Akten-Nr.</th><th>Name</th><th>Geburtsdatum</th><th>Einträge</th><th>Erstellt</th><th>Aktionen</th></tr></thead><tbody id="cak-tbody"><tr><td colspan="6" class="lc-cell"><div class="spin"></div></td></tr></tbody></table></div></div>
+          <div class="ph"><div><div class="ph-title">📋 Bürgerakten</div><div class="ph-sub">AUTOMATISCH BEI REGISTRIERUNG</div></div></div>
+          <div class="fbar"><div class="sbox" style="flex:1;max-width:400px"><input placeholder="Name oder Akten-Nr..." id="s-cak" oninput="loadCitizenAkten()"><button class="sbtn">🔍</button></div></div>
+          <div class="card"><div class="twrap"><table class="tbl"><thead><tr><th>Akten-Nr.</th><th>Name</th><th>Geburtsdatum</th><th>Erstellt</th><th>Aktionen</th></tr></thead><tbody id="cak-tbody"><tr><td colspan="5" class="lc"><div class="spin"></div></td></tr></tbody></table></div></div>
         </div>
 
         <!-- VEHICLES -->
         <div class="page" id="page-vehicles">
-          <div class="ph"><div><div class="ph-title">🚗 Fahrzeugregister</div><div class="ph-sub">KFZ-REGISTER · BW</div></div></div>
-          <div class="fbar">
-            <div class="sbar" style="flex:1;max-width:380px;"><input placeholder="Kennzeichen, Marke, Halter..." id="s-veh" oninput="loadVehs()"><button class="sbtn">🔍</button></div>
-            <select class="fsel" id="f-veh-st" onchange="loadVehs()"><option value="">Alle Status</option><option value="stolen">Gestohlen</option><option value="wanted">Gesucht</option><option value="investigation">Ermittlung</option><option value="ok">OK</option></select>
-          </div>
-          <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Kennzeichen</th><th>Marke / Modell</th><th>Farbe</th><th>Halter</th><th>Zulassung</th><th>Status</th><th>Notiz</th><th>Aktionen</th></tr></thead><tbody id="veh-tbody"><tr><td colspan="8" class="lc-cell"><div class="spin"></div></td></tr></tbody></table></div></div>
+          <div class="ph"><div><div class="ph-title">🚗 Fahrzeugregister</div><div class="ph-sub">KFZ-REGISTER BADEN-WÜRTTEMBERG</div></div></div>
+          <div class="fbar"><div class="sbox" style="flex:1;max-width:400px"><input placeholder="Kennzeichen, Marke, Halter..." id="s-veh" oninput="loadVehs()"><button class="sbtn">🔍</button></div><select class="fsel" id="f-veh-st" onchange="loadVehs()"><option value="">Alle Status</option><option value="stolen">Gestohlen</option><option value="wanted">Gesucht</option><option value="investigation">Ermittlung</option><option value="ok">OK</option></select></div>
+          <div class="card"><div class="twrap"><table class="tbl"><thead><tr><th>Kennzeichen</th><th>Marke / Modell</th><th>Farbe</th><th>Halter</th><th>Zulassung</th><th>Status</th><th>Notiz</th><th>Aktionen</th></tr></thead><tbody id="veh-tbody"><tr><td colspan="8" class="lc"><div class="spin"></div></td></tr></tbody></table></div></div>
         </div>
 
         <!-- PLATE ALERTS -->
         <div class="page" id="page-plate-alerts">
-          <div class="ph">
-            <div><div class="ph-title" style="color:var(--red4)">🔴 Kennzeichen-Fahndung</div><div class="ph-sub">FAHNDUNGSSYSTEM · BUNDESWEIT</div></div>
-            <button class="btn bd bsm" onclick="openM('m-alert')">+ Fahndung eintragen</button>
-          </div>
+          <div class="ph"><div><div class="ph-title" style="color:var(--red)">🔴 Kennzeichen-Fahndung</div><div class="ph-sub">FAHNDUNGSSYSTEM</div></div><button class="btn bd bsm" onclick="openM('m-alert')">+ Fahndung eintragen</button></div>
           <div id="alert-banners"></div>
-          <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Kennzeichen</th><th>Fahrzeug</th><th>Grund</th><th>Beamter</th><th>Datum</th><th>Notizen</th><th>Aktionen</th></tr></thead><tbody id="alts-tbody"><tr><td colspan="7" class="lc-cell"><div class="spin"></div></td></tr></tbody></table></div></div>
+          <div class="card"><div class="twrap"><table class="tbl"><thead><tr><th>Kennzeichen</th><th>Fahrzeug</th><th>Grund</th><th>Beamter</th><th>Datum</th><th>Notizen</th><th>Aktionen</th></tr></thead><tbody id="alts-tbody"><tr><td colspan="7" class="lc"><div class="spin"></div></td></tr></tbody></table></div></div>
         </div>
 
         <!-- CASES -->
         <div class="page" id="page-cases">
-          <div class="ph">
-            <div><div class="ph-title">📁 Fallakten</div><div class="ph-sub">ERMITTLUNGEN · VORFÄLLE · BW</div></div>
-            <button class="btn bp bsm" onclick="openM('m-case')">+ Neue Akte</button>
-          </div>
-          <div class="fbar">
-            <div class="sbar" style="flex:1;max-width:380px;"><input placeholder="Akten-Nr., Bürger, Beschreibung..." id="s-cases" oninput="loadCases()"><button class="sbtn">🔍</button></div>
-            <select class="fsel" id="f-case-st" onchange="loadCases()"><option value="">Alle Status</option><option>Offen</option><option>Ermittlung</option><option>Geschlossen</option></select>
-          </div>
-          <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Akten-Nr.</th><th>Datum</th><th>Beamter</th><th>Bürger</th><th>Typ</th><th>Gesetz</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="cases-tbody"><tr><td colspan="8" class="lc-cell"><div class="spin"></div></td></tr></tbody></table></div></div>
+          <div class="ph"><div><div class="ph-title">📁 Fallakten</div><div class="ph-sub">ERMITTLUNGEN · VORFÄLLE</div></div><button class="btn bp bsm" onclick="openM('m-case')">+ Neue Akte</button></div>
+          <div class="fbar"><div class="sbox" style="flex:1;max-width:400px"><input placeholder="Akten-Nr., Bürger..." id="s-cases" oninput="loadCases()"><button class="sbtn">🔍</button></div><select class="fsel" id="f-case-st" onchange="loadCases()"><option value="">Alle Status</option><option>Offen</option><option>Ermittlung</option><option>Geschlossen</option></select></div>
+          <div class="card"><div class="twrap"><table class="tbl"><thead><tr><th>Akten-Nr.</th><th>Datum</th><th>Beamter</th><th>Bürger</th><th>Typ</th><th>Gesetz</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="cases-tbody"><tr><td colspan="8" class="lc"><div class="spin"></div></td></tr></tbody></table></div></div>
         </div>
 
-        <!-- EINSATZBERICHTE -->
+        <!-- EINSATZ -->
         <div class="page" id="page-einsatz">
-          <div class="ph">
-            <div><div class="ph-title">🚨 Einsatzberichte</div><div class="ph-sub">EINSATZPROTOKOLLE · LAGEBERICHTE</div></div>
-            <button class="btn bp bsm" onclick="openM('m-einsatz')">+ Neuer Einsatzbericht</button>
-          </div>
-          <div class="fbar">
-            <div class="sbar" style="flex:1;max-width:380px;"><input placeholder="Einsatz-Nr., Ort, Beamter..." id="s-einsatz" oninput="loadEinsatz()"><button class="sbtn">🔍</button></div>
-            <select class="fsel" id="f-einsatz-type" onchange="loadEinsatz()"><option value="">Alle Typen</option><option>Verkehrsunfall</option><option>Körperverletzung</option><option>Diebstahl</option><option>Ruhestörung</option><option>Drogendelikt</option><option>Waffendelikt</option><option>Sonstiger Einsatz</option></select>
-            <select class="fsel" id="f-einsatz-st" onchange="loadEinsatz()"><option value="">Alle Status</option><option>Abgeschlossen</option><option>Laufend</option><option>Übergeben</option></select>
-          </div>
-          <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Einsatz-Nr.</th><th>Zeit</th><th>Typ</th><th>Ort</th><th>Beamter</th><th>Beteiligte</th><th>Dauer</th><th>Status</th><th>Detail</th></tr></thead><tbody id="einsatz-tbody"><tr><td colspan="9" class="lc-cell"><div class="spin"></div></td></tr></tbody></table></div></div>
+          <div class="ph"><div><div class="ph-title">🚨 Einsatzberichte</div><div class="ph-sub">EINSATZPROTOKOLLE</div></div><button class="btn bp bsm" onclick="openM('m-einsatz')">+ Neuer Bericht</button></div>
+          <div class="fbar"><div class="sbox" style="flex:1;max-width:400px"><input placeholder="Einsatz-Nr., Ort..." id="s-einsatz" oninput="loadEinsatz()"><button class="sbtn">🔍</button></div><select class="fsel" id="f-einsatz-type" onchange="loadEinsatz()"><option value="">Alle Typen</option><option>Verkehrsunfall</option><option>Körperverletzung</option><option>Diebstahl</option><option>Ruhestörung</option><option>Drogendelikt</option><option>Waffendelikt</option><option>Sonstiger Einsatz</option></select></div>
+          <div class="card"><div class="twrap"><table class="tbl"><thead><tr><th>Einsatz-Nr.</th><th>Zeit</th><th>Typ</th><th>Ort</th><th>Beamter</th><th>Dauer</th><th>Status</th><th>Detail</th></tr></thead><tbody id="einsatz-tbody"><tr><td colspan="8" class="lc"><div class="spin"></div></td></tr></tbody></table></div></div>
         </div>
 
         <!-- EVIDENCE -->
         <div class="page" id="page-evidence">
-          <div class="ph">
-            <div><div class="ph-title">🔍 Beweismittel</div><div class="ph-sub">ASSERVATE · SICHERGESTELLTE GEGENSTÄNDE</div></div>
-            <button class="btn bp bsm" onclick="openM('m-evidence')">+ Hochladen</button>
-          </div>
-          <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>BM-Nr.</th><th>Akte</th><th>Typ</th><th>Beschreibung</th><th>Beamter</th><th>Datum</th></tr></thead><tbody id="ev-tbody"><tr><td colspan="6" class="lc-cell"><div class="spin"></div></td></tr></tbody></table></div></div>
+          <div class="ph"><div><div class="ph-title">🔍 Beweismittel</div><div class="ph-sub">ASSERVATE</div></div><button class="btn bp bsm" onclick="openM('m-evidence')">+ Erfassen</button></div>
+          <div class="card"><div class="twrap"><table class="tbl"><thead><tr><th>BM-Nr.</th><th>Akte</th><th>Typ</th><th>Beschreibung</th><th>Beamter</th><th>Datum</th></tr></thead><tbody id="ev-tbody"><tr><td colspan="6" class="lc"><div class="spin"></div></td></tr></tbody></table></div></div>
         </div>
 
         <!-- LAWS -->
         <div class="page" id="page-laws">
-          <div class="ph"><div><div class="ph-title">⚖ Gesetzbuch BW</div><div class="ph-sub">STRAFGESETZBUCH · ORDNUNGSWIDRIGKEITEN</div></div></div>
+          <div class="ph"><div><div class="ph-title">⚖ Gesetzbuch BW</div><div class="ph-sub">StGB · StVO · WaffG · SchwarzArbG · AO</div></div></div>
           <div class="fbar">
-            <div class="sbar" style="flex:1;max-width:380px;"><input placeholder="§ Paragraph oder Stichwort..." id="s-laws" oninput="filterLaws()"><button class="sbtn">🔍</button></div>
+            <div class="sbox" style="flex:1;max-width:400px"><input placeholder="§ Paragraph oder Stichwort..." id="s-laws" oninput="filterLaws()"><button class="sbtn">🔍</button></div>
             <select class="fsel" id="f-law-cat" onchange="filterLaws()"><option value="">Alle Kategorien</option><option>StGB</option><option>StVO</option><option>WaffG</option><option>SchwarzArbG</option><option>AO</option></select>
             <select class="fsel" id="f-law-sev" onchange="filterLaws()"><option value="">Alle Schweregrade</option><option>Straftat</option><option>Mittelschwere Straftat</option><option>Schwere Straftat</option></select>
           </div>
@@ -672,56 +876,35 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
         <!-- MY AKTE -->
         <div class="page" id="page-my-akte">
-          <div class="ph">
-            <div><div class="ph-title">📋 Meine Akte</div><div class="ph-sub">PERSÖNLICHE BÜRGERAKTE · SCHREIBGESCHÜTZT</div></div>
-            <button class="btn by bsm" onclick="shareMyAkte()">🔗 Akte per Link teilen</button>
-          </div>
-          <div id="my-akte-content"><div class="lc-cell"><div class="spin"></div></div></div>
+          <div class="ph"><div><div class="ph-title">📋 Meine Akte</div><div class="ph-sub">PERSÖNLICHE BÜRGERAKTE · SCHREIBGESCHÜTZT</div></div><button class="btn bwarn bsm" onclick="shareMyAkte()">🔗 Akte teilen</button></div>
+          <div id="my-akte-content"><div class="lc"><div class="spin"></div></div></div>
         </div>
 
         <!-- MY VEHICLES -->
         <div class="page" id="page-my-vehicles">
-          <div class="ph">
-            <div><div class="ph-title">🚗 Meine Fahrzeuge</div><div class="ph-sub">FAHRZEUGREGISTRIERUNG</div></div>
-            <button class="btn bp bsm" onclick="openM('m-reg-veh')">+ Fahrzeug anmelden</button>
-          </div>
+          <div class="ph"><div><div class="ph-title">🚗 Meine Fahrzeuge</div><div class="ph-sub">FAHRZEUGREGISTRIERUNG</div></div><button class="btn bp bsm" onclick="openM('m-reg-veh')">+ Fahrzeug anmelden</button></div>
           <div id="my-veh-list"></div>
         </div>
 
         <!-- MY COMPLAINTS -->
         <div class="page" id="page-my-complaints">
-          <div class="ph">
-            <div><div class="ph-title">📝 Beschwerden</div><div class="ph-sub">BÜRGERBESCHWERDEN · EINGABEN</div></div>
-            <button class="btn bp bsm" onclick="openM('m-complaint')">+ Neue Beschwerde</button>
-          </div>
-          <div id="complaints-list"><div class="card"><div class="cb"><div class="empty"><div class="empty-ic">📝</div><p>Keine Beschwerden eingereicht</p></div></div></div></div>
+          <div class="ph"><div><div class="ph-title">📝 Beschwerden</div><div class="ph-sub">BÜRGERBESCHWERDEN</div></div><button class="btn bp bsm" onclick="openM('m-complaint')">+ Neue Beschwerde</button></div>
+          <div class="card"><div class="cb"><div class="empty"><div class="empty-ic">📝</div><p>Keine Beschwerden eingereicht</p></div></div></div>
         </div>
 
         <!-- ADMIN -->
         <div class="page" id="page-admin">
-          <div class="ph"><div><div class="ph-title">⚙ Administration</div><div class="ph-sub">NUR FÜR FÜHRUNGSKRÄFTE · LEVEL 6+</div></div></div>
+          <div class="ph"><div><div class="ph-title">⚙ Administration</div><div class="ph-sub">NUR FÜHRUNGSKRÄFTE · LEVEL 6+</div></div></div>
           <div class="g2">
-            <div class="card">
-              <div class="ch"><span class="ct">👮 Neuen Beamten anlegen</span></div>
-              <div class="cb">
-                <div class="fg"><label>Dienstnummer</label><input id="a-dienst" placeholder="DE-0042"></div>
-                <div class="fg"><label>Name</label><input id="a-name" placeholder="Max Mustermann"></div>
-                <div class="fg"><label>Rang</label><select id="a-rank"><option>Streifenpolizist</option><option>Verkehrspolizist</option><option>SEK</option><option>Zivilpolizist</option><option>Ausbilder</option><option>SEK Leitung</option><option>Streifenpolizei Leitung</option><option>Zivil Leitung</option><option>Verkehrspolizei Leitung</option><option>Vize Chef</option><option>Polizei Chef</option></select></div>
-                <div class="fg"><label>Temporäres Passwort</label><input type="password" id="a-pass" placeholder="Beamter muss es ändern"></div>
-                <button class="btn bp bfull" onclick="adminCreateOff()">✅ Beamter anlegen</button>
-              </div>
-            </div>
-            <div class="card">
-              <div class="ch"><span class="ct">📋 Beamtenverwaltung</span><button class="btn bs bsm" onclick="loadAdminOff()">⟳</button></div>
-              <div class="cb" id="admin-off-list"><div class="lc-cell"><div class="spin"></div></div></div>
-            </div>
+            <div class="card"><div class="ch"><span class="ct">👮 Neuen Beamten anlegen</span></div><div class="cb"><div class="fg"><label>Dienstnummer</label><input id="a-dienst" placeholder="DE-0042"></div><div class="fg"><label>Name</label><input id="a-name" placeholder="Max Mustermann"></div><div class="fg"><label>Rang</label><select id="a-rank"><option>Streifenpolizist</option><option>Verkehrspolizist</option><option>SEK</option><option>Zivilpolizist</option><option>Ausbilder</option><option>SEK Leitung</option><option>Streifenpolizei Leitung</option><option>Zivil Leitung</option><option>Verkehrspolizei Leitung</option><option>Vize Chef</option><option>Polizei Chef</option></select></div><div class="fg"><label>Temp. Passwort</label><input type="password" id="a-pass"></div><button class="btn bp bfull" onclick="adminCreateOff()">✅ Anlegen</button></div></div>
+            <div class="card"><div class="ch"><span class="ct">📋 Beamtenverwaltung</span><button class="btn bs bsm" onclick="loadAdminOff()">↻</button></div><div class="cb" id="admin-off-list"><div class="lc"><div class="spin"></div></div></div></div>
           </div>
         </div>
 
         <!-- STATS -->
         <div class="page" id="page-stats">
-          <div class="ph"><div><div class="ph-title">📈 Statistiken</div><div class="ph-sub">ANALYTIK · LAGEBERICHT</div></div></div>
-          <div class="g4" style="margin-bottom:13px;">
+          <div class="ph"><div><div class="ph-title">📈 Statistiken</div><div class="ph-sub">ANALYTIK</div></div></div>
+          <div class="g4" style="margin-bottom:14px">
             <div class="stat"><div class="stat-lbl">Akten gesamt</div><div class="stat-val" id="st-cases">—</div><div class="stat-ico">📁</div></div>
             <div class="stat"><div class="stat-lbl">Einsatzberichte</div><div class="stat-val" id="st-eb">—</div><div class="stat-ico">🚨</div></div>
             <div class="stat"><div class="stat-lbl">Fahrzeuge</div><div class="stat-val" id="st-vehs">—</div><div class="stat-ico">🚗</div></div>
@@ -735,129 +918,42 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
         <!-- LOGS -->
         <div class="page" id="page-logs">
-          <div class="ph"><div><div class="ph-title">🗂 Systemlogs</div><div class="ph-sub">AUDIT-PROTOKOLL · ZUGRIFFSLOG</div></div></div>
-          <div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Zeitstempel</th><th>Benutzer</th><th>Aktion</th><th>Details</th></tr></thead><tbody id="logs-tbody"><tr><td colspan="4" class="lc-cell"><div class="spin"></div></td></tr></tbody></table></div></div>
+          <div class="ph"><div><div class="ph-title">🗂 Systemlogs</div><div class="ph-sub">AUDIT-PROTOKOLL</div></div></div>
+          <div class="card"><div class="twrap"><table class="tbl"><thead><tr><th>Zeitstempel</th><th>Benutzer</th><th>Aktion</th><th>Details</th></tr></thead><tbody id="logs-tbody"><tr><td colspan="4" class="lc"><div class="spin"></div></td></tr></tbody></table></div></div>
         </div>
 
         <!-- PROFILE -->
         <div class="page" id="page-profile">
-          <div class="ph"><div><div class="ph-title">👤 Mein Profil</div><div class="ph-sub">DIENSTAKTE · PERSÖNLICHE DATEN</div></div></div>
+          <div class="ph"><div><div class="ph-title">👤 Mein Profil</div><div class="ph-sub">PERSÖNLICHE DATEN</div></div></div>
           <div class="g2">
             <div class="card"><div class="ch"><span class="ct">Persönliche Daten</span></div><div class="cb" id="prof-data"></div></div>
             <div class="card"><div class="ch"><span class="ct">Dienststatistik</span></div><div class="cb" id="prof-stats"></div></div>
           </div>
         </div>
 
-      </div>
-    </div>
-  </div>
-</div>
+      </div><!-- /content -->
+    </div><!-- /main -->
+  </div><!-- /bwrap -->
+</div><!-- /app -->
 
-<!-- ═══ MODALS ═══ -->
-<div class="mo" id="m-add-officer">
-  <div class="modal"><div class="mh"><div class="mht">👮 Beamter anlegen</div><button class="mhc" onclick="closeM('m-add-officer')">✕</button></div>
-  <div class="mb"><div class="fr"><div class="fg"><label>Dienstnummer</label><input id="n-dienst" placeholder="DE-0001"></div><div class="fg"><label>Name</label><input id="n-name" placeholder="Max Mustermann"></div></div>
-  <div class="fg"><label>Rang</label><select id="n-rank"><option>Streifenpolizist</option><option>Verkehrspolizist</option><option>SEK</option><option>Zivilpolizist</option><option>Ausbilder</option><option>SEK Leitung</option><option>Streifenpolizei Leitung</option><option>Zivil Leitung</option><option>Verkehrspolizei Leitung</option><option>Vize Chef</option><option>Polizei Chef</option></select></div>
-  <div class="fg"><label>Passwort (temporär)</label><input type="password" id="n-pass" placeholder="Temporäres Passwort"></div></div>
-  <div class="mf"><button class="btn bs" onclick="closeM('m-add-officer')">Abbrechen</button><button class="btn bp" onclick="createOff()">✅ Anlegen</button></div></div>
-</div>
-
-<div class="mo" id="m-alert">
-  <div class="modal"><div class="mh"><div class="mht">🔴 Fahndung eintragen</div><button class="mhc" onclick="closeM('m-alert')">✕</button></div>
-  <div class="mb"><div class="fr"><div class="fg"><label>Kennzeichen</label><input id="al-plate" placeholder="S-AB 1234"></div><div class="fg"><label>Fahrzeug</label><input id="al-veh" placeholder="BMW 5er, Schwarz"></div></div>
-  <div class="fg"><label>Fahndungsgrund</label><select id="al-reason"><option>Gestohlen</option><option>Gesucht</option><option>Ermittlung</option></select></div>
-  <div class="fg"><label>Detaillierte Bemerkungen</label><textarea id="al-notes" rows="3"></textarea></div></div>
-  <div class="mf"><button class="btn bs" onclick="closeM('m-alert')">Abbrechen</button><button class="btn bd" onclick="addAlert()">🔴 Fahndung starten</button></div></div>
-</div>
-
-<div class="mo" id="m-case">
-  <div class="modal modal-lg"><div class="mh"><div class="mht">📁 Neue Fallakte</div><button class="mhc" onclick="closeM('m-case')">✕</button></div>
-  <div class="mb">
-    <div class="fr"><div class="fg"><label>Template</label><select id="c-tmpl" onchange="fillTmpl()"><option value="">-- Kein Template --</option><option value="verkehr">Verkehrsdelikt</option><option value="beschwerde">Bürgerbeschwerde</option><option value="ermittlung">Ermittlungsbericht</option><option value="vorfall">Vorfallbericht</option><option value="fahrzeug">Fahrzeugdelikt</option></select></div>
-    <div class="fg"><label>Status</label><select id="c-status"><option>Offen</option><option>Ermittlung</option><option>Geschlossen</option></select></div></div>
-    <div class="fr"><div class="fg"><label>Beteiligter Bürger</label><input id="c-cit" placeholder="Name des Bürgers"></div><div class="fg"><label>Kennzeichen (optional)</label><input id="c-veh" placeholder="S-XX 1234"></div></div>
-    <div class="fg"><label>Beschreibung / Sachverhalt</label><textarea id="c-desc" rows="6"></textarea></div>
-    <div class="fg"><label>Angewandtes Gesetz</label><select id="c-law"><option value="">-- Kein Gesetz --</option></select></div>
-  </div>
-  <div class="mf"><button class="btn bs" onclick="closeM('m-case')">Abbrechen</button><button class="btn bp" onclick="createCase()">📁 Akte anlegen</button></div></div>
-</div>
-
-<div class="mo" id="m-einsatz">
-  <div class="modal modal-lg"><div class="mh"><div class="mht">🚨 Einsatzbericht erstellen</div><button class="mhc" onclick="closeM('m-einsatz')">✕</button></div>
-  <div class="mb">
-    <div class="fr"><div class="fg"><label>Einsatztyp</label><select id="e-type"><option>Verkehrsunfall</option><option>Körperverletzung</option><option>Diebstahl</option><option>Ruhestörung</option><option>Drogendelikt</option><option>Waffendelikt</option><option>Sonstiger Einsatz</option></select></div>
-    <div class="fg"><label>Einsatzort</label><input id="e-ort" placeholder="Straße, PLZ Ort (z.B. Hauptstr. 5, Stuttgart)"></div></div>
-    <div class="fr"><div class="fg"><label>Datum / Uhrzeit</label><input type="datetime-local" id="e-time"></div>
-    <div class="fg"><label>Dauer (Minuten)</label><input type="number" id="e-dur" placeholder="45" min="1"></div></div>
-    <div class="fg"><label>Beteiligte Personen</label><input id="e-inv" placeholder="Namen der beteiligten Personen, kommagetrennt"></div>
-    <div class="fg"><label>Beteiligte Fahrzeuge</label><input id="e-vehs" placeholder="Kennzeichen, kommagetrennt"></div>
-    <div class="fg"><label>Einsatzbeschreibung / Sachverhalt</label><textarea id="e-desc" rows="5"></textarea></div>
-    <div class="fg"><label>Getroffene Maßnahmen / Ergebnis</label><textarea id="e-result" rows="3"></textarea></div>
-    <div class="fg"><label>Einsatzstatus</label><select id="e-status"><option>Abgeschlossen</option><option>Laufend</option><option>Übergeben</option></select></div>
-  </div>
-  <div class="mf"><button class="btn bs" onclick="closeM('m-einsatz')">Abbrechen</button><button class="btn bp" onclick="createEinsatz()">🚨 Bericht erstellen</button></div></div>
-</div>
-
-<div class="mo" id="m-evidence">
-  <div class="modal"><div class="mh"><div class="mht">🔍 Beweismittel erfassen</div><button class="mhc" onclick="closeM('m-evidence')">✕</button></div>
-  <div class="mb"><div class="fg"><label>Akten-Nummer (Fallakte)</label><input id="ev-case" placeholder="z.B. 2025-1234"></div>
-  <div class="fg"><label>Typ</label><select id="ev-type"><option>Bild/Foto</option><option>Dokument</option><option>Video</option><option>Objekt / Asservat</option><option>Zeugenbericht</option><option>Digitale Aufzeichnung</option><option>Sonstiges</option></select></div>
-  <div class="fg"><label>Beschreibung</label><input id="ev-desc" placeholder="Kurze, präzise Beschreibung des Beweismittels"></div></div>
-  <div class="mf"><button class="btn bs" onclick="closeM('m-evidence')">Abbrechen</button><button class="btn bp" onclick="addEvidence()">⬆ Erfassen</button></div></div>
-</div>
-
-<div class="mo" id="m-reg-veh">
-  <div class="modal"><div class="mh"><div class="mht">🚗 Fahrzeug anmelden</div><button class="mhc" onclick="closeM('m-reg-veh')">✕</button></div>
-  <div class="mb"><div class="fg"><label>Kennzeichen</label><input id="v-plate" placeholder="S-AB 1234"></div>
-  <div class="fr"><div class="fg"><label>Marke</label><input id="v-brand" placeholder="BMW"></div><div class="fg"><label>Modell</label><input id="v-model" placeholder="3er"></div></div>
-  <div class="fr"><div class="fg"><label>Farbe</label><select id="v-color"><option>Schwarz</option><option>Weiß</option><option>Silber</option><option>Grau</option><option>Blau</option><option>Rot</option><option>Grün</option><option>Gelb</option><option>Braun</option><option>Sonstige</option></select></div>
-  <div class="fg"><label>Erstzulassung</label><input type="date" id="v-year"></div></div></div>
-  <div class="mf"><button class="btn bs" onclick="closeM('m-reg-veh')">Abbrechen</button><button class="btn bp" onclick="regVeh()">✅ Anmelden</button></div></div>
-</div>
-
-<div class="mo" id="m-complaint">
-  <div class="modal"><div class="mh"><div class="mht">📝 Beschwerde einreichen</div><button class="mhc" onclick="closeM('m-complaint')">✕</button></div>
-  <div class="mb"><div class="fg"><label>Betreff</label><input id="comp-subj" placeholder="Kurze Beschreibung des Vorfalls"></div>
-  <div class="fg"><label>Gegen (Beamter / Dienststelle)</label><input id="comp-against" placeholder="Name oder Dienststelle"></div>
-  <div class="fg"><label>Datum des Vorfalls</label><input type="date" id="comp-date"></div>
-  <div class="fg"><label>Ausführliche Beschreibung</label><textarea id="comp-desc" rows="5" placeholder="Bitte schildern Sie den Vorfall so detailliert wie möglich."></textarea></div></div>
-  <div class="mf"><button class="btn bs" onclick="closeM('m-complaint')">Abbrechen</button><button class="btn bp" onclick="submitComplaint()">📝 Einreichen</button></div></div>
-</div>
-
-<div class="mo" id="m-view">
-  <div class="modal modal-lg"><div class="mh"><div class="mht" id="m-view-title">Detailansicht</div><button class="mhc" onclick="closeM('m-view')">✕</button></div>
-  <div class="mb" id="m-view-body"></div>
-  <div class="mf" id="m-view-foot"></div></div>
-</div>
-
-<div class="mo" id="m-off-note">
-  <div class="modal"><div class="mh"><div class="mht">📝 Eintrag in Beamtenakte</div><button class="mhc" onclick="closeM('m-off-note')">✕</button></div>
-  <div class="mb"><input type="hidden" id="note-off-id">
-  <div class="fg"><label>Eintragstyp</label><select id="note-type"><option>Notiz</option><option>Lob</option><option>Beschwerde</option><option>Disziplinareintrag</option><option>Verweis</option></select></div>
-  <div class="fg"><label>Inhalt / Beschreibung</label><textarea id="note-content" rows="5" placeholder="Detaillierte Beschreibung..."></textarea></div></div>
-  <div class="mf"><button class="btn bs" onclick="closeM('m-off-note')">Abbrechen</button><button class="btn bp" onclick="addOffNote()">✅ Eintrag speichern</button></div></div>
-</div>
-
-<div class="mo" id="m-veh-note">
-  <div class="modal"><div class="mh"><div class="mht">📝 Fahrzeugnotiz</div><button class="mhc" onclick="closeM('m-veh-note')">✕</button></div>
-  <div class="mb"><input type="hidden" id="vn-id"><div class="fg"><label>Notiz / Hinweis</label><textarea id="vn-text" rows="4" placeholder="Notiz zum Fahrzeug..."></textarea></div></div>
-  <div class="mf"><button class="btn bs" onclick="closeM('m-veh-note')">Abbrechen</button><button class="btn bp" onclick="saveVehNote()">✅ Speichern</button></div></div>
-</div>
-
-<div class="mo" id="m-akte-note">
-  <div class="modal"><div class="mh"><div class="mht">📝 Eintrag in Bürgerakte</div><button class="mhc" onclick="closeM('m-akte-note')">✕</button></div>
-  <div class="mb"><input type="hidden" id="an-id">
-  <div class="fg"><label>Eintragstyp</label><select id="an-type"><option>Notiz</option><option>Verwarnung</option><option>Eintrag</option><option>Beschlagnahme</option><option>Sonstiges</option></select></div>
-  <div class="fg"><label>Inhalt</label><textarea id="an-content" rows="5" placeholder="Inhalt des Eintrags..."></textarea></div></div>
-  <div class="mf"><button class="btn bs" onclick="closeM('m-akte-note')">Abbrechen</button><button class="btn bp" onclick="saveAkteNote()">✅ Speichern</button></div></div>
-</div>
+<!-- MODALS -->
+<div class="mo" id="m-add-officer"><div class="modal"><div class="mh"><div class="mht">👮 Beamter anlegen</div><button class="mhc" onclick="closeM('m-add-officer')">✕</button></div><div class="mbody"><div class="fr"><div class="fg"><label>Dienstnummer</label><input id="n-dienst" placeholder="DE-0001"></div><div class="fg"><label>Name</label><input id="n-name" placeholder="Max Mustermann"></div></div><div class="fg"><label>Rang</label><select id="n-rank"><option>Streifenpolizist</option><option>Verkehrspolizist</option><option>SEK</option><option>Zivilpolizist</option><option>Ausbilder</option><option>SEK Leitung</option><option>Streifenpolizei Leitung</option><option>Zivil Leitung</option><option>Verkehrspolizei Leitung</option><option>Vize Chef</option><option>Polizei Chef</option></select></div><div class="fg"><label>Passwort (temporär)</label><input type="password" id="n-pass"></div></div><div class="mfoot"><button class="btn bs" onclick="closeM('m-add-officer')">Abbrechen</button><button class="btn bp" onclick="createOff()">✅ Anlegen</button></div></div></div>
+<div class="mo" id="m-alert"><div class="modal"><div class="mh"><div class="mht">🔴 Fahndung eintragen</div><button class="mhc" onclick="closeM('m-alert')">✕</button></div><div class="mbody"><div class="fr"><div class="fg"><label>Kennzeichen</label><input id="al-plate" placeholder="S-AB 1234"></div><div class="fg"><label>Fahrzeug</label><input id="al-veh" placeholder="BMW 5er, Schwarz"></div></div><div class="fg"><label>Fahndungsgrund</label><select id="al-reason"><option>Gestohlen</option><option>Gesucht</option><option>Ermittlung</option></select></div><div class="fg"><label>Bemerkungen</label><textarea id="al-notes" rows="3"></textarea></div></div><div class="mfoot"><button class="btn bs" onclick="closeM('m-alert')">Abbrechen</button><button class="btn bd" onclick="addAlert()">🔴 Fahndung starten</button></div></div></div>
+<div class="mo" id="m-case"><div class="modal mlg"><div class="mh"><div class="mht">📁 Neue Fallakte</div><button class="mhc" onclick="closeM('m-case')">✕</button></div><div class="mbody"><div class="fr"><div class="fg"><label>Template</label><select id="c-tmpl" onchange="fillTmpl()"><option value="">-- Kein Template --</option><option value="verkehr">Verkehrsdelikt</option><option value="beschwerde">Bürgerbeschwerde</option><option value="ermittlung">Ermittlungsbericht</option><option value="vorfall">Vorfallbericht</option><option value="fahrzeug">Fahrzeugdelikt</option></select></div><div class="fg"><label>Status</label><select id="c-status"><option>Offen</option><option>Ermittlung</option><option>Geschlossen</option></select></div></div><div class="fr"><div class="fg"><label>Beteiligter Bürger</label><input id="c-cit" placeholder="Name"></div><div class="fg"><label>Kennzeichen (optional)</label><input id="c-veh" placeholder="S-XX 1234"></div></div><div class="fg"><label>Beschreibung / Sachverhalt</label><textarea id="c-desc" rows="6"></textarea></div><div class="fg"><label>Angewandtes Gesetz</label><select id="c-law"><option value="">-- Kein Gesetz --</option></select></div></div><div class="mfoot"><button class="btn bs" onclick="closeM('m-case')">Abbrechen</button><button class="btn bp" onclick="createCase()">📁 Anlegen</button></div></div></div>
+<div class="mo" id="m-einsatz"><div class="modal mlg"><div class="mh"><div class="mht">🚨 Einsatzbericht</div><button class="mhc" onclick="closeM('m-einsatz')">✕</button></div><div class="mbody"><div class="fr"><div class="fg"><label>Einsatztyp</label><select id="e-type"><option>Verkehrsunfall</option><option>Körperverletzung</option><option>Diebstahl</option><option>Ruhestörung</option><option>Drogendelikt</option><option>Waffendelikt</option><option>Sonstiger Einsatz</option></select></div><div class="fg"><label>Einsatzort</label><input id="e-ort" placeholder="Straße, PLZ Ort"></div></div><div class="fr"><div class="fg"><label>Datum / Uhrzeit</label><input type="datetime-local" id="e-time"></div><div class="fg"><label>Dauer (Minuten)</label><input type="number" id="e-dur" placeholder="45"></div></div><div class="fg"><label>Beteiligte Personen</label><input id="e-inv" placeholder="Namen, kommagetrennt"></div><div class="fg"><label>Beteiligte Fahrzeuge</label><input id="e-vehs" placeholder="Kennzeichen"></div><div class="fg"><label>Einsatzbeschreibung</label><textarea id="e-desc" rows="5"></textarea></div><div class="fg"><label>Maßnahmen / Ergebnis</label><textarea id="e-result" rows="3"></textarea></div><div class="fg"><label>Status</label><select id="e-status"><option>Abgeschlossen</option><option>Laufend</option><option>Übergeben</option></select></div></div><div class="mfoot"><button class="btn bs" onclick="closeM('m-einsatz')">Abbrechen</button><button class="btn bp" onclick="createEinsatz()">🚨 Erstellen</button></div></div></div>
+<div class="mo" id="m-evidence"><div class="modal"><div class="mh"><div class="mht">🔍 Beweismittel erfassen</div><button class="mhc" onclick="closeM('m-evidence')">✕</button></div><div class="mbody"><div class="fg"><label>Akten-Nummer</label><input id="ev-case" placeholder="z.B. 2025-1234"></div><div class="fg"><label>Typ</label><select id="ev-type"><option>Bild/Foto</option><option>Dokument</option><option>Video</option><option>Objekt / Asservat</option><option>Zeugenbericht</option><option>Digitale Aufzeichnung</option><option>Sonstiges</option></select></div><div class="fg"><label>Beschreibung</label><input id="ev-desc" placeholder="Kurze Beschreibung"></div></div><div class="mfoot"><button class="btn bs" onclick="closeM('m-evidence')">Abbrechen</button><button class="btn bp" onclick="addEvidence()">⬆ Erfassen</button></div></div></div>
+<div class="mo" id="m-reg-veh"><div class="modal"><div class="mh"><div class="mht">🚗 Fahrzeug anmelden</div><button class="mhc" onclick="closeM('m-reg-veh')">✕</button></div><div class="mbody"><div class="fg"><label>Kennzeichen</label><input id="v-plate" placeholder="S-AB 1234"></div><div class="fr"><div class="fg"><label>Marke</label><input id="v-brand" placeholder="BMW"></div><div class="fg"><label>Modell</label><input id="v-model" placeholder="3er"></div></div><div class="fr"><div class="fg"><label>Farbe</label><select id="v-color"><option>Schwarz</option><option>Weiß</option><option>Silber</option><option>Grau</option><option>Blau</option><option>Rot</option><option>Grün</option><option>Gelb</option><option>Braun</option><option>Sonstige</option></select></div><div class="fg"><label>Erstzulassung</label><input type="date" id="v-year"></div></div></div><div class="mfoot"><button class="btn bs" onclick="closeM('m-reg-veh')">Abbrechen</button><button class="btn bp" onclick="regVeh()">✅ Anmelden</button></div></div></div>
+<div class="mo" id="m-complaint"><div class="modal"><div class="mh"><div class="mht">📝 Beschwerde</div><button class="mhc" onclick="closeM('m-complaint')">✕</button></div><div class="mbody"><div class="fg"><label>Betreff</label><input id="comp-subj" placeholder="Kurze Beschreibung"></div><div class="fg"><label>Gegen (Beamter / Dienststelle)</label><input id="comp-against" placeholder="Name"></div><div class="fg"><label>Datum des Vorfalls</label><input type="date" id="comp-date"></div><div class="fg"><label>Beschreibung</label><textarea id="comp-desc" rows="5"></textarea></div></div><div class="mfoot"><button class="btn bs" onclick="closeM('m-complaint')">Abbrechen</button><button class="btn bp" onclick="submitComplaint()">📝 Einreichen</button></div></div></div>
+<div class="mo" id="m-view"><div class="modal mlg"><div class="mh"><div class="mht" id="m-view-title">Detailansicht</div><button class="mhc" onclick="closeM('m-view')">✕</button></div><div class="mbody" id="m-view-body"></div><div class="mfoot" id="m-view-foot"></div></div></div>
+<div class="mo" id="m-off-note"><div class="modal"><div class="mh"><div class="mht">📝 Eintrag Beamtenakte</div><button class="mhc" onclick="closeM('m-off-note')">✕</button></div><div class="mbody"><input type="hidden" id="note-off-id"><div class="fg"><label>Eintragstyp</label><select id="note-type"><option>Notiz</option><option>Lob</option><option>Beschwerde</option><option>Disziplinareintrag</option><option>Verweis</option></select></div><div class="fg"><label>Inhalt</label><textarea id="note-content" rows="5"></textarea></div></div><div class="mfoot"><button class="btn bs" onclick="closeM('m-off-note')">Abbrechen</button><button class="btn bp" onclick="addOffNote()">✅ Speichern</button></div></div></div>
+<div class="mo" id="m-veh-note"><div class="modal"><div class="mh"><div class="mht">📝 Fahrzeugnotiz</div><button class="mhc" onclick="closeM('m-veh-note')">✕</button></div><div class="mbody"><input type="hidden" id="vn-id"><div class="fg"><label>Notiz</label><textarea id="vn-text" rows="4"></textarea></div></div><div class="mfoot"><button class="btn bs" onclick="closeM('m-veh-note')">Abbrechen</button><button class="btn bp" onclick="saveVehNote()">✅ Speichern</button></div></div></div>
+<div class="mo" id="m-akte-note"><div class="modal"><div class="mh"><div class="mht">📝 Eintrag Bürgerakte</div><button class="mhc" onclick="closeM('m-akte-note')">✕</button></div><div class="mbody"><input type="hidden" id="an-id"><div class="fg"><label>Eintragstyp</label><select id="an-type"><option>Notiz</option><option>Verwarnung</option><option>Eintrag</option><option>Beschlagnahme</option><option>Sonstiges</option></select></div><div class="fg"><label>Inhalt</label><textarea id="an-content" rows="5"></textarea></div></div><div class="mfoot"><button class="btn bs" onclick="closeM('m-akte-note')">Abbrechen</button><button class="btn bp" onclick="saveAkteNote()">✅ Speichern</button></div></div></div>
 
 <script>
 const SB_URL='https://vekozqxmawzatvyofsxq.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZla296cXhtYXd6YXR2eW9mc3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NzIwMDksImV4cCI6MjA4ODU0ODAwOX0.ASzxEi8Tmnv7AFd5vFV4Hw12FxzA8ysjEoTlXDLMYaE';
 const db=supabase.createClient(SB_URL,SB_KEY);
 const RL={'Polizei Chef':10,'Vize Chef':9,'Verkehrspolizei Leitung':8,'Zivil Leitung':7,'Streifenpolizei Leitung':6,'SEK Leitung':5,'Ausbilder':4,'SEK':3,'Zivilpolizist':3,'Verkehrspolizist':2,'Streifenpolizist':1};
-const TMPLS={verkehr:'VERKEHRSDELIKT\n\nDatum: \nUhrzeit: \nOrt: \nKennzeichen: \nFahrzeug: \nFahrer:\n\nVerstoß nach:\n\nSachverhalt:\n\nBußgeld: €\nPunkte (Flensburg):\n',beschwerde:'BÜRGERBESCHWERDE\n\nEingangsdatum: \nBeschwerdeführer: \nGegen: \nBetreff:\n\nSachverhalt:\n\nGetroffene Maßnahmen:\n\nErgebnis:\n',ermittlung:'ERMITTLUNGSBERICHT\n\nAktenzeichen: \nErmittlungsgegenstand: \nVerdächtige Personen:\n\nBekannte Fakten:\n\nVorliegende Beweise:\n\nNächste Schritte:\n',vorfall:'VORFALLBERICHT\n\nDatum/Uhrzeit: \nOrt: \nBeteiligte Personen:\n\nFahrzeuge:\n\nSachverhalt:\n\nGetroffene Maßnahmen:\n\nErgebnis:\n',fahrzeug:'FAHRZEUGDELIKT\n\nKennzeichen: \nFahrzeugtyp: \nHalter: \nVerstoß:\n\nSachverhalt:\n\nMaßnahmen:\n'};
 const LAWS=[
   // ═══ StGB ═══
   {para:'§1 StGB',name:'Mord | Murder',cat:'StGB',desc:'Vorsätzliche Tötung eines Menschen.',fine:5000,sev:'Schwere Straftat',extra:'+ Gefängnis'},
@@ -931,11 +1027,40 @@ const LAWS=[
   {para:'§6 AO',name:'Schmuggel von Produkten | Smuggling of products',cat:'AO',desc:'Schmuggel von Produkten unter Umgehung der Zollvorschriften.',fine:2000,sev:'Straftat',extra:''},
 ];
 let U=null;
+function tick(){const n=new Date(),e=document.getElementById('htime'),d=document.getElementById('hdate');if(e)e.textContent=n.toLocaleTimeString('de-DE');if(d)d.textContent=n.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});}
+setInterval(tick,1000);tick();
+function notify(msg,type=''){const e=document.getElementById('toast');e.textContent=msg;e.className='toast show '+type;setTimeout(()=>e.className='toast',4200)}
+function showErr(m){const e=document.getElementById('lerr');e.textContent=m;e.style.display='block'}
+function hideErr(){const e=document.getElementById('lerr');if(e)e.style.display='none'}
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+/* BOOT */
+const BL=['BIOS OK','CPU 8 Cores aktiv','RAM 32 GB OK','Netzwerk verbunden','Supabase Cloud: Online','AES-256: Aktiv','Zugangskontrolle: Aktiv','Datenbank: Geladen','CopNet BW v5.0 – Betriebsbereit'];
+let bI=0;
+function nB(){if(bI>=BL.length){setTimeout(()=>{document.getElementById('boot').style.display='none';checkShare()},300);return}const el=document.createElement('div');el.className='bline';el.textContent='▸ '+BL[bI++];if(bI===BL.length)el.style.color='var(--green)';document.getElementById('boot-lines').appendChild(el);document.getElementById('boot-stat').textContent=BL[bI-1];setTimeout(nB,160);}
+setTimeout(nB,500);
+function checkShare(){const p=new URLSearchParams(window.location.search);const s=p.get('share');if(s)showShareView(s);else document.getElementById('login').style.display='flex';}
+/* HELPERS */
+function rb(rank){const lvl=RL[rank]||1;const c=lvl>=8?'brd':lvl>=6?'bor':lvl>=4?'bbl':'bgy';return`<span class="b ${c}">${rank||'—'}</span>`}
+function cbadge(s){const m={'Offen':'byl','Ermittlung':'bor','Geschlossen':'bgr'};return`<span class="b ${m[s]||'bgy'}">${(s||'').toUpperCase()}</span>`}
+function vbadge(s){const m={ok:['bgr','OK'],stolen:['brd','GESTOHLEN'],wanted:['bor','GESUCHT'],investigation:['byl','ERMITTLUNG']};const[c,l]=m[s]||['bgy',s];return`<span class="b ${c}">${l}</span>`}
+function abadge(r){const m={'Gestohlen':'brd','Gesucht':'bor','Ermittlung':'byl'};return`<span class="b ${m[r]||'bgy'}">${(r||'').toUpperCase()}</span>`}
+function afield(l,v){return`<div class="aff"><span class="afl">${l}</span><span class="afv">${v||'—'}</span></div>`}
+/* SHARE */
+async function showShareView(id){document.getElementById('share-view').style.display='block';const el=document.getElementById('share-content');const{data:a}=await db.from('citizen_akten').select('*').eq('share_id',id).single();if(!a){el.innerHTML='<div class="empty"><div class="empty-ic">🔒</div><p>Akte nicht gefunden</p></div>';return}const{data:n}=await db.from('akte_notes').select('*').eq('akte_id',a.id).order('created_at');el.innerHTML=renderAkte(a,n||[],false);}
+function renderAkte(a,notes,canEdit){return`<div class="card"><div class="ch"><span class="ct">📋 Bürgerakte ${a.akte_number}</span><span class="b ${a.status==='Aktiv'?'bgr':'brd'}">${a.status}</span></div><div class="cb">${afield('Akten-Nr.',a.akte_number)}${afield('Name',a.citizen_name)}${afield('Geburtsdatum',a.dob||'—')}${afield('Adresse',a.address||'—')}${afield('Telefon',a.phone||'—')}${afield('E-Mail',a.email||'—')}${afield('Erstellt',new Date(a.created_at).toLocaleDateString('de-DE'))}</div></div><div class="card"><div class="ch"><span class="ct">📝 Einträge</span>${canEdit?`<button class="btn bp bsm" onclick="openM('m-akte-note');document.getElementById('an-id').value='${a.id}'">+ Eintrag</button>`:'<span class="b bgy">SCHREIBGESCHÜTZT</span>'}</div><div class="cb">${!notes.length?'<div class="empty"><div class="empty-ic">📝</div><p>Keine Einträge</p></div>':notes.map(n=>`<div class="ni note-${n.type}"><div class="nm">${n.type||'Notiz'} · ${new Date(n.created_at).toLocaleString('de-DE')} · ${n.author||'System'}</div><div class="nt">${(n.content||'').replace(/</g,'&lt;')}</div></div>`).join('')}</div></div>`;}
+/* AUTH */
+function switchTab(t){document.querySelectorAll('.ltab').forEach((x,i)=>x.classList.toggle('active',(i===0&&t==='off')||(i===1&&t==='cit')));document.getElementById('tab-off').style.display=t==='off'?'block':'none';document.getElementById('tab-cit').style.display=t==='cit'?'block':'none';hideErr()}
+function showReg(){document.getElementById('cit-log').style.display='none';document.getElementById('cit-reg').style.display='block';hideErr()}
+function showLog(){document.getElementById('cit-log').style.display='block';document.getElementById('cit-reg').style.display='none';hideErr()}
+
+let U=null;
 
 function tick(){const n=new Date();const el=document.getElementById('htime');const dl=document.getElementById('hdate');if(el)el.textContent=n.toLocaleTimeString('de-DE');if(dl)dl.textContent=n.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});}
 setInterval(tick,1000);tick();
 
-function notify(msg,type=''){const e=document.getElementById('notif');e.textContent=msg;e.className='notif on '+type;setTimeout(()=>e.className='notif',4000)}
+function notify(msg,type=''){const e=document.getElementById('toast');e.textContent=msg;e.className='toast show '+type;setTimeout(()=>e.className='toast',4000)}
 function showErr(m){const e=document.getElementById('lerr');e.textContent=m;e.style.display='block'}
 function hideErr(){const e=document.getElementById('lerr');if(e)e.style.display='none'}
 
@@ -1032,7 +1157,7 @@ async function regCit(){
 
 function startApp(){
   document.getElementById('login').style.display='none';
-  document.getElementById('app').classList.add('on');
+  document.getElementById('app').classList.add('open');
   const isOff=U.type==='officer';
   const lvl=RL[U.rank]||0;
   const isHigh=isOff&&lvl>=6;
@@ -1053,7 +1178,7 @@ async function doLogout(){
   if(U&&U.type==='officer'&&U.status==='on')await db.from('officers').update({status:'off'}).eq('id',U.id);
   if(U)await log('LOGOUT','Abgemeldet: '+U.name);
   U=null;
-  document.getElementById('app').classList.remove('on');
+  document.getElementById('app').classList.remove('open');
   document.getElementById('login').style.display='flex';
 }
 
@@ -1083,9 +1208,9 @@ function navigate(p){
   if(L[p])L[p]();
 }
 
-function openM(id){document.getElementById(id).classList.add('on')}
-function closeM(id){document.getElementById(id).classList.remove('on')}
-document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on')}));
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 
 async function loadDash(){
   const[a,b,c,d]=await Promise.all([db.from('officers').select('*').eq('status','on'),db.from('cases').select('id').neq('status','Geschlossen'),db.from('alerts').select('*'),db.from('citizens').select('id')]);
@@ -1643,6 +1768,6 @@ function renderProfile(){
   `:'<div class="empty"><div class="empty-ic">📊</div><p>Keine Statistiken verfügbar</p></div>';
 }
 
+
 </script>
-</body>
-</html>
+</body></html>
