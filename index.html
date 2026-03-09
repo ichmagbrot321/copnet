@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CopNet BW – Polizeiinformationssystem</title>
+<title>CopNet Karlsruhe – Polizeiinformationssystem</title>
 <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -169,7 +169,7 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
 }
 #desktop.show{display:block}
 
-/* BW Wappen watermark on desktop */
+/* KA Wappen watermark on desktop */
 .desk-wappen{
   position:absolute;
   top:50%;left:65%;
@@ -502,7 +502,7 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
   <img src="https://i.postimg.cc/q0mHK7V1/Screenshot-2026-03-08-22-27-27.png"
        class="boot-logo" alt=""
        onerror="this.style.display='none'">
-  <div class="boot-title">CopNet <span style="color:#f0a500">BW</span></div>
+  <div class="boot-title">CopNet <span style="color:#f0a500">KA</span></div>
   <div class="boot-sub">Polizeiinformationssystem Karlsruhe</div>
   <div class="boot-bar"><div class="boot-fill"></div></div>
   <div class="boot-status" id="boot-stat">SYSTEM WIRD GESTARTET…</div>
@@ -526,7 +526,7 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
 
   <div class="login-box">
     <div class="login-head">
-      <h1>CopNet <span style="color:#0078d4">BW</span></h1>
+      <h1>CopNet <span style="color:#0078d4">KA</span></h1>
       <div class="login-head-sub">POLIZEIINFORMATIONSSYSTEM · NUR FÜR BEFUGTE</div>
       <!-- PC / Tablet / Panel Auswahl wie copnet.li -->
       <div style="display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;justify-content:center">
@@ -590,7 +590,7 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
         </div>
       </div>
     </div>
-    <div class="login-foot">POLIZEI KARLSRUHE · COPNET v5.0 · ZUGRIFF PROTOKOLLIERT</div>
+    <div class="login-foot">POLIZEI BADEN-WÜRTTEMBERG · COPNET v5.0 · ZUGRIFF PROTOKOLLIERT</div>
   </div>
   <div style="position:relative;z-index:1;margin-top:16px;font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3);letter-spacing:2px">CopNet since 2018 – bring your Roleplay to the next level!</div>
 </div>
@@ -771,7 +771,7 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
 
 <!-- GESETZBUCH -->
 <div class="win" id="win-laws" style="top:30px;left:50px;width:820px;height:580px">
-  <div class="win-titlebar" id="tb-laws"><span class="win-icon">⚖</span><span class="win-title">Gesetzbuch BW – StGB · StVO · WaffG · SchwarzArbG · AO</span><div class="win-btns"><div class="win-btn" onclick="minimizeWin('laws')">─</div><div class="win-btn" onclick="maximizeWin('laws')">□</div><div class="win-btn close" onclick="closeWin('laws')">✕</div></div></div>
+  <div class="win-titlebar" id="tb-laws"><span class="win-icon">⚖</span><span class="win-title">Gesetzbuch Karlsruhe – StGB · StVO · WaffG · SchwarzArbG · AO</span><div class="win-btns"><div class="win-btn" onclick="minimizeWin('laws')">─</div><div class="win-btn" onclick="maximizeWin('laws')">□</div><div class="win-btn close" onclick="closeWin('laws')">✕</div></div></div>
   <div class="win-toolbar">
     <div class="search-box" style="max-width:280px"><input placeholder="§ Paragraph oder Stichwort..." id="s-laws" oninput="filterLaws()"><button>🔍</button></div>
     <select class="fsel" id="f-law-cat" onchange="filterLaws()"><option value="">Alle Kategorien</option><option>StGB</option><option>StVO</option><option>WaffG</option><option>SchwarzArbG</option><option>AO</option></select>
@@ -902,7 +902,7 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
       </div>
     </div>
     <div id="share-content"></div>
-    <div style="margin-top:16px;padding:8px;border:1px solid #ddd;font-family:var(--mono);font-size:9px;color:#aaa;text-align:center;letter-spacing:2px">COPNET BW v5.0 · SCHREIBGESCHÜTZTE ANSICHT</div>
+    <div style="margin-top:16px;padding:8px;border:1px solid #ddd;font-family:var(--mono);font-size:9px;color:#aaa;text-align:center;letter-spacing:2px">COPNET KA v5.0 · SCHREIBGESCHÜTZTE ANSICHT</div>
   </div>
 </div>
 
@@ -1284,7 +1284,7 @@ const BOOT_LINES = [
   'BIOS OK', 'CPU: 8 CORES AKTIV', 'RAM: 32GB OK',
   'NETZWERK: VERBUNDEN', 'SUPABASE CLOUD: ONLINE',
   'VERSCHLÜSSELUNG: AES-256 AKTIV', 'ZUGRIFFSKONTROLLE: AKTIV',
-  'DATENBANK: ALLE TABELLEN GELADEN', 'COPNET BW v5.0: BETRIEBSBEREIT'
+  'DATENBANK: ALLE TABELLEN GELADEN', 'COPNET KA v5.0: BETRIEBSBEREIT'
 ];
 let bIdx = 0;
 function nextBoot() {
@@ -1900,13 +1900,52 @@ async function handleDiscordCallback() {
 
   try {
     // Discord Token Exchange via Supabase Edge Function
+    // Token Exchange: Supabase Edge Function mit anon key
     const SUPABASE_EDGE = 'https://vekozqxmawzatvyofsxq.supabase.co/functions/v1/discord-auth';
-    const res = await fetch(SUPABASE_EDGE, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ code, redirect_uri: DISCORD_REDIRECT })
-    });
-    const discordUser = await res.json();
+    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZla296cXhtYXd6YXR2eW9mc3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NzIwMDksImV4cCI6MjA4ODU0ODAwOX0.ASzxEi8Tmnv7AFd5vFV4Hw12FxzA8ysjEoTlXDLMYaE';
+    
+    let discordUser = null;
+
+    // Versuch 1: Mit Authorization Header (für JWT Verify OFF)
+    try {
+      const r1 = await fetch(SUPABASE_EDGE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + ANON_KEY,
+          'apikey': ANON_KEY
+        },
+        body: JSON.stringify({ code, redirect_uri: DISCORD_REDIRECT })
+      });
+      if(r1.ok) { discordUser = await r1.json(); }
+      else { const e = await r1.text(); console.warn('Edge Function Fehler:', r1.status, e); }
+    } catch(e) { console.warn('Edge Function nicht erreichbar:', e.message); }
+
+    // Versuch 2: CORS Proxy → Discord API direkt (kein Client Secret nötig für Public Apps)
+    if(!discordUser || discordUser.error) {
+      try {
+        const proxyBase = 'https://corsproxy.io/?';
+        const tokenRes = await fetch(proxyBase + encodeURIComponent('https://discord.com/api/oauth2/token'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            client_id: DISCORD_CLIENT_ID,
+            grant_type: 'authorization_code',
+            code: code,
+            redirect_uri: DISCORD_REDIRECT
+          }).toString()
+        });
+        const tokenData = await tokenRes.json();
+        if(tokenData.access_token) {
+          const userRes = await fetch(proxyBase + encodeURIComponent('https://discord.com/api/users/@me'), {
+            headers: { 'Authorization': 'Bearer ' + tokenData.access_token }
+          });
+          discordUser = await userRes.json();
+        } else {
+          console.warn('Kein Access Token vom Proxy:', tokenData);
+        }
+      } catch(e2) { console.warn('CORS Proxy fehlgeschlagen:', e2.message); }
+    }
 
     if(!discordUser || discordUser.error) {
       // Fallback: Discord-Login fehlgeschlagen → normale Login-Seite zeigen
