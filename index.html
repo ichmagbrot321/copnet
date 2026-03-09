@@ -514,12 +514,12 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
   <!-- Wappen Hintergrund groß zentriert -->
   <img src="https://i.postimg.cc/q0mHK7V1/Screenshot-2026-03-08-22-27-27.png"
        style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-              width:520px;max-width:72vw;opacity:.09;pointer-events:none;z-index:0"
+              width:600px;max-width:80vw;opacity:.13;pointer-events:none;z-index:0"
        alt="" onerror="this.style.display='none'">
 
-  <div style="position:relative;z-index:1;margin-bottom:12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px">
+  <div style="position:relative;z-index:1;margin-bottom:12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px">
     <img src="https://i.postimg.cc/q0mHK7V1/Screenshot-2026-03-08-22-27-27.png"
-         style="width:56px;filter:drop-shadow(0 2px 14px rgba(0,0,0,.8))"
+         style="width:80px;filter:drop-shadow(0 4px 20px rgba(0,0,0,.9)) brightness(1.1)"
          alt="" onerror="this.style.display='none'">
     <div style="color:#fff;font-size:12px;font-weight:300;letter-spacing:5px;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,.6)">Polizei Baden-Württemberg</div>
   </div>
@@ -548,6 +548,17 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
         <button class="btn bp bfull" onclick="loginOff()">🔐 Anmelden</button>
       </div>
       <div id="tab-cit" style="display:none">
+        <!-- Discord OAuth – empfohlene Methode -->
+        <button class="btn bfull" onclick="loginDiscord()"
+          style="background:#5865F2;color:#fff;border-color:#4752c4;font-size:13px;padding:10px;gap:8px;font-weight:700;margin-bottom:10px">
+          <span style="font-size:16px">🎮</span> Mit Discord anmelden
+        </button>
+        <div style="font-size:10px;color:#888;text-align:center;margin-bottom:10px">Empfohlen · Verknüpft automatisch deine Discord-ID</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="flex:1;height:1px;background:#ddd"></div>
+          <span style="font-size:10px;color:#aaa">oder mit E-Mail</span>
+          <div style="flex:1;height:1px;background:#ddd"></div>
+        </div>
         <div id="cit-log">
           <div class="fg"><label>E-Mail</label><input id="c-mail" placeholder="ihre@email.de" onkeydown="if(event.key==='Enter')loginCit()"></div>
           <div class="fg"><label>Passwort</label><input type="password" id="c-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginCit()"></div>
@@ -555,16 +566,27 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
           <div style="text-align:center;margin-top:10px;font-size:12px;color:#888">Noch kein Konto? <span style="color:#0078d4;cursor:pointer;font-weight:700" onclick="showReg()">Registrieren →</span></div>
         </div>
         <div id="cit-reg" style="display:none">
-          <div class="fg"><label>Vollständiger Name</label><input id="r-name" placeholder="Max Mustermann"></div>
-          <div class="fr">
-            <div class="fg"><label>Geburtsdatum</label><input type="date" id="r-dob"></div>
-            <div class="fg"><label>Telefon</label><input id="r-phone" placeholder="+49 711..."></div>
+          <div class="fg">
+            <label>Roblox Name</label>
+            <input id="r-name" placeholder="DeinRobloxName" autocomplete="off">
+            <div style="font-size:10px;color:#888;margin-top:2px">Dein echter Roblox-Benutzername</div>
           </div>
-          <div class="fg"><label>Adresse</label><input id="r-addr" placeholder="Musterstraße 1, 70173 Stuttgart"></div>
+          <div class="fg">
+            <label>Roblox @Username</label>
+            <div style="display:flex;align-items:center;gap:4px">
+              <span style="font-size:14px;font-weight:700;color:#555">@</span>
+              <input id="r-roblox-at" placeholder="robloxname" autocomplete="off" style="flex:1">
+            </div>
+          </div>
+          <div class="fg">
+            <label>RP Geburtsdatum</label>
+            <input type="date" id="r-dob">
+            <div style="font-size:10px;color:#888;margin-top:2px">Dein Geburtsdatum im Roleplay</div>
+          </div>
           <div class="fg"><label>E-Mail</label><input type="email" id="r-mail" placeholder="ihre@email.de"></div>
           <div class="fg"><label>Passwort</label><input type="password" id="r-pass" placeholder="Passwort wählen"></div>
           <button class="btn bp bfull" onclick="regCit()">✅ Konto erstellen</button>
-          <div style="text-align:center;margin-top:10px"><span style="font-size:12px;color:#0078d4;cursor:pointer;font-weight:700" onclick="showLog()">← Zurück</span></div>
+          <div style="text-align:center;margin-top:8px"><span style="font-size:12px;color:#0078d4;cursor:pointer;font-weight:700" onclick="showLog()">← Zurück</span></div>
         </div>
       </div>
     </div>
@@ -578,7 +600,7 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
   <!-- Wappen zentriert im Hintergrund -->
   <img src="https://i.postimg.cc/q0mHK7V1/Screenshot-2026-03-08-22-27-27.png"
        style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-              width:400px;max-width:55vw;opacity:.07;pointer-events:none;z-index:0"
+              width:480px;max-width:60vw;opacity:.12;pointer-events:none;z-index:0"
        alt="" onerror="this.style.display='none'">
   <div class="icons-grid" id="icons-grid"></div>
 </div>
@@ -652,13 +674,16 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
 </div>
 
 <!-- BÜRGERDATENBANK -->
-<div class="win" id="win-citizens-db" style="top:50px;left:80px;width:860px;height:520px">
-  <div class="win-titlebar" id="tb-citizens-db"><span class="win-icon">👥</span><span class="win-title">Bürgerdatenbank</span><div class="win-btns"><div class="win-btn" onclick="minimizeWin('citizens-db')">─</div><div class="win-btn" onclick="maximizeWin('citizens-db')">□</div><div class="win-btn close" onclick="closeWin('citizens-db')">✕</div></div></div>
+<div class="win" id="win-citizens-db" style="top:50px;left:80px;width:960px;height:560px">
+  <div class="win-titlebar" id="tb-citizens-db"><span class="win-icon">👥</span><span class="win-title">Bürgerdatenbank inkl. Fallakten</span><div class="win-btns"><div class="win-btn" onclick="minimizeWin('citizens-db')">─</div><div class="win-btn" onclick="maximizeWin('citizens-db')">□</div><div class="win-btn close" onclick="closeWin('citizens-db')">✕</div></div></div>
   <div class="win-toolbar">
-    <div class="search-box" style="max-width:300px"><input placeholder="Name, E-Mail oder Adresse..." id="s-cit" oninput="loadCits()"><button>🔍</button></div>
+    <div class="search-box" style="max-width:300px"><input placeholder="Name, Roblox, Discord..." id="s-cit" oninput="loadCits()"><button>🔍</button></div>
     <select class="fsel" id="f-cit-st" onchange="loadCits()"><option value="">Alle Status</option><option>Aktiv</option><option>Gesperrt</option></select>
   </div>
-  <div class="win-body"><div style="overflow-x:auto"><table class="wtbl"><thead><tr><th>Name</th><th>Geb.-datum</th><th>Adresse</th><th>Telefon</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="cit-tbody"><tr><td colspan="6" class="loading-cell"><div class="spin"></div></td></tr></tbody></table></div></div>
+  <div class="win-body"><div style="overflow-x:auto"><table class="wtbl">
+    <thead><tr><th>Roblox-Name</th><th>@Username</th><th>RP Geburtsdatum</th><th>Discord</th><th>Fallakten</th><th>Status</th><th>Aktionen</th></tr></thead>
+    <tbody id="cit-tbody"><tr><td colspan="7" class="loading-cell"><div class="spin"></div></td></tr></tbody>
+  </table></div></div>
   <div class="win-statusbar"><span id="cit-count">0 Bürger</span></div>
 </div>
 
@@ -681,16 +706,36 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
   <div class="win-body"><div style="overflow-x:auto"><table class="wtbl"><thead><tr><th>Kennzeichen</th><th>Marke/Modell</th><th>Farbe</th><th>Halter</th><th>Zulassung</th><th>Status</th><th>Notiz</th><th>Aktionen</th></tr></thead><tbody id="veh-tbody"><tr><td colspan="8" class="loading-cell"><div class="spin"></div></td></tr></tbody></table></div></div>
 </div>
 
-<!-- FAHNDUNG -->
-<div class="win" id="win-plate-alerts" style="top:30px;left:40px;width:860px;height:520px">
-  <div class="win-titlebar" id="tb-plate-alerts" style="background:linear-gradient(180deg,#b71c1c,#8e0000)"><span class="win-icon">🚨</span><span class="win-title">Kennzeichen-Fahndung</span><div class="win-btns"><div class="win-btn" onclick="minimizeWin('plate-alerts')">─</div><div class="win-btn" onclick="maximizeWin('plate-alerts')">□</div><div class="win-btn close" onclick="closeWin('plate-alerts')">✕</div></div></div>
+<!-- FAHNDUNG – KFZ & Personen -->
+<div class="win" id="win-plate-alerts" style="top:30px;left:40px;width:920px;height:580px">
+  <div class="win-titlebar" id="tb-plate-alerts" style="background:linear-gradient(180deg,#b71c1c,#8e0000)">
+    <span class="win-icon">🚨</span><span class="win-title">Fahndungsliste – KFZ & Personen</span>
+    <div class="win-btns"><div class="win-btn" onclick="minimizeWin('plate-alerts')">─</div><div class="win-btn" onclick="maximizeWin('plate-alerts')">□</div><div class="win-btn close" onclick="closeWin('plate-alerts')">✕</div></div>
+  </div>
   <div class="win-toolbar">
-    <button class="btn bd bsm" onclick="openModal('m-alert')">+ Fahndung eintragen</button>
+    <div style="display:flex;gap:0;border:1px solid #ccc;border-radius:3px;overflow:hidden">
+      <div class="fahn-tab active" id="ftab-kfz" onclick="switchFahnTab('kfz')" style="padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;background:#d32f2f;color:#fff;border-right:1px solid #b71c1c">🚗 KFZ</div>
+      <div class="fahn-tab" id="ftab-person" onclick="switchFahnTab('person')" style="padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;background:#f0f0f0;color:#333">👤 Personen</div>
+    </div>
+    <button class="btn bd bsm" onclick="openFahnModal()">+ Fahndung eintragen</button>
   </div>
   <div class="win-body">
     <div class="wc">
       <div id="alert-banners"></div>
-      <div style="overflow-x:auto"><table class="wtbl"><thead><tr><th>Kennzeichen</th><th>Fahrzeug</th><th>Grund</th><th>Beamter</th><th>Datum</th><th>Notizen</th><th>Aktionen</th></tr></thead><tbody id="alts-tbody"><tr><td colspan="7" class="loading-cell"><div class="spin"></div></td></tr></tbody></table></div>
+      <!-- KFZ Tabelle -->
+      <div id="fahn-kfz-view">
+        <div style="overflow-x:auto"><table class="wtbl">
+          <thead><tr><th>Kennzeichen</th><th>Fahrzeug</th><th>Grund</th><th>Beamter</th><th>Datum</th><th>Notizen</th><th>Aktion</th></tr></thead>
+          <tbody id="alts-tbody"><tr><td colspan="7" class="loading-cell"><div class="spin"></div></td></tr></tbody>
+        </table></div>
+      </div>
+      <!-- Personen Tabelle -->
+      <div id="fahn-person-view" style="display:none">
+        <div style="overflow-x:auto"><table class="wtbl">
+          <thead><tr><th>Name</th><th>Beschreibung</th><th>Grund</th><th>Beamter</th><th>Datum</th><th>Notizen</th><th>Aktion</th></tr></thead>
+          <tbody id="alts-person-tbody"><tr><td colspan="7" class="loading-cell"><div class="spin"></div></td></tr></tbody>
+        </table></div>
+      </div>
     </div>
   </div>
 </div>
@@ -863,7 +908,55 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
 
 <!-- ═══════════ MODALS ═══════════ -->
 <div class="modal-overlay" id="m-add-officer"><div class="modal-box"><div class="modal-head"><div class="modal-head-title">👮 Beamter anlegen</div><button class="modal-close" onclick="closeModal('m-add-officer')">✕</button></div><div class="modal-body"><div class="fr"><div class="fg"><label>Dienstnummer</label><input id="n-dienst" placeholder="DE-0001"></div><div class="fg"><label>Name</label><input id="n-name" placeholder="Max Mustermann"></div></div><div class="fg"><label>Rang</label><select id="n-rank"><option>Streifenpolizist</option><option>Verkehrspolizist</option><option>SEK</option><option>Zivilpolizist</option><option>Ausbilder</option><option>SEK Leitung</option><option>Streifenpolizei Leitung</option><option>Zivil Leitung</option><option>Verkehrspolizei Leitung</option><option>Vize Chef</option><option>Polizei Chef</option></select></div><div class="fg"><label>Passwort</label><input type="password" id="n-pass"></div></div><div class="modal-foot"><button class="btn bs" onclick="closeModal('m-add-officer')">Abbrechen</button><button class="btn bp" onclick="createOff()">✅ Anlegen</button></div></div></div>
-<div class="modal-overlay" id="m-alert"><div class="modal-box"><div class="modal-head"><div class="modal-head-title">🔴 Fahndung eintragen</div><button class="modal-close" onclick="closeModal('m-alert')">✕</button></div><div class="modal-body"><div class="fr"><div class="fg"><label>Kennzeichen</label><input id="al-plate" placeholder="S-AB 1234"></div><div class="fg"><label>Fahrzeug</label><input id="al-veh" placeholder="BMW 5er, Schwarz"></div></div><div class="fg"><label>Fahndungsgrund</label><select id="al-reason"><option>Gestohlen</option><option>Gesucht</option><option>Ermittlung</option></select></div><div class="fg"><label>Bemerkungen</label><textarea id="al-notes" rows="3"></textarea></div></div><div class="modal-foot"><button class="btn bs" onclick="closeModal('m-alert')">Abbrechen</button><button class="btn bd" onclick="addAlert()">🔴 Fahndung starten</button></div></div></div>
+<div class="modal-overlay" id="m-alert">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-head-title">🔴 Fahndung eintragen</div>
+      <button class="modal-close" onclick="closeModal('m-alert')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="m-alert-type-hidden" value="kfz">
+      <!-- Tab-Auswahl -->
+      <div style="display:flex;gap:0;border:1px solid #ccc;border-radius:3px;overflow:hidden;margin-bottom:14px">
+        <div id="malert-tab-kfz" onclick="switchAlertModalTab('kfz')"
+             style="flex:1;padding:7px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;background:#d32f2f;color:#fff;border-right:1px solid #b71c1c">
+          🚗 KFZ-Fahndung
+        </div>
+        <div id="malert-tab-person" onclick="switchAlertModalTab('person')"
+             style="flex:1;padding:7px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;background:#f0f0f0;color:#333">
+          👤 Personen-Fahndung
+        </div>
+      </div>
+      <!-- KFZ Felder -->
+      <div id="m-alert-kfz">
+        <div class="fr">
+          <div class="fg"><label>Kennzeichen</label><input id="al-plate" placeholder="S-AB 1234"></div>
+          <div class="fg"><label>Fahrzeugbeschreibung</label><input id="al-veh" placeholder="BMW 5er, Schwarz"></div>
+        </div>
+      </div>
+      <!-- Personen Felder -->
+      <div id="m-alert-person" style="display:none">
+        <div class="fg"><label>Name der gesuchten Person</label><input id="al-person-name" placeholder="Max Mustermann / Roblox-Name"></div>
+        <div class="fg"><label>Personenbeschreibung</label><textarea id="al-person-desc" rows="2" placeholder="Aussehen, letzte bekannte Position..."></textarea></div>
+      </div>
+      <!-- Gemeinsame Felder -->
+      <div class="fg">
+        <label>Fahndungsgrund</label>
+        <select id="al-reason">
+          <option>Gestohlen</option>
+          <option>Gesucht</option>
+          <option>Ermittlung</option>
+          <option>Verhaftungsbefehl</option>
+        </select>
+      </div>
+      <div class="fg"><label>Bemerkungen / Hinweise</label><textarea id="al-notes" rows="3"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn bs" onclick="closeModal('m-alert')">Abbrechen</button>
+      <button class="btn bd" onclick="addAlert()">🔴 Fahndung starten</button>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay" id="m-case"><div class="modal-box lg"><div class="modal-head"><div class="modal-head-title">📁 Neue Fallakte</div><button class="modal-close" onclick="closeModal('m-case')">✕</button></div><div class="modal-body"><div class="fr"><div class="fg"><label>Template</label><select id="c-tmpl" onchange="fillTmpl()"><option value="">-- Kein Template --</option><option value="verkehr">Verkehrsdelikt</option><option value="beschwerde">Bürgerbeschwerde</option><option value="ermittlung">Ermittlungsbericht</option><option value="vorfall">Vorfallbericht</option><option value="fahrzeug">Fahrzeugdelikt</option></select></div><div class="fg"><label>Status</label><select id="c-status"><option>Offen</option><option>Ermittlung</option><option>Geschlossen</option></select></div></div><div class="fr"><div class="fg"><label>Beteiligter Bürger</label><input id="c-cit" placeholder="Name"></div><div class="fg"><label>Kennzeichen (optional)</label><input id="c-veh" placeholder="S-XX 1234"></div></div><div class="fg"><label>Beschreibung / Sachverhalt</label><textarea id="c-desc" rows="5"></textarea></div><div class="fg"><label>Angewandtes Gesetz</label><select id="c-law"><option value="">-- Kein Gesetz --</option></select></div></div><div class="modal-foot"><button class="btn bs" onclick="closeModal('m-case')">Abbrechen</button><button class="btn bp" onclick="createCase()">📁 Anlegen</button></div></div></div>
 <div class="modal-overlay" id="m-einsatz"><div class="modal-box lg"><div class="modal-head"><div class="modal-head-title">🚔 Einsatzbericht</div><button class="modal-close" onclick="closeModal('m-einsatz')">✕</button></div><div class="modal-body"><div class="fr"><div class="fg"><label>Einsatztyp</label><select id="e-type"><option>Verkehrsunfall</option><option>Körperverletzung</option><option>Diebstahl</option><option>Ruhestörung</option><option>Drogendelikt</option><option>Waffendelikt</option><option>Sonstiger Einsatz</option></select></div><div class="fg"><label>Einsatzort</label><input id="e-ort" placeholder="Straße, PLZ Ort"></div></div><div class="fr"><div class="fg"><label>Datum / Uhrzeit</label><input type="datetime-local" id="e-time"></div><div class="fg"><label>Dauer (Minuten)</label><input type="number" id="e-dur" placeholder="45"></div></div><div class="fg"><label>Beteiligte Personen</label><input id="e-inv" placeholder="Namen, kommagetrennt"></div><div class="fg"><label>Beteiligte Fahrzeuge</label><input id="e-vehs" placeholder="Kennzeichen"></div><div class="fg"><label>Einsatzbeschreibung</label><textarea id="e-desc" rows="4"></textarea></div><div class="fg"><label>Maßnahmen / Ergebnis</label><textarea id="e-result" rows="3"></textarea></div><div class="fg"><label>Status</label><select id="e-status"><option>Abgeschlossen</option><option>Laufend</option><option>Übergeben</option></select></div></div><div class="modal-foot"><button class="btn bs" onclick="closeModal('m-einsatz')">Abbrechen</button><button class="btn bp" onclick="createEinsatz()">🚔 Erstellen</button></div></div></div>
 <div class="modal-overlay" id="m-evidence"><div class="modal-box"><div class="modal-head"><div class="modal-head-title">🔍 Beweismittel erfassen</div><button class="modal-close" onclick="closeModal('m-evidence')">✕</button></div><div class="modal-body"><div class="fg"><label>Akten-Nummer</label><input id="ev-case" placeholder="z.B. 2025-1234"></div><div class="fg"><label>Typ</label><select id="ev-type"><option>Bild/Foto</option><option>Dokument</option><option>Video</option><option>Objekt / Asservat</option><option>Zeugenbericht</option><option>Digitale Aufzeichnung</option><option>Sonstiges</option></select></div><div class="fg"><label>Beschreibung</label><input id="ev-desc" placeholder="Kurze Beschreibung"></div></div><div class="modal-foot"><button class="btn bs" onclick="closeModal('m-evidence')">Abbrechen</button><button class="btn bp" onclick="addEvidence()">⬆ Erfassen</button></div></div></div>
@@ -1223,8 +1316,10 @@ window.addEventListener('DOMContentLoaded', () => {
 // ═══════════════════════════════════════
 function checkShare() {
   const p = new URLSearchParams(window.location.search);
-  const s = p.get('share');
-  if (s) showShareView(s);
+  const code  = p.get('code');
+  const share = p.get('share');
+  if(code) { handleDiscordCallback(); return; }
+  if(share) showShareView(share);
   else document.getElementById('login-screen').style.display = 'flex';
 }
 async function showShareView(id) {
@@ -1292,19 +1387,20 @@ async function loginCit() {
 }
 async function regCit() {
   hideErr();
-  const name = document.getElementById('r-name').value.trim();
-  const dob = document.getElementById('r-dob').value;
-  const phone = document.getElementById('r-phone').value.trim();
-  const address = document.getElementById('r-addr').value.trim();
-  const email = document.getElementById('r-mail').value.trim().toLowerCase();
-  const password = document.getElementById('r-pass').value;
-  if (!name||!dob||!phone||!address||!email||!password) { showErr('Bitte alle Felder ausfüllen.'); return; }
-  const {data:cit,error:ce} = await db.from('citizens').insert([{name,dob,phone,address,email,password,status:'Aktiv'}]).select().single();
+  const roblox_name = document.getElementById('r-name').value.trim();
+  const roblox_at   = document.getElementById('r-roblox-at').value.trim().replace(/^@/,'');
+  const dob         = document.getElementById('r-dob').value;
+  const email       = document.getElementById('r-mail').value.trim().toLowerCase();
+  const password    = document.getElementById('r-pass').value;
+  if (!roblox_name||!roblox_at||!dob||!email||!password) { showErr('Bitte alle Felder ausfüllen.'); return; }
+  // Display name = "RobloxName (@at)"
+  const name = roblox_name + ' (@' + roblox_at + ')';
+  const {data:cit,error:ce} = await db.from('citizens').insert([{name,dob,email,password,status:'Aktiv',roblox_name,roblox_at}]).select().single();
   if (ce) { showErr('Fehler: E-Mail bereits registriert.'); return; }
   const akteNum = 'AK-'+Date.now();
   const shareId = Math.random().toString(36).substr(2,14).toUpperCase();
-  await db.from('citizen_akten').insert([{akte_number:akteNum,citizen_id:cit.id,citizen_name:name,dob,phone,address,email,status:'Aktiv',share_id:shareId}]);
-  await logDB('REGISTRIERUNG','Neuer Bürger: '+name+' | Akte '+akteNum+' automatisch angelegt');
+  await db.from('citizen_akten').insert([{akte_number:akteNum,citizen_id:cit.id,citizen_name:name,dob,email,status:'Aktiv',share_id:shareId}]);
+  await logDB('REGISTRIERUNG','Neuer Bürger: '+name+' | Akte '+akteNum+' angelegt');
   notify('✅ Konto erstellt! Akte '+akteNum+' wurde angelegt.','ok');
   U = {type:'citizen',...cit};
   startDesktop();
@@ -1529,23 +1625,33 @@ async function loadCits(){
   const s=(document.getElementById('s-cit')?.value||'').toLowerCase();
   const sf=document.getElementById('f-cit-st')?.value||'';
   const{data}=await db.from('citizens').select('*').order('name');
+  // Lade alle Fallakten auf einmal
+  const{data:allCases}=await db.from('cases').select('id,case_number,status,citizen_id').order('created_at',{ascending:false});
   let list=data||[];
-  if(s)list=list.filter(c=>c.name.toLowerCase().includes(s)||c.email?.toLowerCase().includes(s)||c.address?.toLowerCase().includes(s));
+  if(s)list=list.filter(c=>c.name?.toLowerCase().includes(s)||c.roblox_name?.toLowerCase().includes(s)||c.roblox_at?.toLowerCase().includes(s)||c.discord_tag?.toLowerCase().includes(s));
   if(sf)list=list.filter(c=>c.status===sf);
   const tb=document.getElementById('cit-tbody');const myLvl=RL[U?.rank]||0;
   const cnt=document.getElementById('cit-count');if(cnt)cnt.textContent=list.length+' Bürger';
-  if(!list.length){tb.innerHTML='<tr><td colspan="6" class="loading-cell">Keine Bürger gefunden.</td></tr>';return;}
-  tb.innerHTML=list.map(c=>`<tr>
-    <td><strong>${c.name}</strong></td>
+  if(!list.length){tb.innerHTML='<tr><td colspan="7" class="loading-cell">Keine Bürger gefunden.</td></tr>';return;}
+  tb.innerHTML=list.map(c=>{
+    // Fallakten dieses Bürgers
+    const citCases=(allCases||[]).filter(f=>f.citizen_id===c.id);
+    const casesBadges=citCases.length
+      ?citCases.slice(0,3).map(f=>`<span class="badge ${f.status==='Offen'?'badge-yellow':f.status==='Ermittlung'?'badge-orange':'badge-green'}" style="cursor:pointer;margin-right:2px" onclick="viewCase('${f.id}')" title="Akte #${f.case_number}">#${f.case_number}</span>`).join('')+(citCases.length>3?`<span class="badge badge-grey">+${citCases.length-3}</span>`:'')
+      :'<span style="font-size:10px;color:#bbb">—</span>';
+    return`<tr>
+    <td><strong>${c.roblox_name||c.name}</strong></td>
+    <td style="font-family:var(--mono);font-size:11px;color:#5865F2">@${c.roblox_at||'—'}</td>
     <td style="font-family:var(--mono);font-size:11px">${c.dob||'—'}</td>
-    <td style="font-size:11px">${c.address||'—'}</td>
-    <td style="font-family:var(--mono);font-size:11px">${c.phone||'—'}</td>
+    <td style="font-size:11px">${c.discord_tag?`<span style="color:#5865F2;font-family:var(--mono)">🎮 ${c.discord_tag}</span>`:'<span style="color:#bbb">—</span>'}</td>
+    <td style="max-width:180px">${casesBadges}</td>
     <td><span class="badge ${c.status==='Aktiv'?'badge-green':'badge-red'}">${c.status}</span></td>
     <td style="display:flex;gap:3px">
       ${myLvl>=3?`<button class="btn bs bxs" onclick="viewCitAkte('${c.id}')">📋 Akte</button>`:''}
-      ${myLvl>=4?`<button class="btn ${c.status==='Aktiv'?'bd':'bg2b'} bxs" onclick="toggleCit('${c.id}','${c.status}','${c.name}')">${c.status==='Aktiv'?'Sperren':'Entsperren'}</button>`:''}
+      ${myLvl>=4?`<button class="btn ${c.status==='Aktiv'?'bd':'bg2b'} bxs" onclick="toggleCit('${c.id}','${c.status}','${c.name}')">${c.status==='Aktiv'?'Sperren':'Freigeben'}</button>`:''}
     </td>
-  </tr>`).join('');
+  </tr>`;
+  }).join('');
 }
 async function toggleCit(id,status,name){
   const ns=status==='Aktiv'?'Gesperrt':'Aktiv';
@@ -1650,32 +1756,346 @@ async function saveVehNote(){
 }
 
 // ═══════════════════════════════════════
-//  PLATE ALERTS
+//  FAHNDUNG – KFZ & PERSONEN
 // ═══════════════════════════════════════
+let currentFahnTab = 'kfz';
+
+function switchFahnTab(tab) {
+  currentFahnTab = tab;
+  document.getElementById('fahn-kfz-view').style.display    = tab==='kfz'    ? 'block' : 'none';
+  document.getElementById('fahn-person-view').style.display = tab==='person' ? 'block' : 'none';
+  const kbtn = document.getElementById('ftab-kfz');
+  const pbtn = document.getElementById('ftab-person');
+  if(kbtn){ kbtn.style.background = tab==='kfz' ? '#d32f2f' : '#f0f0f0'; kbtn.style.color = tab==='kfz' ? '#fff' : '#333'; }
+  if(pbtn){ pbtn.style.background = tab==='person' ? '#d32f2f' : '#f0f0f0'; pbtn.style.color = tab==='person' ? '#fff' : '#333'; }
+  loadAlerts();
+}
+
+function openFahnModal() {
+  if(!U||U.type!=='officer'){notify('Nur Beamte können Fahndungen eintragen.','err');return;}
+  openModal('m-alert');
+  // Reset tabs in modal
+  switchAlertModalTab('kfz');
+}
+
+function switchAlertModalTab(t) {
+  document.getElementById('m-alert-kfz').style.display    = t==='kfz' ? 'block' : 'none';
+  document.getElementById('m-alert-person').style.display = t==='person' ? 'block' : 'none';
+  ['kfz','person'].forEach(x => {
+    const b = document.getElementById('malert-tab-'+x);
+    if(b){ b.style.background = t===x ? '#d32f2f' : '#f0f0f0'; b.style.color = t===x ? '#fff' : '#333'; }
+  });
+  document.getElementById('m-alert-type-hidden').value = t;
+}
+
 async function loadAlerts(){
-  const{data}=await db.from('alerts').select('*').order('created_at',{ascending:false});
-  const ab=document.getElementById('alert-banners');const tb=document.getElementById('alts-tbody');
-  if(!data?.length){ab.innerHTML='';tb.innerHTML='<tr><td colspan="7" class="loading-cell">Keine aktiven Fahndungen.</td></tr>';return;}
-  ab.innerHTML=data.map(a=>`<div class="alert-banner">🚨 <span class="plate" style="color:#d32f2f">${a.plate}</span><span style="font-size:11px">${a.vehicle||''}</span>&nbsp;${abadge(a.reason)}<span style="font-size:11px;flex:1;margin-left:8px;color:#666">${a.notes||''}</span></div>`).join('');
-  tb.innerHTML=data.map(a=>`<tr>
-    <td><span class="plate" style="color:#d32f2f">${a.plate}</span></td><td>${a.vehicle||'—'}</td>
-    <td>${abadge(a.reason)}</td><td>${a.officer_name||'—'}</td>
-    <td style="font-family:var(--mono);font-size:11px">${new Date(a.created_at).toLocaleDateString('de-DE')}</td>
-    <td style="font-size:11px">${a.notes||'—'}</td>
-    <td><button class="btn bd bxs" onclick="removeAlert('${a.id}','${a.plate}')">Aufheben</button></td>
-  </tr>`).join('');
+  const ab = document.getElementById('alert-banners');
+  const {data} = await db.from('alerts').select('*').order('created_at',{ascending:false});
+  const all = data || [];
+
+  // Banner: zeige alle aktiven (max 3)
+  const bannerItems = all.slice(0,3);
+  if(ab) ab.innerHTML = bannerItems.map(a => a.alert_type==='person'
+    ? `<div class="alert-banner">🚨 <strong>${a.person_name||'Unbekannt'}</strong>&nbsp;${abadge(a.reason)}<span style="font-size:11px;flex:1;margin-left:8px;color:#666">${a.notes||''}</span></div>`
+    : `<div class="alert-banner">🚨 <span class="plate" style="color:#d32f2f">${a.plate||'—'}</span>&nbsp;<span style="font-size:11px">${a.vehicle||''}</span>&nbsp;${abadge(a.reason)}<span style="font-size:11px;flex:1;margin-left:8px;color:#666">${a.notes||''}</span></div>`
+  ).join('');
+
+  // KFZ Tabelle
+  const kfzList = all.filter(a => !a.alert_type || a.alert_type==='kfz');
+  const tbKfz = document.getElementById('alts-tbody');
+  if(tbKfz) tbKfz.innerHTML = kfzList.length
+    ? kfzList.map(a=>`<tr>
+        <td><span class="plate" style="color:#d32f2f">${a.plate||'—'}</span></td>
+        <td>${a.vehicle||'—'}</td><td>${abadge(a.reason)}</td>
+        <td>${a.officer_name||'—'}</td>
+        <td style="font-family:var(--mono);font-size:11px">${new Date(a.created_at).toLocaleDateString('de-DE')}</td>
+        <td style="font-size:11px">${a.notes||'—'}</td>
+        <td>${U?.type==='officer'?`<button class="btn bd bxs" onclick="removeAlert('${a.id}','${a.plate||a.person_name}')">Aufheben</button>`:'—'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="7" class="loading-cell">Keine KFZ-Fahndungen.</td></tr>';
+
+  // Personen Tabelle
+  const pList = all.filter(a => a.alert_type==='person');
+  const tbP = document.getElementById('alts-person-tbody');
+  if(tbP) tbP.innerHTML = pList.length
+    ? pList.map(a=>`<tr>
+        <td><strong style="color:#d32f2f">${a.person_name||'—'}</strong></td>
+        <td style="font-size:11px">${a.person_desc||'—'}</td>
+        <td>${abadge(a.reason)}</td>
+        <td>${a.officer_name||'—'}</td>
+        <td style="font-family:var(--mono);font-size:11px">${new Date(a.created_at).toLocaleDateString('de-DE')}</td>
+        <td style="font-size:11px">${a.notes||'—'}</td>
+        <td>${U?.type==='officer'?`<button class="btn bd bxs" onclick="removeAlert('${a.id}','${a.person_name}')">Aufheben</button>`:'—'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="7" class="loading-cell">Keine Personen-Fahndungen.</td></tr>';
 }
+
 async function addAlert(){
-  const plate=document.getElementById('al-plate').value.trim().toUpperCase();const vehicle=document.getElementById('al-veh').value.trim();
-  const reason=document.getElementById('al-reason').value;const notes=document.getElementById('al-notes').value.trim();
-  if(!plate){notify('Kennzeichen eingeben.','err');return;}
-  await db.from('alerts').insert([{plate,vehicle,reason,notes,officer_name:U?.name}]);
-  await logDB('FAHNDUNG',plate+' → '+reason);notify('🔴 Fahndung für '+plate+' eingetragen.','err');
-  closeModal('m-alert');['al-plate','al-veh','al-notes'].forEach(x=>document.getElementById(x).value='');loadAlerts();
+  if(!U||U.type!=='officer'){notify('Nur Beamte können Fahndungen eintragen.','err');closeModal('m-alert');return;}
+  const alertType = document.getElementById('m-alert-type-hidden').value || 'kfz';
+  const reason = document.getElementById('al-reason').value;
+  const notes  = document.getElementById('al-notes').value.trim();
+
+  if(alertType === 'kfz') {
+    const plate   = document.getElementById('al-plate').value.trim().toUpperCase();
+    const vehicle = document.getElementById('al-veh').value.trim();
+    if(!plate){notify('Kennzeichen eingeben.','err');return;}
+    await db.from('alerts').insert([{alert_type:'kfz',plate,vehicle,reason,notes,officer_name:U.name}]);
+    await logDB('FAHNDUNG_KFZ', plate+' → '+reason);
+    notify('🔴 KFZ-Fahndung für '+plate+' eingetragen.','err');
+  } else {
+    const person_name = document.getElementById('al-person-name').value.trim();
+    const person_desc = document.getElementById('al-person-desc').value.trim();
+    if(!person_name){notify('Name der Person eingeben.','err');return;}
+    await db.from('alerts').insert([{alert_type:'person',person_name,person_desc,reason,notes,officer_name:U.name}]);
+    await logDB('FAHNDUNG_PERSON', person_name+' → '+reason);
+    notify('🔴 Personen-Fahndung für '+person_name+' eingetragen.','err');
+  }
+  closeModal('m-alert');
+  ['al-plate','al-veh','al-notes','al-person-name','al-person-desc'].forEach(x=>{const e=document.getElementById(x);if(e)e.value='';});
+  loadAlerts();
 }
-async function removeAlert(id,plate){
-  await db.from('alerts').delete().eq('id',id);await logDB('FAHNDUNG_AUFGEHOBEN',plate);
-  notify('✅ Fahndung für '+plate+' aufgehoben.','ok');loadAlerts();
+
+async function removeAlert(id,label){
+  if(!U||U.type!=='officer'){notify('Nur Beamte können Fahndungen aufheben.','err');return;}
+  await db.from('alerts').delete().eq('id',id);
+  await logDB('FAHNDUNG_AUFGEHOBEN', label);
+  notify('✅ Fahndung für '+label+' aufgehoben.','ok');
+  loadAlerts();
+}
+
+// ═══════════════════════════════════════
+//  DISCORD OAUTH LOGIN
+// ═══════════════════════════════════════
+const DISCORD_CLIENT_ID = '1443410909098807337';
+const DISCORD_REDIRECT   = 'https://copnet-rho.vercel.app';
+
+function loginDiscord() {
+  // Weiterleitung zu Discord OAuth2
+  const state = Math.random().toString(36).substr(2,16);
+  sessionStorage.setItem('discord_oauth_state', state);
+  const url = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(DISCORD_REDIRECT)}&scope=identify+email&state=${state}`;
+  window.location.href = url;
+}
+
+async function handleDiscordCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const code  = params.get('code');
+  const state = params.get('state');
+  const share = params.get('share');
+
+  if (share) { showShareView(share); return; }
+  if (!code) { document.getElementById('login-screen').style.display = 'flex'; return; }
+
+  // Code vorhanden → Discord-Nutzerdaten via Supabase Edge Function holen
+  // (Da wir kein Backend haben, nutzen wir einen Proxy-Ansatz über unsere Supabase Function)
+  const loginBox = document.querySelector('.login-box');
+  if(loginBox) loginBox.innerHTML = `
+    <div style="padding:40px;text-align:center">
+      <div class="spin" style="width:30px;height:30px;border-width:3px;margin:0 auto 16px"></div>
+      <div style="font-weight:700;color:#0078d4">Discord-Login wird verarbeitet…</div>
+      <div style="font-size:11px;color:#888;margin-top:6px">Bitte warten</div>
+    </div>`;
+  document.getElementById('login-screen').style.display = 'flex';
+
+  try {
+    // Discord Token Exchange via Supabase Edge Function
+    const SUPABASE_EDGE = 'https://vekozqxmawzatvyofsxq.supabase.co/functions/v1/discord-auth';
+    const res = await fetch(SUPABASE_EDGE, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ code, redirect_uri: DISCORD_REDIRECT })
+    });
+    const discordUser = await res.json();
+
+    if(!discordUser || discordUser.error) {
+      // Fallback: Discord-Login fehlgeschlagen → normale Login-Seite zeigen
+      document.getElementById('login-screen').innerHTML = `
+        <div style="position:relative;z-index:1;color:#fff;text-align:center;padding:20px">
+          <div style="font-size:40px;margin-bottom:10px">⚠️</div>
+          <div style="font-weight:700;font-size:16px">Discord-Login fehlgeschlagen</div>
+          <div style="font-size:12px;opacity:.7;margin-top:6px">${discordUser?.error||'Unbekannter Fehler'}</div>
+          <div style="font-size:11px;color:#ffcc00;margin-top:8px">Hinweis: Discord OAuth benötigt eine Supabase Edge Function.<br>Ohne Backend-Setup bitte E-Mail-Login verwenden.</div>
+          <button class="btn bp" style="margin-top:16px" onclick="location.href=location.pathname">Zurück zum Login</button>
+        </div>`;
+      return;
+    }
+
+    const discord_id  = parseInt(discordUser.id);
+    const discord_tag = discordUser.username || discordUser.global_name || '';
+    const discord_avatar = discordUser.avatar
+      ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`
+      : null;
+    const email = discordUser.email || null;
+
+    // Prüfe ob bereits registriert
+    const {data:existing} = await db.from('citizens')
+      .select('*').eq('discord_id', discord_id).single();
+
+    if(existing) {
+      // Bereits registriert → einloggen, Discord-Daten aktualisieren
+      await db.from('citizens').update({discord_tag, discord_avatar, email:email||existing.email}).eq('id',existing.id);
+      U = {type:'citizen',...existing, discord_tag, discord_avatar};
+      await logDB('DISCORD_LOGIN', 'Bürger via Discord: '+discord_tag);
+      // URL bereinigen
+      window.history.replaceState({}, document.title, '/');
+      startDesktop();
+    } else {
+      // Neu → Registrierungsformular vorausfüllen
+      window.history.replaceState({}, document.title, '/');
+      document.getElementById('login-screen').style.display = 'flex';
+      switchTab('cit');
+      showReg();
+      // Discord-Daten im sessionStorage speichern
+      sessionStorage.setItem('discord_pending', JSON.stringify({discord_id, discord_tag, discord_avatar, email}));
+      // Felder vorausfüllen
+      if(email) { const m = document.getElementById('r-mail'); if(m) m.value = email; }
+      notify('🎮 Discord verbunden als @'+discord_tag+' · Bitte Roblox-Daten eingeben um die Registrierung abzuschließen.','ok');
+      // Hinweis-Banner
+      const reg = document.getElementById('cit-reg');
+      if(reg) {
+        const banner = document.createElement('div');
+        banner.style.cssText = 'background:#e8f0fe;border:1px solid #bbdefb;border-radius:3px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#1a237e';
+        banner.innerHTML = `🎮 <strong>Discord verbunden:</strong> ${discord_tag}${discord_avatar?`<img src="${discord_avatar}" style="width:20px;height:20px;border-radius:50%;margin-left:6px;vertical-align:middle">`:''}`;
+        reg.prepend(banner);
+      }
+    }
+  } catch(err) {
+    console.error('Discord OAuth error:', err);
+    document.getElementById('login-screen').style.display = 'flex';
+    showErr('Discord-Login fehlgeschlagen: '+err.message);
+  }
+}
+
+// Beim Registrieren Discord-Daten einbinden falls vorhanden
+const _origRegCit = regCit;
+async function regCit() {
+  hideErr();
+  const roblox_name = document.getElementById('r-name').value.trim();
+  const roblox_at   = document.getElementById('r-roblox-at').value.trim().replace(/^@/,'');
+  const dob         = document.getElementById('r-dob').value;
+  const email       = document.getElementById('r-mail').value.trim().toLowerCase();
+  const password    = document.getElementById('r-pass').value;
+  if(!roblox_name||!roblox_at||!dob||!email) { showErr('Bitte alle Pflichtfelder ausfüllen.'); return; }
+
+  // Discord-Daten aus sessionStorage holen falls vorhanden
+  let discordData = {};
+  try {
+    const pending = sessionStorage.getItem('discord_pending');
+    if(pending) discordData = JSON.parse(pending);
+  } catch(e) {}
+
+  const name = roblox_name + ' (@' + roblox_at + ')';
+  // Passwort nur wenn kein Discord-Login
+  const pw = discordData.discord_id ? (password || Math.random().toString(36).substr(2,10)) : password;
+  if(!discordData.discord_id && !pw) { showErr('Passwort eingeben.'); return; }
+
+  const insertData = {name, dob, email, password:pw, status:'Aktiv', roblox_name, roblox_at};
+  if(discordData.discord_id) {
+    insertData.discord_id = discordData.discord_id;
+    insertData.discord_tag = discordData.discord_tag;
+    insertData.discord_avatar = discordData.discord_avatar;
+  }
+
+  const {data:cit, error:ce} = await db.from('citizens').insert([insertData]).select().single();
+  if(ce) { showErr('Fehler: E-Mail bereits registriert.'); return; }
+
+  const akteNum = 'AK-'+Date.now();
+  const shareId = Math.random().toString(36).substr(2,14).toUpperCase();
+  await db.from('citizen_akten').insert([{akte_number:akteNum,citizen_id:cit.id,citizen_name:name,dob,email,status:'Aktiv',share_id:shareId}]);
+  await logDB('REGISTRIERUNG','Neuer Bürger: '+name+(discordData.discord_id?' (Discord: '+discordData.discord_tag+')':''));
+  sessionStorage.removeItem('discord_pending');
+  notify('✅ Konto erstellt! Akte '+akteNum+' wurde angelegt.','ok');
+  U = {type:'citizen',...cit};
+  startDesktop();
+}
+
+// ═══════════════════════════════════════
+//  VIEW MODES — PC / TABLET / PANEL
+// ═══════════════════════════════════════
+let currentDesign = 0;
+let currentViewMode = 'pc';
+
+// PC = Windows-Desktop wie gewohnt
+// Tablet = alle Fenster nehmen volle Breite, Icons kleiner, touch-freundlich
+// Panel = ein Fenster maximiert, kein Desktop sichtbar, reine Datensicht
+function setViewMode(mode) {
+  currentViewMode = mode;
+  // Buttons updaten (Login + Desktop)
+  ['pc','tablet','panel','design'].forEach(m => {
+    ['vbtn-'+m, 'vbtn-desk-'+m].forEach(bid => {
+      const b = document.getElementById(bid);
+      if(b) b.classList.toggle('active', m===mode);
+    });
+  });
+
+  const cfg = {
+    pc:     { rootFontSize:'13px', iconImg:'28px',  iconLabel:'11px', iconGrid:'repeat(6,90px)',  iconRowH:'90px' },
+    tablet: { rootFontSize:'12px', iconImg:'22px',  iconLabel:'10px', iconGrid:'repeat(4,80px)',  iconRowH:'80px' },
+    panel:  { rootFontSize:'12px', iconImg:'18px',  iconLabel:'9px',  iconGrid:'repeat(8,64px)',  iconRowH:'58px' },
+  }[mode] || {};
+
+  document.body.style.fontSize = cfg.rootFontSize || '';
+
+  // Icons-Grid anpassen
+  const grid = document.getElementById('icons-grid');
+  if(grid) {
+    grid.style.gridTemplateColumns = cfg.iconGrid || '';
+    grid.style.gridAutoRows = cfg.iconRowH || '';
+  }
+  document.querySelectorAll('.desk-icon .icon-img').forEach(el => el.style.fontSize = cfg.iconImg || '');
+  document.querySelectorAll('.desk-icon .icon-label').forEach(el => el.style.fontSize = cfg.iconLabel || '');
+
+  if(mode === 'pc') {
+    // PC: Fenster auf ihre ursprüngliche Größe zurücksetzen
+    document.querySelectorAll('.win.show').forEach(w => {
+      w.classList.remove('maximized');
+      w.style.width = '';
+      w.style.height = '';
+    });
+    document.getElementById('desktop').style.bottom = '40px';
+  } else if(mode === 'tablet') {
+    // Tablet: Fenster volle Breite, oben platziert
+    document.querySelectorAll('.win.show').forEach(w => {
+      w.classList.remove('maximized');
+      w.style.width = '100vw';
+      w.style.left  = '0';
+      w.style.top   = '0';
+      w.style.height = 'calc(100vh - 40px)';
+    });
+  } else if(mode === 'panel') {
+    // Panel: alle Fenster maximiert (ein Fenster füllt alles)
+    document.querySelectorAll('.win.show').forEach(w => {
+      w.classList.add('maximized');
+    });
+  }
+
+  // Login-Box Breite
+  const lb = document.querySelector('.login-box');
+  if(lb) {
+    if(mode==='pc')     lb.style.width = '380px';
+    else if(mode==='tablet') lb.style.width = 'min(340px,96vw)';
+    else lb.style.width = 'min(300px,98vw)';
+  }
+  if(mode !== 'pc') notify('📱 Ansicht: '+(mode==='tablet'?'Tablet':'Panel'),'ok');
+}
+
+const DESIGNS = [
+  {bg:'linear-gradient(160deg,#1e3f7a 0%,#16325e 40%,#0f2347 100%)', tb:'linear-gradient(180deg,#0d2244 0%,#081833 100%)'},
+  {bg:'linear-gradient(160deg,#1a3a1a 0%,#0f2b0f 40%,#091a09 100%)', tb:'linear-gradient(180deg,#0d2210 0%,#081508 100%)'},
+  {bg:'linear-gradient(160deg,#3a1a1a 0%,#2b0f0f 40%,#1a0909 100%)', tb:'linear-gradient(180deg,#220d0d 0%,#150808 100%)'},
+  {bg:'linear-gradient(160deg,#1a1a3a 0%,#0f0f2b 40%,#09091a 100%)', tb:'linear-gradient(180deg,#0d0d22 0%,#080815 100%)'},
+];
+function cycleDesign() {
+  currentDesign = (currentDesign+1) % DESIGNS.length;
+  const d = DESIGNS[currentDesign];
+  const desk = document.getElementById('desktop');
+  const tbar = document.getElementById('taskbar');
+  const ls   = document.getElementById('login-screen');
+  if(desk) desk.style.background = d.bg;
+  if(tbar) tbar.style.background = d.tb;
+  if(ls)   ls.style.background   = d.bg.replace('160deg','135deg');
+  notify('🎨 Design '+(currentDesign+1)+'/'+DESIGNS.length, 'ok');
 }
 
 // ═══════════════════════════════════════
@@ -1899,55 +2319,6 @@ async function loadLogs(){
     <td>${l.username||'—'}</td><td><span class="badge badge-blue">${l.action||''}</span></td>
     <td style="font-size:11px">${l.detail||'—'}</td>
   </tr>`).join('');
-}
-
-// ═══════════════════════════════════════
-//  VIEW MODE (PC / TABLET / PANEL)
-// ═══════════════════════════════════════
-let currentDesign = 0;
-const DESIGNS = [
-  {bg:'linear-gradient(160deg,#1e3f7a 0%,#16325e 40%,#0f2347 100%)',taskbar:'linear-gradient(180deg,#0d2244 0%,#081833 100%)'},
-  {bg:'linear-gradient(160deg,#1a3a1a 0%,#0f2b0f 40%,#091a09 100%)',taskbar:'linear-gradient(180deg,#0d2210 0%,#081508 100%)'},
-  {bg:'linear-gradient(160deg,#3a1a1a 0%,#2b0f0f 40%,#1a0909 100%)',taskbar:'linear-gradient(180deg,#220d0d 0%,#150808 100%)'},
-  {bg:'linear-gradient(160deg,#1a1a3a 0%,#0f0f2b 40%,#09091a 100%)',taskbar:'linear-gradient(180deg,#0d0d22 0%,#080815 100%)'},
-];
-
-function setViewMode(mode) {
-  // Update active button
-  ['pc','tablet','panel','design'].forEach(m => {
-    const b = document.getElementById('vbtn-'+m);
-    if (b) b.classList.remove('active');
-  });
-  const btn = document.getElementById('vbtn-'+mode);
-  if (btn) btn.classList.add('active');
-
-  const lb = document.querySelector('.login-box');
-  if (!lb) return;
-  if (mode === 'pc') {
-    lb.style.width = '380px';
-    lb.style.maxWidth = '';
-  } else if (mode === 'tablet') {
-    lb.style.width = '340px';
-    lb.style.maxWidth = '98vw';
-  } else if (mode === 'panel') {
-    lb.style.width = '300px';
-    lb.style.maxWidth = '99vw';
-  }
-  // Also after login — change windows layout
-  if (mode === 'tablet' || mode === 'panel') {
-    document.querySelectorAll('.win').forEach(w => {
-      w.style.width = '98vw';
-      w.style.left = '1vw';
-    });
-  }
-}
-
-function cycleDesign() {
-  currentDesign = (currentDesign + 1) % DESIGNS.length;
-  const d = DESIGNS[currentDesign];
-  document.getElementById('desktop').style.background = d.bg;
-  document.getElementById('taskbar').style.background = d.taskbar;
-  notify('🎨 Design gewechselt.','ok');
 }
 
 // ═══════════════════════════════════════
