@@ -1900,51 +1900,23 @@ async function handleDiscordCallback() {
 
   try {
     // Discord Token Exchange via Supabase Edge Function
-    // Token Exchange: Supabase Edge Function mit anon key
-    const SUPABASE_EDGE = 'https://vekozqxmawzatvyofsxq.supabase.co/functions/v1/discord-auth';
-    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZla296cXhtYXd6YXR2eW9mc3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NzIwMDksImV4cCI6MjA4ODU0ODAwOX0.ASzxEi8Tmnv7AFd5vFV4Hw12FxzA8ysjEoTlXDLMYaE';
-    
+    // Token Exchange via Vercel API Route /api/discord-auth
+    // Kein CORS Problem da gleiche Domain (copnet-rho.vercel.app)
     let discordUser = null;
-
-    // Versuch 1: Mit Authorization Header (für JWT Verify OFF)
     try {
-      const r1 = await fetch(SUPABASE_EDGE, {
+      const r = await fetch('/api/discord-auth', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + ANON_KEY,
-          'apikey': ANON_KEY
-        },
-        body: JSON.stringify({ code, redirect_uri: DISCORD_REDIRECT })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
       });
-      if(r1.ok) { discordUser = await r1.json(); }
-      else { const e = await r1.text(); console.warn('Edge Function Fehler:', r1.status, e); }
-    } catch(e) { console.warn('Edge Function nicht erreichbar:', e.message); }
-
-    // Versuch 2: CORS Proxy → Discord API direkt (kein Client Secret nötig für Public Apps)
-    if(!discordUser || discordUser.error) {
-      try {
-        const proxyBase = 'https://corsproxy.io/?';
-        const tokenRes = await fetch(proxyBase + encodeURIComponent('https://discord.com/api/oauth2/token'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({
-            client_id: DISCORD_CLIENT_ID,
-            grant_type: 'authorization_code',
-            code: code,
-            redirect_uri: DISCORD_REDIRECT
-          }).toString()
-        });
-        const tokenData = await tokenRes.json();
-        if(tokenData.access_token) {
-          const userRes = await fetch(proxyBase + encodeURIComponent('https://discord.com/api/users/@me'), {
-            headers: { 'Authorization': 'Bearer ' + tokenData.access_token }
-          });
-          discordUser = await userRes.json();
-        } else {
-          console.warn('Kein Access Token vom Proxy:', tokenData);
-        }
-      } catch(e2) { console.warn('CORS Proxy fehlgeschlagen:', e2.message); }
+      if(r.ok) {
+        discordUser = await r.json();
+      } else {
+        const errText = await r.text();
+        console.warn('API Route Fehler:', r.status, errText);
+      }
+    } catch(e) {
+      console.warn('API Route nicht erreichbar:', e.message);
     }
 
     if(!discordUser || discordUser.error) {
