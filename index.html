@@ -1939,42 +1939,52 @@ async function handleDiscordCallback() {
       : null;
     const email = discordUser.email || null;
 
-    // Prüfe ob bereits registriert
-    const {data:existing} = await db.from('citizens')
-      .select('*').eq('discord_id', discord_id).single();
+    // Prüfe ob bereits registriert – maybeSingle() statt single() vermeidet 406 Fehler
+    const {data:existing, error:lookupErr} = await db.from('citizens')
+      .select('*').eq('discord_id', discord_id).maybeSingle();
+
+    // Login-Screen sicherstellen
+    const ls = document.getElementById('login-screen');
+    if(ls) ls.style.display = 'flex';
 
     if(existing) {
       // Bereits registriert → einloggen, Discord-Daten aktualisieren
       await db.from('citizens').update({discord_tag, discord_avatar, email:email||existing.email}).eq('id',existing.id);
       U = {type:'citizen',...existing, discord_tag, discord_avatar};
       await logDB('DISCORD_LOGIN', 'Bürger via Discord: '+discord_tag);
-      // URL bereinigen
       window.history.replaceState({}, document.title, '/');
       startDesktop();
     } else {
       // Neu → Registrierungsformular vorausfüllen
       window.history.replaceState({}, document.title, '/');
-      document.getElementById('login-screen').style.display = 'flex';
-      switchTab('cit');
+      // Login-Screen zeigen und Tab wechseln
+      if(ls) ls.style.display = 'flex';
+      // Kurz warten bis DOM bereit
+      await new Promise(r => setTimeout(r, 100));
+      const citTab = document.getElementById('tab-cit');
+      if(citTab) citTab.click(); else switchTab('cit');
+      await new Promise(r => setTimeout(r, 100));
       showReg();
       // Discord-Daten im sessionStorage speichern
       sessionStorage.setItem('discord_pending', JSON.stringify({discord_id, discord_tag, discord_avatar, email}));
-      // Felder vorausfüllen
+      // E-Mail vorausfüllen
       if(email) { const m = document.getElementById('r-mail'); if(m) m.value = email; }
-      notify('🎮 Discord verbunden als @'+discord_tag+' · Bitte Roblox-Daten eingeben um die Registrierung abzuschließen.','ok');
-      // Hinweis-Banner
+      notify('🎮 Discord verbunden als @'+discord_tag+' · Bitte Roblox-Daten eingeben','ok');
+      // Discord-Badge im Formular
       const reg = document.getElementById('cit-reg');
       if(reg) {
         const banner = document.createElement('div');
         banner.style.cssText = 'background:#e8f0fe;border:1px solid #bbdefb;border-radius:3px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#1a237e';
-        banner.innerHTML = `🎮 <strong>Discord verbunden:</strong> ${discord_tag}${discord_avatar?`<img src="${discord_avatar}" style="width:20px;height:20px;border-radius:50%;margin-left:6px;vertical-align:middle">`:''}`;
+        banner.innerHTML = '🎮 <strong>Discord verbunden:</strong> ' + discord_tag + (discord_avatar ? '<img src="'+discord_avatar+'" style="width:20px;height:20px;border-radius:50%;margin-left:6px;vertical-align:middle">' : '');
         reg.prepend(banner);
       }
     }
   } catch(err) {
     console.error('Discord OAuth error:', err);
-    document.getElementById('login-screen').style.display = 'flex';
-    showErr('Discord-Login fehlgeschlagen: '+err.message);
+    const ls2 = document.getElementById('login-screen');
+    if(ls2) ls2.style.display = 'flex';
+    const errEl = document.getElementById('login-err');
+    if(errEl) errEl.textContent = 'Discord-Login fehlgeschlagen: ' + err.message;
   }
 }
 
