@@ -1907,7 +1907,9 @@ async function handleDiscordCallback() {
 
   // Code vorhanden → Discord-Nutzerdaten via Supabase Edge Function holen
   // (Da wir kein Backend haben, nutzen wir einen Proxy-Ansatz über unsere Supabase Function)
+  // Original login-box HTML speichern, damit wir es wiederherstellen können
   const loginBox = document.querySelector('.login-box');
+  const loginBoxOriginal = loginBox ? loginBox.innerHTML : '';
   if(loginBox) loginBox.innerHTML = `
     <div style="padding:40px;text-align:center">
       <div class="spin" style="width:30px;height:30px;border-width:3px;margin:0 auto 16px"></div>
@@ -1976,10 +1978,12 @@ async function handleDiscordCallback() {
       // Neu → Registrierungsformular vorausfüllen
       window.history.replaceState({}, document.title, '/');
       // Login-Screen anzeigen und warten bis DOM gerendert
-      if(ls) { ls.style.display = 'flex'; ls.style.visibility = 'visible'; }
-      await new Promise(r => setTimeout(r, 300));
+      // Login-Box wiederherstellen bevor switchTab läuft
+      if(loginBox && loginBoxOriginal) loginBox.innerHTML = loginBoxOriginal;
+      if(ls) { ls.style.display = 'flex'; }
+      await new Promise(r => setTimeout(r, 100));
       switchTab('cit');
-      await new Promise(r => setTimeout(r, 200));
+      await new Promise(r => setTimeout(r, 100));
       showReg();
       // Discord-Daten speichern
       sessionStorage.setItem('discord_pending', JSON.stringify({discord_id, discord_tag, discord_avatar, email}));
