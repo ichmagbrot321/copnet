@@ -79,8 +79,8 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
 .login-wappen-bg{
   position:absolute;top:50%;left:50%;
   transform:translate(-50%,-50%);
-  width:500px;opacity:.06;pointer-events:none;
-  filter:blur(1px)
+  width:600px;opacity:.18;pointer-events:none;
+  filter:blur(0px)
 }
 .login-box{
   position:relative;z-index:1;
@@ -174,8 +174,8 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
   position:absolute;
   top:50%;left:65%;
   transform:translate(-50%,-50%);
-  width:380px;opacity:.08;pointer-events:none;
-  filter:blur(0.5px)
+  width:500px;opacity:.22;pointer-events:none;
+  filter:blur(0px)
 }
 
 /* DESKTOP ICONS */
@@ -514,7 +514,7 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
   <!-- Wappen Hintergrund groß zentriert -->
   <img src="https://i.postimg.cc/q0mHK7V1/Screenshot-2026-03-08-22-27-27.png"
        style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-              width:600px;max-width:80vw;opacity:.13;pointer-events:none;z-index:0"
+              width:700px;max-width:88vw;opacity:.28;pointer-events:none;z-index:0;filter:drop-shadow(0 0 40px rgba(255,255,255,0.1))"
        alt="" onerror="this.style.display='none'">
 
   <div style="position:relative;z-index:1;margin-bottom:12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px">
@@ -609,7 +609,7 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
   <!-- Wappen zentriert im Hintergrund -->
   <img src="https://i.postimg.cc/q0mHK7V1/Screenshot-2026-03-08-22-27-27.png"
        style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-              width:480px;max-width:60vw;opacity:.12;pointer-events:none;z-index:0"
+              width:600px;max-width:68vw;opacity:.25;pointer-events:none;z-index:0;filter:drop-shadow(0 0 30px rgba(255,255,255,0.08))"
        alt="" onerror="this.style.display='none'">
   <div class="icons-grid" id="icons-grid"></div>
 </div>
@@ -726,7 +726,7 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
       <div class="fahn-tab active" id="ftab-kfz" onclick="switchFahnTab('kfz')" style="padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;background:#d32f2f;color:#fff;border-right:1px solid #b71c1c">🚗 KFZ</div>
       <div class="fahn-tab" id="ftab-person" onclick="switchFahnTab('person')" style="padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;background:#f0f0f0;color:#333">👤 Personen</div>
     </div>
-    <button class="btn bd bsm" onclick="openFahnModal()">+ Fahndung eintragen</button>
+    <button class="btn bd bsm" onclick="openFahnModal()" id="fahn-add-btn">+ Fahndung eintragen</button>
   </div>
   <div class="win-body">
     <div class="wc">
