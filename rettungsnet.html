@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RettungsNet Karlsruhe – Notfallsystem</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --red:#e53935;--red-dark:#b71c1c;--red-light:#ef9a9a;
+  --white:#fff;--bg:#f5f5f5;--sidebar:#1a1a2e;
+  --accent:#ff6b35;--green:#43a047;--yellow:#f9a825;
+  --text:#1a1a1a;--text2:#555;--border:#ddd;
+  --card:#fff;--shadow:0 2px 12px rgba(0,0,0,.1);
+  --font:'Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── BOOT ── */
+#boot{position:fixed;inset:0;background:#0a0a0a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
+.boot-cross{font-size:80px;animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}
+.boot-title{color:#fff;font-size:28px;font-weight:700;letter-spacing:3px}
+.boot-sub{color:#e53935;font-size:13px;letter-spacing:2px;text-transform:uppercase}
+.boot-bar{width:300px;height:3px;background:#222;border-radius:2px;overflow:hidden}
+.boot-prog{height:100%;width:0;background:linear-gradient(90deg,#e53935,#ff6b35);transition:width .3s}
+.boot-status{color:#888;font-size:11px;letter-spacing:1px;margin-top:-12px}
+
+/* ── LAYOUT ── */
+#app{display:none;min-height:100vh;flex-direction:column}
+.topbar{background:linear-gradient(135deg,#b71c1c 0%,#e53935 50%,#c62828 100%);
+  height:56px;display:flex;align-items:center;padding:0 20px;gap:16px;
+  box-shadow:0 2px 8px rgba(229,57,53,.4);position:sticky;top:0;z-index:100}
+.topbar-logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:18px;letter-spacing:1px}
+.topbar-logo span{font-size:24px}
+.topbar-status{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);
+  padding:4px 12px;border-radius:20px;color:#fff;font-size:12px;cursor:pointer;margin-left:auto}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#4caf50;animation:blink 1.5s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.status-dot.red{background:#ff5252;animation:none}
+.topbar-user{color:rgba(255,255,255,.9);font-size:13px;display:flex;align-items:center;gap:8px}
+.topbar-btn{background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 14px;
+  border-radius:4px;cursor:pointer;font-size:12px;font-family:var(--font)}
+.topbar-btn:hover{background:rgba(255,255,255,.25)}
+
+.main-layout{display:flex;flex:1;min-height:calc(100vh - 56px)}
+.sidebar{width:220px;background:var(--sidebar);padding:16px 0;flex-shrink:0;
+  box-shadow:2px 0 8px rgba(0,0,0,.15)}
+.sidebar-section{color:#666;font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  padding:12px 16px 4px;font-weight:600}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;
+  color:#bbb;font-size:13px;transition:all .15s;border-left:3px solid transparent}
+.sidebar-item:hover{background:rgba(255,255,255,.05);color:#fff}
+.sidebar-item.active{background:rgba(229,57,53,.15);color:#ef5350;border-left-color:#e53935}
+.sidebar-item .si{font-size:16px;width:20px;text-align:center}
+.content{flex:1;padding:24px;overflow-y:auto}
+
+/* ── CARDS ── */
+.page{display:none}
+.page.active{display:block}
+.page-title{font-size:22px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--card);border-radius:8px;padding:20px;box-shadow:var(--shadow);
+  border-left:4px solid var(--red);position:relative;overflow:hidden}
+.stat-card .sc-val{font-size:36px;font-weight:800;color:var(--red)}
+.stat-card .sc-label{font-size:12px;color:var(--text2);margin-top:4px;font-weight:500}
+.stat-card .sc-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:36px;opacity:.15}
+.stat-card.green{border-left-color:var(--green)} .stat-card.green .sc-val{color:var(--green)}
+.stat-card.yellow{border-left-color:var(--yellow)} .stat-card.yellow .sc-val{color:var(--yellow)}
+.stat-card.blue{border-left-color:#1976d2} .stat-card.blue .sc-val{color:#1976d2}
+
+.card{background:var(--card);border-radius:8px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+.card-head{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;
+  justify-content:space-between;gap:8px}
+.card-head .ch-icon{font-size:18px}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f8f8f8;padding:10px 12px;text-align:left;font-weight:600;
+  color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+tr:hover td{background:#fafafa}
+.empty-row td{text-align:center;color:#aaa;padding:32px;font-style:italic}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;
+  font-size:11px;font-weight:600;white-space:nowrap}
+.badge-red{background:#ffebee;color:#c62828}
+.badge-green{background:#e8f5e9;color:#2e7d32}
+.badge-yellow{background:#fff8e1;color:#f57f17}
+.badge-blue{background:#e3f2fd;color:#1565c0}
+.badge-gray{background:#f5f5f5;color:#616161}
+.badge-orange{background:#fff3e0;color:#e65100}
+
+/* ── PRIORITY ── */
+.prio-1{color:#b71c1c;font-weight:800} /* Notfall */
+.prio-2{color:#e65100;font-weight:700} /* Dringend */
+.prio-3{color:#f57f17;font-weight:600} /* Normal */
+.prio-4{color:#388e3c;font-weight:500} /* Gering */
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:4px;
+  cursor:pointer;font-size:13px;font-family:var(--font);font-weight:600;border:1px solid;
+  transition:all .15s}
+.btn-red{background:var(--red);color:#fff;border-color:var(--red-dark)}
+.btn-red:hover{background:var(--red-dark)}
+.btn-green{background:#43a047;color:#fff;border-color:#2e7d32}
+.btn-green:hover{background:#2e7d32}
+.btn-gray{background:#f5f5f5;color:var(--text);border-color:#ddd}
+.btn-gray:hover{background:#ebebeb}
+.btn-sm{padding:5px 10px;font-size:12px}
+
+/* ── FORMS ── */
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+input,select,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:4px;
+  font-size:13px;font-family:var(--font);transition:border-color .15s;background:#fff;color:var(--text)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--red)}
+textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* ── MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;
+  align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:8px;width:100%;max-width:560px;max-height:90vh;
+  overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between}
+.modal-head h3{font-size:16px;font-weight:700}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#888;line-height:1}
+.modal-body{padding:24px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* ── EINSATZ KARTE ── */
+.einsatz-card{background:#fff;border-radius:8px;border-left:5px solid #e53935;
+  padding:16px;box-shadow:var(--shadow);margin-bottom:12px;cursor:pointer;transition:all .15s}
+.einsatz-card:hover{box-shadow:0 4px 20px rgba(229,57,53,.2);transform:translateY(-1px)}
+.einsatz-card.prio1{border-left-color:#b71c1c}
+.einsatz-card.prio2{border-left-color:#e65100}
+.einsatz-card.prio3{border-left-color:#f9a825}
+.einsatz-card.prio4{border-left-color:#43a047}
+.einsatz-card.done{border-left-color:#9e9e9e;opacity:.7}
+.ec-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
+.ec-nr{font-size:11px;color:#999;font-weight:600}
+.ec-type{font-size:15px;font-weight:700}
+.ec-ort{font-size:13px;color:var(--text2);margin-top:2px}
+.ec-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.ec-time{font-size:11px;color:#999}
+
+/* ── NOTIFY ── */
+#notify{position:fixed;top:70px;right:20px;z-index:9000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.notify-item{background:#fff;border-radius:6px;padding:12px 16px;box-shadow:0 4px 20px rgba(0,0,0,.2);
+  font-size:13px;max-width:320px;border-left:4px solid #e53935;animation:slideIn .3s ease;pointer-events:all}
+.notify-item.ok{border-left-color:#43a047}
+.notify-item.warn{border-left-color:#f9a825}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#b71c1c 0%,#7f0000 100%);
+  display:none;align-items:center;justify-content:center;z-index:800;flex-direction:column;gap:20px}
+.login-card{background:#fff;border-radius:8px;width:360px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.login-top{background:linear-gradient(135deg,#e53935,#b71c1c);padding:32px;text-align:center;color:#fff}
+.login-top .lt-icon{font-size:48px;margin-bottom:8px}
+.login-top .lt-title{font-size:20px;font-weight:800;letter-spacing:1px}
+.login-top .lt-sub{font-size:11px;opacity:.8;letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.login-body{padding:24px}
+.login-err{color:#e53935;font-size:12px;margin-bottom:10px;min-height:16px}
+.login-foot{color:rgba(255,255,255,.5);font-size:10px;letter-spacing:2px;text-align:center}
+
+/* ── PATIENT AKTE ── */
+.patient-head{display:flex;align-items:center;gap:16px;background:#fff;border-radius:8px;
+  padding:20px;box-shadow:var(--shadow);margin-bottom:16px;border-top:4px solid var(--red)}
+.patient-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#e53935,#b71c1c);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;flex-shrink:0}
+.patient-info h2{font-size:18px;font-weight:700}
+.patient-info p{font-size:13px;color:var(--text2);margin-top:2px}
+
+/* ── TIMELINE ── */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:#f0f0f0}
+.tl-item{position:relative;margin-bottom:16px;padding:12px 16px;background:#fff;border-radius:6px;box-shadow:var(--shadow)}
+.tl-item::before{content:'';position:absolute;left:-20px;top:16px;width:12px;height:12px;
+  border-radius:50%;background:var(--red);border:2px solid #fff;box-shadow:0 0 0 2px var(--red)}
+.tl-time{font-size:11px;color:#999;margin-bottom:4px}
+.tl-type{font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.5px}
+.tl-text{font-size:13px;margin-top:4px;line-height:1.5}
+
+/* ── PULSATING ALARM ── */
+.alarm-banner{background:linear-gradient(90deg,#b71c1c,#e53935,#b71c1c);color:#fff;
+  padding:10px 20px;text-align:center;font-weight:700;font-size:14px;
+  animation:alarmPulse 1s ease infinite;display:none}
+@keyframes alarmPulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .topbar{padding:0 12px}
+  .content{padding:12px}
+  .cards-grid{grid-template-columns:1fr 1fr}
+  .form-row,.form-row3{grid-template-columns:1fr}
+  .mobile-nav{display:flex!important}
+}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--sidebar);
+  padding:8px;gap:4px;z-index:200;justify-content:space-around}
+.mob-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;
+  border-radius:6px;cursor:pointer;color:#888;font-size:10px;border:none;background:none;
+  font-family:var(--font);transition:all .15s}
+.mob-btn.active,.mob-btn:hover{color:#ef5350;background:rgba(229,57,53,.1)}
+.mob-btn span{font-size:20px}
+</style>
+</head>
+<body>
+
+<!-- BOOT -->
+<div id="boot">
+  <div class="boot-cross">🚑</div>
+  <div class="boot-title">RettungsNet</div>
+  <div class="boot-sub">Karlsruhe · Rettungsdienst</div>
+  <div class="boot-bar"><div class="boot-prog" id="boot-prog"></div></div>
+  <div class="boot-status" id="boot-status">System startet…</div>
+</div>
+
+<!-- NOTIFY -->
+<div id="notify"></div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-top">
+      <div class="lt-icon">🚑</div>
+      <div class="lt-title">RettungsNet</div>
+      <div class="lt-sub">Karlsruhe · Rettungsdienst</div>
+    </div>
+    <div class="login-body">
+      <div class="login-err" id="lerr"></div>
+      <div class="fg"><label>Dienstnummer</label><input id="l-dienst" placeholder="z.B. RD-0001" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="fg"><label>Passwort</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn btn-red" style="width:100%;justify-content:center;padding:12px" onclick="doLogin()">🔐 Anmelden</button>
+    </div>
+  </div>
+  <div class="login-foot">RETTUNGSNET KARLSRUHE · ZUGRIFF PROTOKOLLIERT</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- ALARM BANNER -->
+  <div class="alarm-banner" id="alarm-banner">🚨 AKTIVER NOTFALL – EINSATZ LÄUFT 🚨</div>
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo"><span>🚑</span> RettungsNet <span style="font-size:11px;opacity:.7;font-weight:400;margin-left:4px">Karlsruhe</span></div>
+    <div id="duty-toggle" class="topbar-status" onclick="toggleDuty()" title="Dienst an/aus">
+      <div class="status-dot red" id="duty-dot"></div>
+      <span id="duty-label">Kein Dienst</span>
+    </div>
+    <div class="topbar-user" id="topbar-user"></div>
+    <button class="topbar-btn" onclick="doLogout()">Abmelden</button>
+  </div>
+
+  <div class="main-layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">Einsatz</div>
+      <div class="sidebar-item active" onclick="showPage('dashboard')" data-page="dashboard"><span class="si">📊</span> Lagebild</div>
+      <div class="sidebar-item" onclick="showPage('einsaetze')" data-page="einsaetze"><span class="si">🚨</span> Einsätze</div>
+      <div class="sidebar-item" onclick="showPage('new-einsatz')" data-page="new-einsatz"><span class="si">➕</span> Neuer Einsatz</div>
+      <div class="sidebar-section">Patienten</div>
+      <div class="sidebar-item" onclick="showPage('patienten')" data-page="patienten"><span class="si">🏥</span> Patienten</div>
+      <div class="sidebar-item" onclick="showPage('new-patient')" data-page="new-patient"><span class="si">➕</span> Neuer Patient</div>
+      <div class="sidebar-section">Berichte</div>
+      <div class="sidebar-item" onclick="showPage('berichte')" data-page="berichte"><span class="si">📋</span> Einsatzberichte</div>
+      <div class="sidebar-section">System</div>
+      <div class="sidebar-item" onclick="showPage('team')" data-page="team"><span class="si">👨‍⚕️</span> Team</div>
+      <div class="sidebar-item" onclick="showPage('profil')" data-page="profil"><span class="si">👤</span> Mein Profil</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-title">📊 Lagebild</div>
+        <div class="cards-grid">
+          <div class="stat-card" id="stat-aktiv"><div class="sc-val" id="s-aktiv">–</div><div class="sc-label">Aktive Einsätze</div><div class="sc-icon">🚨</div></div>
+          <div class="stat-card green" id="stat-duty"><div class="sc-val" id="s-duty">–</div><div class="sc-label">Personal im Dienst</div><div class="sc-icon">👨‍⚕️</div></div>
+          <div class="stat-card yellow"><div class="sc-val" id="s-today">–</div><div class="sc-label">Einsätze heute</div><div class="sc-icon">📊</div></div>
+          <div class="stat-card blue"><div class="sc-val" id="s-patients">–</div><div class="sc-label">Patienten gesamt</div><div class="sc-icon">🏥</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="card">
+            <div class="card-head"><span><span class="ch-icon">🚨</span> Aktive Einsätze</span>
+              <button class="btn btn-red btn-sm" onclick="showPage('new-einsatz')">+ Neu</button></div>
+            <div id="dash-einsaetze"><div style="color:#aaa;text-align:center;padding:20px;font-style:italic">Laden…</div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span><span class="ch-icon">👨‍⚕️</span> Personal im Dienst</span></div>
+            <div id="dash-team"><div style="color:#aaa;text-align:center;padding:20px;font-style:italic">Laden…</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EINSÄTZE -->
+      <div class="page" id="page-einsaetze">
+        <div class="page-title" style="justify-content:space-between">
+          <span>🚨 Einsätze</span>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="filt-status" style="width:auto" onchange="loadEinsaetze()">
+              <option value="">Alle</option><option value="Aktiv">Aktiv</option>
+              <option value="Abgeschlossen">Abgeschlossen</option></select>
+            <button class="btn btn-red btn-sm" onclick="showPage('new-einsatz')">+ Neuer Einsatz</button>
+          </div>
+        </div>
+        <div id="einsatz-list"></div>
+      </div>
+
+      <!-- NEUER EINSATZ -->
+      <div class="page" id="page-new-einsatz">
+        <div class="page-title">➕ Neuer Einsatz</div>
+        <div class="card">
+          <div class="form-row">
+            <div class="fg"><label>Einsatzart *</label>
+              <select id="ne-type">
+                <option value="">– Bitte wählen –</option>
+                <option>Verkehrsunfall</option><option>Herzstillstand / Reanimation</option>
+                <option>Atemnot / Asthmaanfall</option><option>Bewusstlosigkeit</option>
+                <option>Schlaganfall</option><option>Schussverletzung</option>
+                <option>Schnittverletzung</option><option>Sturz / Trauma</option>
+                <option>Vergiftung / Überdosis</option><option>Brand / Rauchgasvergiftung</option>
+                <option>Psychische Krise</option><option>Geburt</option>
+                <option>Sonstiges</option>
+              </select>
+            </div>
+            <div class="fg"><label>Priorität *</label>
+              <select id="ne-prio">
+                <option value="1">🔴 Priorität 1 – Notfall (lebensbedrohlich)</option>
+                <option value="2">🟠 Priorität 2 – Dringend</option>
+                <option value="3" selected>🟡 Priorität 3 – Normal</option>
+                <option value="4">🟢 Priorität 4 – Gering</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label>Einsatzort *</label><input id="ne-ort" placeholder="z.B. Kaiserstraße 12, Karlsruhe"></div>
+          <div class="form-row">
+            <div class="fg"><label>Anzahl Patienten</label><input type="number" id="ne-anz" value="1" min="0"></div>
+            <div class="fg"><label>Eingesetzte Einheiten</label><input id="ne-einheiten" placeholder="z.B. RTW-1, NEF-2"></div>
+          </div>
+          <div class="fg"><label>Beschreibung / Lage</label><textarea id="ne-desc" placeholder="Einsatzbeschreibung, Lage vor Ort, besondere Hinweise…"></textarea></div>
+          <div id="ne-err" style="color:#e53935;font-size:12px;min-height:16px;margin-bottom:8px"></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-red" onclick="createEinsatz()">🚨 Einsatz starten</button>
+            <button class="btn btn-gray" onclick="showPage('einsaetze')">Abbrechen</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATIENTEN -->
+      <div class="page" id="page-patienten">
+        <div class="page-title" style="justify-content:space-between">
+          <span>🏥 Patientenakten</span>
+          <button class="btn btn-red btn-sm" onclick="showPage('new-patient')">+ Neue Akte</button>
+        </div>
+        <div class="card">
+          <input id="p-search" placeholder="🔍 Name suchen…" onkeyup="loadPatienten()" style="margin-bottom:14px">
+          <table>
+            <thead><tr><th>Name</th><th>Roblox</th><th>Geburtsdatum</th><th>Letzte Behandlung</th><th>Status</th><th></th></tr></thead>
+            <tbody id="patienten-tbody"><tr class="empty-row"><td colspan="6">Laden…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NEUE PATIENTEN AKTE -->
+      <div class="page" id="page-new-patient">
+        <div class="page-title">➕ Neuer Patient / Eintrag</div>
+        <div class="card">
+          <div class="form-row">
+            <div class="fg"><label>Bürger suchen (optional)</label>
+              <input id="np-search" placeholder="Discord-Tag oder Roblox-Name" oninput="searchCitizen()">
+              <div id="np-results" style="border:1px solid #ddd;border-radius:4px;display:none;max-height:150px;overflow-y:auto"></div>
+            </div>
+            <div class="fg"><label>Vollständiger Name</label><input id="np-name" placeholder="Vor- und Nachname"></div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label>Roblox-Name</label><input id="np-roblox" placeholder="RobloxName"></div>
+            <div class="fg"><label>Geburtsdatum (RP)</label><input type="date" id="np-dob"></div>
+          </div>
+          <div class="fg"><label>Allergien / Vorerkrankungen</label><input id="np-allergien" placeholder="z.B. Penicillin-Allergie, Diabetes"></div>
+          <div class="fg"><label>Blutgruppe</label>
+            <select id="np-blut">
+              <option value="">Unbekannt</option><option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
+              <option>0+</option><option>0-</option>
+            </select>
+          </div>
+          <hr style="margin:16px 0;border:none;border-top:1px solid #f0f0f0">
+          <div style="font-weight:700;margin-bottom:12px;font-size:14px">Behandlungseintrag</div>
+          <div class="form-row">
+            <div class="fg"><label>Diagnose *</label><input id="np-diagnose" placeholder="z.B. Polytrauma nach Verkehrsunfall"></div>
+            <div class="fg"><label>Einsatz-Typ</label>
+              <select id="np-typ">
+                <option>Notfallbehandlung</option><option>Erstversorgung</option>
+                <option>Krankentransport</option><option>Nachsorge</option><option>Sonstige Behandlung</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label>Behandlung / Maßnahmen</label>
+            <textarea id="np-behandlung" placeholder="Durchgeführte Maßnahmen, verabreichte Medikamente, Vitalwerte…"></textarea></div>
+          <div class="fg"><label>Outcome / Ergebnis</label>
+            <select id="np-outcome">
+              <option value="Transportiert">Transportiert (Krankenhaus)</option>
+              <option value="Vor Ort behandelt">Vor Ort behandelt (entlassen)</option>
+              <option value="Verstorben">Verstorben</option>
+              <option value="Abgebrochen">Behandlung verweigert</option>
+            </select>
+          </div>
+          <div id="np-err" style="color:#e53935;font-size:12px;min-height:16px;margin-bottom:8px"></div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-red" onclick="createPatient()">💾 Akte speichern</button>
+            <button class="btn btn-gray" onclick="showPage('patienten')">Abbrechen</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BERICHTE -->
+      <div class="page" id="page-berichte">
+        <div class="page-title">📋 Einsatzberichte</div>
+        <div class="card">
+          <table>
+            <thead><tr><th>#</th><th>Datum</th><th>Art</th><th>Ort</th><th>Prio</th><th>Personal</th><th>Status</th></tr></thead>
+            <tbody id="berichte-tbody"><tr class="empty-row"><td colspan="7">Laden…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TEAM -->
+      <div class="page" id="page-team">
+        <div class="page-title">👨‍⚕️ Team – Aktueller Dienststatus</div>
+        <div class="card">
+          <table>
+            <thead><tr><th>Name</th><th>Dienstnummer</th><th>Rang</th><th>Status</th></tr></thead>
+            <tbody id="team-tbody"><tr class="empty-row"><td colspan="4">Laden…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PROFIL -->
+      <div class="page" id="page-profil">
+        <div class="page-title">👤 Mein Profil</div>
+        <div class="card" id="profil-content" style="max-width:480px"></div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main-layout -->
+
+  <!-- MOBILE NAV -->
+  <nav class="mobile-nav">
+    <button class="mob-btn active" onclick="showPage('dashboard')"><span>📊</span>Lagebild</button>
+    <button class="mob-btn" onclick="showPage('einsaetze')"><span>🚨</span>Einsätze</button>
+    <button class="mob-btn" onclick="showPage('new-einsatz')"><span>➕</span>Neu</button>
+    <button class="mob-btn" onclick="showPage('patienten')"><span>🏥</span>Patienten</button>
+    <button class="mob-btn" onclick="showPage('profil')"><span>👤</span>Profil</button>
+  </nav>
+</div><!-- /app -->
+
+<!-- PATIENT DETAIL MODAL -->
+<div class="modal-bg" id="modal-patient">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-head">
+      <h3>🏥 Patientenakte</h3>
+      <button class="modal-close" onclick="closeModal('modal-patient')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-patient-body"></div>
+  </div>
+</div>
+
+<!-- EINSATZ DETAIL MODAL -->
+<div class="modal-bg" id="modal-einsatz">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-head">
+      <h3>🚨 Einsatz</h3>
+      <button class="modal-close" onclick="closeModal('modal-einsatz')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-einsatz-body"></div>
+    <div class="modal-foot" id="modal-einsatz-foot"></div>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://vekozqxmawzatvyofsxq.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZla296cXhtYXd6YXR2eW9mc3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NzIwMDksImV4cCI6MjA4ODU0ODAwOX0.ASzxEi8Tmnv7AFd5vFV4Hw12FxzA8ysjEoTlXDLMYaE';
+const db = supabase.createClient(SB_URL, SB_KEY);
+
+let U = null; // aktueller Nutzer
+
+// ── BOOT ─────────────────────────────────────────────────────
+const BOOT_STEPS = [
+  'BIOS OK','CPU OK','NETZWERK: VERBUNDEN',
+  'SUPABASE: VERBUNDEN','DATENBANK GELADEN','RETTUNGSNET v1.0: BEREIT'
+];
+let bi = 0;
+function bootStep() {
+  if(bi >= BOOT_STEPS.length) {
+    setTimeout(() => {
+      document.getElementById('boot').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }, 400);
+    return;
+  }
+  document.getElementById('boot-status').textContent = '▸ ' + BOOT_STEPS[bi];
+  document.getElementById('boot-prog').style.width = ((bi+1)/BOOT_STEPS.length*100) + '%';
+  bi++;
+  setTimeout(bootStep, 250);
+}
+window.addEventListener('DOMContentLoaded', () => setTimeout(bootStep, 400));
+
+// ── NOTIFY ───────────────────────────────────────────────────
+function notify(msg, type='info') {
+  const el = document.createElement('div');
+  el.className = 'notify-item' + (type==='ok'?' ok':type==='warn'?' warn':'');
+  el.textContent = msg;
+  document.getElementById('notify').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// ── MODAL ────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── PAGES ────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.toggle('active', i.dataset.page===id));
+  document.querySelectorAll('.mob-btn').forEach(b => b.classList.remove('active'));
+  if(id==='dashboard') loadDashboard();
+  else if(id==='einsaetze') loadEinsaetze();
+  else if(id==='patienten') loadPatienten();
+  else if(id==='berichte') loadBerichte();
+  else if(id==='team') loadTeam();
+  else if(id==='profil') loadProfil();
+}
+
+// ── AUTH ─────────────────────────────────────────────────────
+async function doLogin() {
+  const dienst = document.getElementById('l-dienst').value.trim().toUpperCase();
+  const pass   = document.getElementById('l-pass').value;
+  if(!dienst || !pass) { document.getElementById('lerr').textContent='Alle Felder ausfüllen.'; return; }
+  const {data, error} = await db.from('officers').select('*').eq('dienst', dienst).single();
+  if(!data || data.password !== pass) {
+    document.getElementById('lerr').textContent = 'Ungültige Zugangsdaten.'; return;
+  }
+  if(data.suspended) { document.getElementById('lerr').textContent = 'Zugang gesperrt.'; return; }
+  U = data;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('topbar-user').innerHTML = `<span>👨‍⚕️</span> ${U.name} · <small style="opacity:.8">${U.rank||'Sanitäter'}</small>`;
+  await logAction('LOGIN', `${U.name} (${U.dienst}) angemeldet`);
+  loadDashboard();
+  notify(`👋 Willkommen, ${U.name}!`, 'ok');
+}
+
+async function doLogout() {
+  if(U) {
+    if(U.status==='on') await db.from('officers').update({status:'off'}).eq('id',U.id);
+    await logAction('LOGOUT', `${U.name} abgemeldet`);
+  }
+  U = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+async function toggleDuty() {
+  if(!U) return;
+  const newStatus = U.status==='on' ? 'off' : 'on';
+  await db.from('officers').update({status:newStatus}).eq('id',U.id);
+  U.status = newStatus;
+  const dot = document.getElementById('duty-dot');
+  const lbl = document.getElementById('duty-label');
+  if(newStatus==='on') {
+    dot.classList.remove('red'); lbl.textContent='Im Dienst';
+    notify('✅ Dienst gestartet', 'ok');
+    document.getElementById('alarm-banner').style.display = 'block';
+  } else {
+    dot.classList.add('red'); lbl.textContent='Kein Dienst';
+    notify('🔴 Dienst beendet');
+    document.getElementById('alarm-banner').style.display = 'none';
+  }
+  await logAction('DIENST', `${U.name}: ${newStatus==='on'?'Dienst begonnen':'Dienst beendet'}`);
+  loadDashboard();
+}
+
+// ── LOG ──────────────────────────────────────────────────────
+async function logAction(action, detail) {
+  await db.from('logs').insert([{username: U?.name||'System', action, detail}]);
+}
+
+// ── DASHBOARD ────────────────────────────────────────────────
+async function loadDashboard() {
+  // Stats
+  const [{data:aktiv},{data:heute},{data:duty},{data:patients}] = await Promise.all([
+    db.from('rettung_einsaetze').select('id',{count:'exact'}).eq('status','Aktiv'),
+    db.from('rettung_einsaetze').select('id',{count:'exact'}).gte('created_at', new Date().toISOString().split('T')[0]),
+    db.from('officers').select('id',{count:'exact'}).eq('status','on'),
+    db.from('rettung_patienten').select('id',{count:'exact'}),
+  ]);
+  document.getElementById('s-aktiv').textContent  = aktiv?.length ?? '–';
+  document.getElementById('s-today').textContent  = heute?.length ?? '–';
+  document.getElementById('s-duty').textContent   = duty?.length  ?? '–';
+  document.getElementById('s-patients').textContent = patients?.length ?? '–';
+
+  // Aktive Einsätze
+  const {data:activeE} = await db.from('rettung_einsaetze').select('*').eq('status','Aktiv').order('created_at',{ascending:false}).limit(5);
+  const de = document.getElementById('dash-einsaetze');
+  if(!activeE?.length) { de.innerHTML='<div style="color:#aaa;text-align:center;padding:20px;font-style:italic">Keine aktiven Einsätze</div>'; }
+  else de.innerHTML = activeE.map(e=>`
+    <div class="einsatz-card prio${e.prioritaet}" onclick="openEinsatz(${e.id})" style="margin-bottom:8px">
+      <div class="ec-head"><div><div class="ec-nr">E-${e.id}</div><div class="ec-type">${e.typ}</div></div>
+        <span class="badge badge-red">Prio ${e.prioritaet}</span></div>
+      <div class="ec-ort">📍 ${e.ort}</div>
+      <div class="ec-time">${new Date(e.created_at).toLocaleString('de-DE')}</div>
+    </div>`).join('');
+
+  // Dienst-Team
+  const {data:onDuty} = await db.from('officers').select('*').eq('status','on').order('name');
+  const dt = document.getElementById('dash-team');
+  if(!onDuty?.length) { dt.innerHTML='<div style="color:#aaa;text-align:center;padding:20px;font-style:italic">Kein Personal im Dienst</div>'; }
+  else dt.innerHTML = onDuty.map(o=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:4px;background:#f9f9f9;margin-bottom:6px">
+      <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#e53935,#b71c1c);
+        display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px">👨‍⚕️</div>
+      <div><div style="font-weight:600;font-size:13px">${o.name}</div>
+        <div style="font-size:11px;color:#888">${o.rank||'Sanitäter'} · ${o.dienst}</div></div>
+      <span class="badge badge-green" style="margin-left:auto">Im Dienst</span>
+    </div>`).join('');
+}
+
+// ── EINSÄTZE ─────────────────────────────────────────────────
+async function loadEinsaetze() {
+  const status = document.getElementById('filt-status')?.value;
+  let q = db.from('rettung_einsaetze').select('*').order('created_at',{ascending:false}).limit(50);
+  if(status) q = q.eq('status', status);
+  const {data} = await q;
+  const el = document.getElementById('einsatz-list');
+  if(!data?.length) { el.innerHTML='<div class="card" style="color:#aaa;text-align:center;padding:32px;font-style:italic">Keine Einsätze gefunden</div>'; return; }
+  el.innerHTML = data.map(e=>`
+    <div class="einsatz-card prio${e.prioritaet}${e.status==='Abgeschlossen'?' done':''}" onclick="openEinsatz(${e.id})">
+      <div class="ec-head">
+        <div><div class="ec-nr">E-${e.id} · ${new Date(e.created_at).toLocaleString('de-DE')}</div>
+          <div class="ec-type">${e.typ}</div></div>
+        <div style="display:flex;gap:6px;flex-direction:column;align-items:flex-end">
+          <span class="badge ${e.status==='Aktiv'?'badge-red':'badge-gray'}">${e.status}</span>
+          <span class="badge badge-orange">Prio ${e.prioritaet}</span>
+        </div>
+      </div>
+      <div class="ec-ort">📍 ${e.ort}</div>
+      <div class="ec-meta">
+        ${e.einheiten?`<span style="font-size:11px;color:#888">🚑 ${e.einheiten}</span>`:''}
+        <span style="font-size:11px;color:#888">👤 ${e.bearbeiter||'–'}</span>
+        ${e.anzahl_patienten?`<span style="font-size:11px;color:#888">🏥 ${e.anzahl_patienten} Patient(en)</span>`:''}
+      </div>
+    </div>`).join('');
+}
+
+async function openEinsatz(id) {
+  const {data:e} = await db.from('rettung_einsaetze').select('*').eq('id',id).single();
+  if(!e) return;
+  const body = document.getElementById('modal-einsatz-body');
+  const prios = ['','🔴 Notfall (lebensbedrohlich)','🟠 Dringend','🟡 Normal','🟢 Gering'];
+  body.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Einsatz-Nr</div><div style="font-size:20px;font-weight:800;color:#e53935">E-${e.id}</div></div>
+      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Status</div><span class="badge ${e.status==='Aktiv'?'badge-red':'badge-gray'}">${e.status}</span></div>
+      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Art</div><div style="font-weight:600">${e.typ}</div></div>
+      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Priorität</div><div class="prio-${e.prioritaet}">${prios[e.prioritaet]||e.prioritaet}</div></div>
+      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Ort</div><div>${e.ort}</div></div>
+      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Bearbeiter</div><div>${e.bearbeiter||'–'}</div></div>
+      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Einheiten</div><div>${e.einheiten||'–'}</div></div>
+      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Patienten</div><div>${e.anzahl_patienten||0}</div></div>
+    </div>
+    ${e.beschreibung?`<div style="background:#f9f9f9;border-radius:6px;padding:12px;margin-bottom:12px"><div style="font-size:11px;color:#999;font-weight:600;margin-bottom:6px;text-transform:uppercase">Beschreibung</div>${e.beschreibung}</div>`:''}
+    <div style="font-size:11px;color:#999">Erstellt: ${new Date(e.created_at).toLocaleString('de-DE')}</div>`;
+  const foot = document.getElementById('modal-einsatz-foot');
+  foot.innerHTML = '';
+  if(e.status==='Aktiv') {
+    const btn = document.createElement('button');
+    btn.className='btn btn-green'; btn.textContent='✅ Einsatz abschließen';
+    btn.onclick = async() => { await db.from('rettung_einsaetze').update({status:'Abgeschlossen'}).eq('id',id); closeModal('modal-einsatz'); loadEinsaetze(); loadDashboard(); notify('Einsatz abgeschlossen','ok'); await logAction('EINSATZ_ABGESCHLOSSEN',`E-${id}: ${e.typ}`); };
+    foot.appendChild(btn);
+  }
+  const closeBtn = document.createElement('button');
+  closeBtn.className='btn btn-gray'; closeBtn.textContent='Schließen';
+  closeBtn.onclick=()=>closeModal('modal-einsatz');
+  foot.appendChild(closeBtn);
+  openModal('modal-einsatz');
+}
+
+async function createEinsatz() {
+  const typ  = document.getElementById('ne-type').value;
+  const ort  = document.getElementById('ne-ort').value.trim();
+  const prio = document.getElementById('ne-prio').value;
+  const desc = document.getElementById('ne-desc').value.trim();
+  const anz  = parseInt(document.getElementById('ne-anz').value)||0;
+  const einh = document.getElementById('ne-einheiten').value.trim();
+  const err  = document.getElementById('ne-err');
+  if(!typ) { err.textContent='Bitte Einsatzart wählen.'; return; }
+  if(!ort) { err.textContent='Bitte Einsatzort eingeben.'; return; }
+  err.textContent='';
+  const {data,error} = await db.from('rettung_einsaetze').insert([{
+    typ, ort, prioritaet:parseInt(prio), beschreibung:desc,
+    anzahl_patienten:anz, einheiten:einh, status:'Aktiv',
+    bearbeiter: U?.name||'Unbekannt'
+  }]).select().single();
+  if(error) { err.textContent='Fehler: '+error.message; return; }
+  await logAction('EINSATZ_ERSTELLT', `E-${data.id}: ${typ} – ${ort}`);
+  notify('🚨 Einsatz E-'+data.id+' gestartet!','ok');
+  ['ne-type','ne-ort','ne-desc','ne-einheiten'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ne-anz').value='1';
+  showPage('einsaetze');
+}
+
+// ── PATIENTEN ────────────────────────────────────────────────
+async function loadPatienten() {
+  const search = document.getElementById('p-search')?.value?.toLowerCase()||'';
+  let {data} = await db.from('rettung_patienten').select('*').order('created_at',{ascending:false}).limit(100);
+  if(search && data) data = data.filter(p=>(p.name||'').toLowerCase().includes(search)||(p.roblox_name||'').toLowerCase().includes(search));
+  const tbody = document.getElementById('patienten-tbody');
+  if(!data?.length) { tbody.innerHTML='<tr class="empty-row"><td colspan="6">Keine Patienten gefunden</td></tr>'; return; }
+  tbody.innerHTML = data.map(p=>`
+    <tr>
+      <td style="font-weight:600">${p.name||'–'}</td>
+      <td>${p.roblox_name||'–'}</td>
+      <td>${p.dob ? new Date(p.dob).toLocaleDateString('de-DE') : '–'}</td>
+      <td>${p.letzte_behandlung ? new Date(p.letzte_behandlung).toLocaleDateString('de-DE') : '–'}</td>
+      <td><span class="badge ${p.blutgruppe?'badge-red':'badge-gray'}">${p.blutgruppe||'Unbekannt'}</span></td>
+      <td><button class="btn btn-gray btn-sm" onclick="openPatient(${p.id})">Akte →</button></td>
+    </tr>`).join('');
+}
+
+async function openPatient(id) {
+  const [{data:p},{data:behandlungen}] = await Promise.all([
+    db.from('rettung_patienten').select('*').eq('id',id).single(),
+    db.from('rettung_behandlungen').select('*').eq('patient_id',id).order('created_at',{ascending:false})
+  ]);
+  if(!p) return;
+  const body = document.getElementById('modal-patient-body');
+  body.innerHTML = `
+    <div class="patient-head">
+      <div class="patient-avatar">🏥</div>
+      <div class="patient-info">
+        <h2>${p.name||'Unbekannt'}</h2>
+        <p>Roblox: ${p.roblox_name||'–'} · Geb.: ${p.dob?new Date(p.dob).toLocaleDateString('de-DE'):'–'}</p>
+        <p style="margin-top:4px">${p.blutgruppe?`🩸 Blutgruppe: <strong>${p.blutgruppe}</strong>`:''} ${p.allergien?`⚠️ Allergien: <strong>${p.allergien}</strong>`:''}</p>
+      </div>
+    </div>
+    <div style="font-weight:700;margin-bottom:12px">Behandlungshistorie</div>
+    ${!behandlungen?.length?'<div style="color:#aaa;text-align:center;padding:20px;font-style:italic">Keine Behandlungen</div>':
+    `<div class="timeline">${behandlungen.map(b=>`
+      <div class="tl-item">
+        <div class="tl-time">${new Date(b.created_at).toLocaleString('de-DE')} · ${b.bearbeiter||'–'}</div>
+        <div class="tl-type">${b.typ||'Behandlung'}</div>
+        <div style="font-weight:600;margin-top:2px">${b.diagnose||''}</div>
+        <div class="tl-text">${b.behandlung||''}</div>
+        ${b.outcome?`<span class="badge ${b.outcome==='Transportiert'?'badge-blue':b.outcome==='Verstorben'?'badge-red':'badge-green'}" style="margin-top:6px">${b.outcome}</span>`:''}
+      </div>`).join('')}</div>`}
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f0f0f0">
+      <button class="btn btn-red btn-sm" onclick="quickNewTreatment(${id})">+ Neue Behandlung</button>
+    </div>`;
+  openModal('modal-patient');
+}
+
+function quickNewTreatment(patientId) {
+  closeModal('modal-patient');
+  document.getElementById('np-name').value = '';
+  showPage('new-patient');
+  window._currentPatientId = patientId;
+}
+
+async function searchCitizen() {
+  const q = document.getElementById('np-search').value.trim();
+  if(q.length < 2) { document.getElementById('np-results').style.display='none'; return; }
+  const {data} = await db.from('citizens').select('*').or(`name.ilike.%${q}%,discord_tag.ilike.%${q}%,roblox_name.ilike.%${q}%`).limit(5);
+  const res = document.getElementById('np-results');
+  if(!data?.length) { res.style.display='none'; return; }
+  res.style.display='block';
+  res.innerHTML = data.map(c=>`<div style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:12px" onmousedown="fillCitizen(${JSON.stringify(c).replace(/"/g,'&quot;')})">${c.name} <span style="color:#999">(${c.discord_tag||c.roblox_name||''})</span></div>`).join('');
+}
+
+function fillCitizen(c) {
+  document.getElementById('np-name').value    = c.name||'';
+  document.getElementById('np-roblox').value  = c.roblox_name||'';
+  document.getElementById('np-dob').value     = c.dob||'';
+  document.getElementById('np-search').value  = c.name||'';
+  document.getElementById('np-results').style.display = 'none';
+  window._linkedCitizenId = c.id;
+}
+
+async function createPatient() {
+  const name      = document.getElementById('np-name').value.trim();
+  const diagnose  = document.getElementById('np-diagnose').value.trim();
+  const behandlung= document.getElementById('np-behandlung').value.trim();
+  const err       = document.getElementById('np-err');
+  if(!name)     { err.textContent='Name erforderlich.'; return; }
+  if(!diagnose) { err.textContent='Diagnose erforderlich.'; return; }
+  err.textContent='';
+
+  // Patient anlegen oder bestehenden finden
+  let patientId = window._currentPatientId||null;
+  if(!patientId) {
+    const existing = await db.from('rettung_patienten').select('id').eq('name',name).maybeSingle();
+    if(existing.data) {
+      patientId = existing.data.id;
+    } else {
+      const {data:np} = await db.from('rettung_patienten').insert([{
+        name, roblox_name:document.getElementById('np-roblox').value.trim(),
+        dob:document.getElementById('np-dob').value||null,
+        blutgruppe:document.getElementById('np-blut').value||null,
+        allergien:document.getElementById('np-allergien').value.trim()||null,
+        citizen_id:window._linkedCitizenId||null,
+        letzte_behandlung:new Date().toISOString()
+      }]).select().single();
+      if(!np) { err.textContent='Fehler beim Anlegen des Patienten.'; return; }
+      patientId = np.id;
+    }
+  }
+
+  // Behandlung speichern
+  await db.from('rettung_behandlungen').insert([{
+    patient_id:patientId, diagnose, behandlung,
+    typ:document.getElementById('np-typ').value,
+    outcome:document.getElementById('np-outcome').value,
+    bearbeiter:U?.name||'Unbekannt'
+  }]);
+  // letzte_behandlung aktualisieren
+  await db.from('rettung_patienten').update({letzte_behandlung:new Date().toISOString()}).eq('id',patientId);
+  await logAction('PATIENT_BEHANDELT',`${name}: ${diagnose}`);
+  notify('✅ Patientenakte gespeichert','ok');
+  window._currentPatientId = null;
+  window._linkedCitizenId  = null;
+  ['np-search','np-name','np-roblox','np-diagnose','np-behandlung','np-allergien'].forEach(id=>document.getElementById(id).value='');
+  showPage('patienten');
+}
+
+// ── BERICHTE ─────────────────────────────────────────────────
+async function loadBerichte() {
+  const {data} = await db.from('rettung_einsaetze').select('*').order('created_at',{ascending:false}).limit(100);
+  const tbody = document.getElementById('berichte-tbody');
+  const prios=['','🔴','🟠','🟡','🟢'];
+  if(!data?.length) { tbody.innerHTML='<tr class="empty-row"><td colspan="7">Keine Einsätze</td></tr>'; return; }
+  tbody.innerHTML = data.map(e=>`
+    <tr style="cursor:pointer" onclick="openEinsatz(${e.id})">
+      <td style="font-weight:700;color:#e53935">E-${e.id}</td>
+      <td>${new Date(e.created_at).toLocaleDateString('de-DE')}</td>
+      <td>${e.typ}</td><td>${e.ort}</td>
+      <td>${prios[e.prioritaet]||''} ${e.prioritaet}</td>
+      <td>${e.bearbeiter||'–'}</td>
+      <td><span class="badge ${e.status==='Aktiv'?'badge-red':'badge-gray'}">${e.status}</span></td>
+    </tr>`).join('');
+}
+
+// ── TEAM ─────────────────────────────────────────────────────
+async function loadTeam() {
+  const {data} = await db.from('officers').select('*').order('name');
+  const tbody = document.getElementById('team-tbody');
+  if(!data?.length) { tbody.innerHTML='<tr class="empty-row"><td colspan="4">Keine Einträge</td></tr>'; return; }
+  tbody.innerHTML = data.map(o=>`
+    <tr>
+      <td style="font-weight:600">${o.name}</td>
+      <td style="font-family:monospace">${o.dienst}</td>
+      <td>${o.rank||'Sanitäter'}</td>
+      <td><span class="badge ${o.status==='on'?'badge-green':'badge-gray'}">${o.status==='on'?'Im Dienst':'Außer Dienst'}</span></td>
+    </tr>`).join('');
+}
+
+// ── PROFIL ───────────────────────────────────────────────────
+function loadProfil() {
+  if(!U) return;
+  document.getElementById('profil-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#e53935,#b71c1c);
+        display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px">👨‍⚕️</div>
+      <div><div style="font-size:20px;font-weight:800">${U.name}</div>
+        <div style="font-size:13px;color:#888">${U.rank||'Sanitäter'} · ${U.dienst}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:#f9f9f9;border-radius:6px;padding:12px">
+        <div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase;margin-bottom:4px">Status</div>
+        <span class="badge ${U.status==='on'?'badge-green':'badge-gray'}">${U.status==='on'?'Im Dienst':'Außer Dienst'}</span>
+      </div>
+      <div style="background:#f9f9f9;border-radius:6px;padding:12px">
+        <div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase;margin-bottom:4px">Dienstnummer</div>
+        <div style="font-family:monospace;font-weight:700">${U.dienst}</div>
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>
+PYEOF
