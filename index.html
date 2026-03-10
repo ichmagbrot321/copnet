@@ -566,6 +566,12 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
           <div style="text-align:center;margin-top:10px;font-size:12px;color:#888">Noch kein Konto? <span style="color:#0078d4;cursor:pointer;font-weight:700" onclick="showReg()">Registrieren →</span></div>
         </div>
         <div id="cit-reg" style="display:none">
+          <!-- Discord Badge – wird nur bei Discord-Login gezeigt -->
+          <div id="discord-reg-badge" style="display:none;background:#5865F2;color:#fff;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:16px">🎮</span>
+            <span id="discord-reg-name" style="font-weight:700"></span>
+            <span style="opacity:.7;font-size:11px">· Discord verknüpft ✓</span>
+          </div>
           <div class="fg">
             <label>Roblox Name</label>
             <input id="r-name" placeholder="DeinRobloxName" autocomplete="off">
@@ -583,14 +589,17 @@ body{font-family:var(--font);font-size:13px;line-height:1.4;background:var(--des
             <input type="date" id="r-dob">
             <div style="font-size:10px;color:#888;margin-top:2px">Dein Geburtsdatum im Roleplay</div>
           </div>
-          <div class="fg"><label>E-Mail</label><input type="email" id="r-mail" placeholder="ihre@email.de"></div>
-          <div class="fg"><label>Passwort</label><input type="password" id="r-pass" placeholder="Passwort wählen"></div>
+          <!-- E-Mail & Passwort nur bei normaler Registrierung -->
+          <div id="reg-email-pass">
+            <div class="fg"><label>E-Mail</label><input type="email" id="r-mail" placeholder="ihre@email.de"></div>
+            <div class="fg"><label>Passwort</label><input type="password" id="r-pass" placeholder="Passwort wählen"></div>
+          </div>
           <button class="btn bp bfull" onclick="regCit()">✅ Konto erstellen</button>
           <div style="text-align:center;margin-top:8px"><span style="font-size:12px;color:#0078d4;cursor:pointer;font-weight:700" onclick="showLog()">← Zurück</span></div>
         </div>
       </div>
     </div>
-    <div class="login-foot">POLIZEI BADEN-WÜRTTEMBERG · COPNET v5.0 · ZUGRIFF PROTOKOLLIERT</div>
+    <div class="login-foot">POLIZEI KARLSRUHE · COPNET v5.0 · ZUGRIFF PROTOKOLLIERT</div>
   </div>
   <div style="position:relative;z-index:1;margin-top:16px;font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3);letter-spacing:2px">CopNet since 2018 – bring your Roleplay to the next level!</div>
 </div>
@@ -1318,7 +1327,12 @@ function checkShare() {
   const p = new URLSearchParams(window.location.search);
   const code  = p.get('code');
   const share = p.get('share');
-  if(code) { handleDiscordCallback(); return; }
+  if(code) {
+    // Login-Screen zuerst anzeigen, DANN Callback aufrufen
+    document.getElementById('login-screen').style.display = 'flex';
+    handleDiscordCallback();
+    return;
+  }
   if(share) showShareView(share);
   else document.getElementById('login-screen').style.display = 'flex';
 }
@@ -1352,11 +1366,15 @@ function renderAkte(a, notes, canEdit) {
 // ═══════════════════════════════════════
 function switchTab(t) {
   document.querySelectorAll('.login-tab').forEach((x,i) => x.classList.toggle('active',(i===0&&t==='off')||(i===1&&t==='cit')));
-  document.getElementById('tab-off').style.display = t==='off'?'block':'none';
-  document.getElementById('tab-cit').style.display = t==='cit'?'block':'none';
+  const tOff = document.getElementById('tab-off'); if(tOff) tOff.style.display = t==='off'?'block':'none';
+  const tCit = document.getElementById('tab-cit'); if(tCit) tCit.style.display = t==='cit'?'block':'none';
   hideErr();
 }
-function showReg() { document.getElementById('cit-log').style.display='none'; document.getElementById('cit-reg').style.display='block'; hideErr(); }
+function showReg() {
+  const cl = document.getElementById('cit-log'); if(cl) cl.style.display='none';
+  const cr = document.getElementById('cit-reg'); if(cr) cr.style.display='block';
+  hideErr();
+}
 function showLog() { document.getElementById('cit-log').style.display='block'; document.getElementById('cit-reg').style.display='none'; hideErr(); }
 
 async function loginOff() {
@@ -1957,27 +1975,31 @@ async function handleDiscordCallback() {
     } else {
       // Neu → Registrierungsformular vorausfüllen
       window.history.replaceState({}, document.title, '/');
-      // Login-Screen zeigen und Tab wechseln
-      if(ls) ls.style.display = 'flex';
-      // Kurz warten bis DOM bereit
-      await new Promise(r => setTimeout(r, 100));
-      const citTab = document.getElementById('tab-cit');
-      if(citTab) citTab.click(); else switchTab('cit');
-      await new Promise(r => setTimeout(r, 100));
+      // Login-Screen anzeigen und warten bis DOM gerendert
+      if(ls) { ls.style.display = 'flex'; ls.style.visibility = 'visible'; }
+      await new Promise(r => setTimeout(r, 300));
+      switchTab('cit');
+      await new Promise(r => setTimeout(r, 200));
       showReg();
-      // Discord-Daten im sessionStorage speichern
+      // Discord-Daten speichern
       sessionStorage.setItem('discord_pending', JSON.stringify({discord_id, discord_tag, discord_avatar, email}));
-      // E-Mail vorausfüllen
-      if(email) { const m = document.getElementById('r-mail'); if(m) m.value = email; }
-      notify('🎮 Discord verbunden als @'+discord_tag+' · Bitte Roblox-Daten eingeben','ok');
-      // Discord-Badge im Formular
-      const reg = document.getElementById('cit-reg');
-      if(reg) {
-        const banner = document.createElement('div');
-        banner.style.cssText = 'background:#e8f0fe;border:1px solid #bbdefb;border-radius:3px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#1a237e';
-        banner.innerHTML = '🎮 <strong>Discord verbunden:</strong> ' + discord_tag + (discord_avatar ? '<img src="'+discord_avatar+'" style="width:20px;height:20px;border-radius:50%;margin-left:6px;vertical-align:middle">' : '');
-        reg.prepend(banner);
+      // E-Mail/Passwort Felder verstecken – Discord übernimmt Auth
+      const epDiv = document.getElementById('reg-email-pass');
+      if(epDiv) epDiv.style.display = 'none';
+      // Discord Badge anzeigen
+      const badge = document.getElementById('discord-reg-badge');
+      const badgeName = document.getElementById('discord-reg-name');
+      if(badge) {
+        badge.style.display = 'flex';
+        if(badgeName) badgeName.textContent = '@' + discord_tag;
+        if(discord_avatar) {
+          const img = document.createElement('img');
+          img.src = discord_avatar;
+          img.style.cssText = 'width:24px;height:24px;border-radius:50%;margin-left:auto';
+          badge.appendChild(img);
+        }
       }
+      notify('🎮 Discord verbunden als @'+discord_tag+' · Bitte Roblox-Daten eingeben', 'ok');
     }
   } catch(err) {
     console.error('Discord OAuth error:', err);
@@ -1988,44 +2010,66 @@ async function handleDiscordCallback() {
   }
 }
 
-// Beim Registrieren Discord-Daten einbinden falls vorhanden
-const _origRegCit = regCit;
 async function regCit() {
   hideErr();
   const roblox_name = document.getElementById('r-name').value.trim();
   const roblox_at   = document.getElementById('r-roblox-at').value.trim().replace(/^@/,'');
   const dob         = document.getElementById('r-dob').value;
-  const email       = document.getElementById('r-mail').value.trim().toLowerCase();
-  const password    = document.getElementById('r-pass').value;
-  if(!roblox_name||!roblox_at||!dob||!email) { showErr('Bitte alle Pflichtfelder ausfüllen.'); return; }
+  const emailEl     = document.getElementById('r-mail');
+  const passEl      = document.getElementById('r-pass');
+  const email       = emailEl ? emailEl.value.trim().toLowerCase() : '';
+  const password    = passEl ? passEl.value : '';
 
-  // Discord-Daten aus sessionStorage holen falls vorhanden
+  // Discord-Daten aus sessionStorage holen
   let discordData = {};
   try {
     const pending = sessionStorage.getItem('discord_pending');
     if(pending) discordData = JSON.parse(pending);
   } catch(e) {}
 
-  const name = roblox_name + ' (@' + roblox_at + ')';
-  // Passwort nur wenn kein Discord-Login
-  const pw = discordData.discord_id ? (password || Math.random().toString(36).substr(2,10)) : password;
-  if(!discordData.discord_id && !pw) { showErr('Passwort eingeben.'); return; }
+  const isDiscord = !!discordData.discord_id;
 
-  const insertData = {name, dob, email, password:pw, status:'Aktiv', roblox_name, roblox_at};
-  if(discordData.discord_id) {
-    insertData.discord_id = discordData.discord_id;
-    insertData.discord_tag = discordData.discord_tag;
+  // Pflichtfelder prüfen
+  if(!roblox_name) { showErr('Bitte Roblox-Name eingeben.'); return; }
+  if(!roblox_at)   { showErr('Bitte Roblox @Username eingeben.'); return; }
+  if(!dob)         { showErr('Bitte RP-Geburtsdatum eingeben.'); return; }
+  if(!isDiscord && !email)    { showErr('Bitte E-Mail eingeben.'); return; }
+  if(!isDiscord && !password) { showErr('Bitte Passwort eingeben.'); return; }
+
+  const name = roblox_name + ' (@' + roblox_at + ')';
+  const pw   = isDiscord ? (password || Math.random().toString(36).substr(2,12)) : password;
+  const mail = isDiscord ? (discordData.email || email || null) : email;
+
+  const insertData = {name, dob, status:'Aktiv', roblox_name, roblox_at, password:pw};
+  if(mail) insertData.email = mail;
+  if(isDiscord) {
+    insertData.discord_id     = discordData.discord_id;
+    insertData.discord_tag    = discordData.discord_tag;
     insertData.discord_avatar = discordData.discord_avatar;
   }
 
   const {data:cit, error:ce} = await db.from('citizens').insert([insertData]).select().single();
-  if(ce) { showErr('Fehler: E-Mail bereits registriert.'); return; }
+  if(ce) {
+    if(ce.message && ce.message.includes('unique')) showErr('E-Mail oder Discord bereits registriert.');
+    else showErr('Fehler beim Erstellen: ' + ce.message);
+    return;
+  }
 
   const akteNum = 'AK-'+Date.now();
   const shareId = Math.random().toString(36).substr(2,14).toUpperCase();
-  await db.from('citizen_akten').insert([{akte_number:akteNum,citizen_id:cit.id,citizen_name:name,dob,email,status:'Aktiv',share_id:shareId}]);
-  await logDB('REGISTRIERUNG','Neuer Bürger: '+name+(discordData.discord_id?' (Discord: '+discordData.discord_tag+')':''));
+  await db.from('citizen_akten').insert([{
+    akte_number:akteNum, citizen_id:cit.id, citizen_name:name,
+    dob, email:mail||'', status:'Aktiv', share_id:shareId
+  }]);
+  await logDB('REGISTRIERUNG','Neuer Bürger: '+name+(isDiscord?' (Discord: @'+discordData.discord_tag+')':''));
   sessionStorage.removeItem('discord_pending');
+
+  // E-Mail/Passwort Felder wieder einblenden für nächste Nutzung
+  const epDiv = document.getElementById('reg-email-pass');
+  if(epDiv) epDiv.style.display = 'block';
+  const badge = document.getElementById('discord-reg-badge');
+  if(badge) badge.style.display = 'none';
+
   notify('✅ Konto erstellt! Akte '+akteNum+' wurde angelegt.','ok');
   U = {type:'citizen',...cit};
   startDesktop();
