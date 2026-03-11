@@ -2,889 +2,927 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>JustizNet Karlsruhe – Staatsanwaltschaft & Gericht</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>JustizNet · Karlsruhe</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --gold:#c9a84c;--gold-dark:#9a7a32;--navy:#1a1a2e;--navy2:#16213e;
-  --bg:#f4f1eb;--white:#fff;--border:#e0d8c8;
-  --text:#1a1a1a;--text2:#666;
-  --green:#2e7d32;--red:#c62828;--blue:#1565c0;
-  --font:'Georgia',serif;--sans:'Segoe UI',system-ui,sans-serif;
-  --shadow:0 2px 12px rgba(0,0,0,.08);
+  --a:#f59e0b;--a2:#d97706;--a3:#fcd34d;--ag:rgba(245,158,11,.12);
+  --bg:#05040a;--s1:#09080f;--s2:#0e0d16;--s3:#14121f;--s4:#1c1929;
+  --glass:rgba(9,8,15,.75);--glass2:rgba(20,18,31,.65);
+  --border:rgba(255,255,255,.05);--border2:rgba(245,158,11,.18);--borderA:rgba(245,158,11,.35);
+  --t1:#eee8d5;--t2:#7d7592;--t3:#3e3854;
+  --green:#10b981;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;--orange:#f97316;
+  --f:'Inter',sans-serif;--fg:'Space Grotesk',sans-serif;--fp:'Playfair Display',serif;--fm:'JetBrains Mono',monospace;
+  --r6:6px;--r10:10px;--r14:14px;--r20:20px;--r24:24px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:var(--f);background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden;font-size:14px}
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse 900px 700px at -5% 0%,rgba(245,158,11,.05) 0%,transparent 55%),
+  radial-gradient(ellipse 700px 900px at 105% 100%,rgba(139,92,246,.04) 0%,transparent 55%),
+  radial-gradient(ellipse 400px 400px at 50% 50%,rgba(245,158,11,.02) 0%,transparent 70%);
+  pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--s4)}
+::selection{background:var(--ag);color:var(--a3)}
 
-/* BOOT */
-#boot{position:fixed;inset:0;background:#0a0a0a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
-.boot-icon{font-size:70px;animation:scale .8s ease infinite alternate}
-@keyframes scale{from{transform:scale(1)}to{transform:scale(1.1)}}
-.boot-title{color:#c9a84c;font-family:var(--font);font-size:30px;letter-spacing:4px}
-.boot-sub{color:#888;font-size:11px;letter-spacing:3px;text-transform:uppercase}
-.boot-bar{width:280px;height:2px;background:#222;border-radius:1px;overflow:hidden}
-.boot-prog{height:100%;width:0;background:linear-gradient(90deg,#9a7a32,#c9a84c);transition:width .3s}
-.boot-status{color:#555;font-size:11px;letter-spacing:1px}
+/* ── BOOT ── */
+#boot{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px}
+.br{width:96px;height:96px;position:relative;display:flex;align-items:center;justify-content:center}
+.br::before{content:'';position:absolute;inset:0;border-radius:50%;border:1px solid var(--border2);animation:bspin 4s linear infinite}
+.br::after{content:'';position:absolute;inset:8px;border-radius:50%;border:1px solid rgba(245,158,11,.08);animation:bspin 6s linear infinite reverse}
+@keyframes bspin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.bi{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--s3),var(--s4));border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 40px rgba(245,158,11,.15),inset 0 0 20px rgba(245,158,11,.04)}
+.bt{font-family:var(--fp);font-size:30px;font-weight:700;letter-spacing:-.5px}
+.bt em{background:linear-gradient(135deg,var(--a2),var(--a),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.bsub{font-size:10px;color:var(--t3);letter-spacing:4px;text-transform:uppercase}
+.bb{width:260px;height:1px;background:var(--s4);overflow:hidden;border-radius:1px}
+.bf{height:100%;width:0;background:linear-gradient(90deg,var(--a2),var(--a),var(--a3));transition:width .35s ease;box-shadow:0 0 8px var(--a)}
+.bl{font-family:var(--fm);font-size:11px;color:var(--t3)}
 
-/* LAYOUT */
-#app{display:none;min-height:100vh}
-.topbar{background:linear-gradient(135deg,#1a1a2e,#16213e);height:56px;display:flex;
-  align-items:center;padding:0 20px;gap:16px;
-  box-shadow:0 2px 8px rgba(0,0,0,.3);position:sticky;top:0;z-index:100;
-  border-bottom:2px solid var(--gold)}
-.topbar-logo{display:flex;align-items:center;gap:10px;color:var(--gold);font-family:var(--font);font-size:18px;font-weight:700;letter-spacing:2px}
-.topbar-logo span{font-size:22px}
-.topbar-role{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);
-  color:var(--gold);padding:3px 12px;border-radius:20px;font-size:11px;letter-spacing:1px}
-.topbar-user{color:rgba(255,255,255,.8);font-size:13px;margin-left:auto}
-.topbar-btn{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.4);
-  color:var(--gold);padding:6px 14px;border-radius:4px;cursor:pointer;font-size:12px;font-family:var(--sans)}
-.topbar-btn:hover{background:rgba(201,168,76,.25)}
+/* ── LOGIN ── */
+#login{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+.lbox{width:100%;max-width:400px}
+.lc{text-align:center;margin-bottom:22px}
+.lico{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--s3),var(--s4));border:1px solid var(--border2);display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;box-shadow:0 8px 32px rgba(245,158,11,.15)}
+.lh{font-family:var(--fp);font-size:28px;font-weight:700}
+.lh em{background:linear-gradient(135deg,var(--a2),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.lsub{font-size:10px;color:var(--t3);letter-spacing:3px;text-transform:uppercase;margin-top:5px}
+.lcard{background:var(--glass);backdrop-filter:blur(24px);border:1px solid var(--border2);border-radius:var(--r24);padding:28px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.lerr{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5;font-size:12px;padding:10px 14px;border-radius:var(--r6);margin-bottom:14px;display:none}
+.lfoot{text-align:center;margin-top:12px;font-size:10px;color:var(--t3);letter-spacing:2px;text-transform:uppercase}
 
-.main-layout{display:flex;min-height:calc(100vh - 56px)}
-.sidebar{width:230px;background:var(--navy);padding:16px 0;flex-shrink:0}
-.sidebar-section{color:#4a4a6a;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:12px 16px 4px;font-weight:700}
-.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;
-  color:#888;font-size:13px;transition:all .15s;border-left:3px solid transparent}
-.sidebar-item:hover{background:rgba(255,255,255,.05);color:#ccc}
-.sidebar-item.active{background:rgba(201,168,76,.1);color:var(--gold);border-left-color:var(--gold)}
-.sidebar-item .si{font-size:16px;width:20px;text-align:center}
-.content{flex:1;padding:28px;overflow-y:auto}
+/* ROLE TABS */
+.role-tabs{display:flex;background:var(--s2);border-radius:var(--r10);padding:3px;margin-bottom:20px;gap:3px}
+.role-tab{flex:1;padding:9px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;border-radius:8px;transition:all .15s;color:var(--t3);font-family:var(--fg)}
+.role-tab.act{background:var(--s4);color:var(--a3);box-shadow:0 2px 8px rgba(0,0,0,.3)}
 
-/* PAGES */
-.page{display:none}
-.page.active{display:block}
-.page-title{font-family:var(--font);font-size:24px;font-weight:700;color:var(--navy);
-  margin-bottom:20px;display:flex;align-items:center;gap:12px;
-  border-bottom:2px solid var(--gold);padding-bottom:12px}
-.page-title .pt-icon{font-size:26px}
-
-/* CARDS */
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:24px}
-.stat-card{background:var(--white);border-radius:6px;padding:18px;box-shadow:var(--shadow);
-  border-top:3px solid var(--gold);text-align:center}
-.stat-card .sc-val{font-size:34px;font-weight:800;color:var(--navy);font-family:var(--font)}
-.stat-card .sc-label{font-size:11px;color:var(--text2);margin-top:4px;letter-spacing:.5px;text-transform:uppercase}
-.stat-card.green{border-top-color:#43a047} .stat-card.green .sc-val{color:#2e7d32}
-.stat-card.red{border-top-color:#e53935} .stat-card.red .sc-val{color:#c62828}
-.stat-card.blue{border-top-color:#1976d2} .stat-card.blue .sc-val{color:#1565c0}
-
-.card{background:var(--white);border-radius:6px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
-.card-head{font-family:var(--font);font-size:15px;font-weight:700;color:var(--navy);
-  margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;
-  padding-bottom:10px;border-bottom:1px solid var(--border)}
-
-/* TABLE */
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:#f9f6f0;padding:10px 12px;text-align:left;font-weight:700;font-size:10px;
-  text-transform:uppercase;letter-spacing:.8px;color:var(--text2);border-bottom:2px solid var(--border)}
-td{padding:10px 12px;border-bottom:1px solid #f5f2ea;vertical-align:middle}
-tr:hover td{background:#faf7f0}
-.empty-row td{text-align:center;color:#aaa;padding:32px;font-style:italic}
-
-/* VERFAHREN KARTE */
-.vf-card{background:var(--white);border-radius:6px;border-left:4px solid var(--gold);
-  padding:16px;box-shadow:var(--shadow);margin-bottom:12px;cursor:pointer;transition:all .15s}
-.vf-card:hover{box-shadow:0 4px 20px rgba(201,168,76,.2);transform:translateY(-1px)}
-.vf-card.status-Anklage{border-left-color:#e65100}
-.vf-card.status-Verhandlung{border-left-color:#1565c0}
-.vf-card.status-Urteil{border-left-color:#2e7d32}
-.vf-card.status-Eingestellt{border-left-color:#9e9e9e;opacity:.7}
-.vf-az{font-size:11px;color:#999;font-weight:700;font-family:monospace}
-.vf-title{font-size:15px;font-weight:700;font-family:var(--font);color:var(--navy);margin-top:4px}
-.vf-sub{font-size:12px;color:var(--text2);margin-top:4px}
-.vf-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-
-/* BADGES */
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;
-  font-size:11px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
-.badge-gold{background:#fdf3db;color:#7a5c00;border:1px solid #e8cc6f}
-.badge-red{background:#ffebee;color:#c62828;border:1px solid #ef9a9a}
-.badge-green{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
-.badge-blue{background:#e3f2fd;color:#1565c0;border:1px solid #90caf9}
-.badge-gray{background:#f5f5f5;color:#616161;border:1px solid #e0e0e0}
-.badge-orange{background:#fff3e0;color:#e65100;border:1px solid #ffcc80}
-
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:4px;
-  cursor:pointer;font-size:13px;font-family:var(--sans);font-weight:600;border:1px solid;transition:all .15s}
-.btn-gold{background:var(--gold);color:var(--navy);border-color:var(--gold-dark)}
-.btn-gold:hover{background:var(--gold-dark);color:#fff}
-.btn-red{background:#e53935;color:#fff;border-color:#c62828}
-.btn-red:hover{background:#c62828}
-.btn-green{background:#43a047;color:#fff;border-color:#2e7d32}
-.btn-green:hover{background:#2e7d32}
-.btn-gray{background:#f5f5f5;color:var(--text);border-color:#ddd}
-.btn-gray:hover{background:#ebebeb}
-.btn-sm{padding:5px 10px;font-size:12px}
-
-/* FORMS */
+/* ── FORMS ── */
 .fg{margin-bottom:14px}
-.fg label{display:block;font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;
-  text-transform:uppercase;letter-spacing:.5px}
-input,select,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:4px;
-  font-size:13px;font-family:var(--sans);background:#fff;color:var(--text);transition:border-color .15s}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
-textarea{resize:vertical;min-height:90px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.form-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.fg label{display:block;font-size:10px;font-weight:600;color:var(--t3);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 14px;background:rgba(20,18,31,.8);border:1px solid var(--border);border-radius:var(--r6);font-size:13px;font-family:var(--f);color:var(--t1);outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(245,158,11,.1)}
+.fg select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%233e3854' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.fg textarea{resize:vertical;min-height:88px;line-height:1.55}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ac-wrap{position:relative}
+.ac-drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:rgba(14,13,22,.98);backdrop-filter:blur(20px);border:1px solid var(--border2);border-radius:var(--r10);z-index:300;max-height:190px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.8);display:none}
+.ac-item{padding:10px 14px;cursor:pointer;font-size:13px;transition:background .12s;border-bottom:1px solid var(--border)}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover{background:var(--s3)}
+.ac-item strong{display:block;font-weight:600}
+.ac-item span{font-size:11px;color:var(--t3)}
 
-/* MODAL */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:none;
-  align-items:center;justify-content:center;padding:20px}
-.modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:8px;width:100%;max-width:640px;max-height:90vh;
-  overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.4);border-top:3px solid var(--gold)}
-.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#faf7f0}
-.modal-head h3{font-family:var(--font);font-size:17px;font-weight:700;color:var(--navy)}
-.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:#888}
-.modal-body{padding:24px}
-.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:#faf7f0}
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 18px;border-radius:var(--r6);cursor:pointer;font-size:13px;font-family:var(--fg);font-weight:600;border:1px solid transparent;transition:all .15s;white-space:nowrap;user-select:none}
+.b-pri{background:linear-gradient(135deg,var(--a2),var(--a));color:#0a0810;border-color:var(--a2);box-shadow:0 2px 16px rgba(245,158,11,.35)}
+.b-pri:hover{box-shadow:0 4px 24px rgba(245,158,11,.55);transform:translateY(-1px)}
+.b-grn{background:rgba(16,185,129,.1);color:#34d399;border-color:rgba(16,185,129,.3)}
+.b-grn:hover{background:rgba(16,185,129,.18)}
+.b-ghost{background:rgba(255,255,255,.04);color:var(--t2);border-color:var(--border)}
+.b-ghost:hover{background:rgba(255,255,255,.07);color:var(--t1);border-color:var(--border2)}
+.b-danger{background:rgba(239,68,68,.08);color:#fca5a5;border-color:rgba(239,68,68,.25)}
+.b-danger:hover{background:rgba(239,68,68,.14)}
+.b-gold{background:var(--ag);color:var(--a3);border-color:rgba(245,158,11,.3)}
+.b-gold:hover{background:rgba(245,158,11,.18)}
+.b-sm{padding:6px 12px;font-size:12px}
+.b-full{width:100%}
+.btn:disabled{opacity:.3;cursor:not-allowed;transform:none!important}
 
-/* NOTIFY */
-#notify{position:fixed;top:70px;right:20px;z-index:9000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.notify-item{background:#fff;border-radius:6px;padding:12px 16px;box-shadow:0 4px 20px rgba(0,0,0,.2);
-  font-size:13px;max-width:320px;border-left:4px solid var(--gold);animation:slideIn .3s ease}
-.notify-item.ok{border-left-color:#43a047}.notify-item.err{border-left-color:#e53935}
-@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+/* ── LAYOUT ── */
+#app{display:none;min-height:100vh;position:relative;z-index:1}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:64px;background:var(--glass);backdrop-filter:blur(24px);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;align-items:flex-start;padding:12px 0;overflow:hidden;transition:width .22s cubic-bezier(.4,0,.2,1)}
+.sidebar:hover,.sidebar.exp{width:240px}
+.sb-logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--s3),var(--s4));border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;margin:0 12px 16px;box-shadow:0 4px 16px rgba(245,158,11,.15)}
+.sb-sec{font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;padding:10px 20px 3px;width:240px;white-space:nowrap;font-weight:700;opacity:0;transition:opacity .15s}
+.sidebar:hover .sb-sec,.sidebar.exp .sb-sec{opacity:1}
+.sbi{width:240px;display:flex;align-items:center;gap:11px;padding:9px 20px;cursor:pointer;color:var(--t3);font-size:13px;font-weight:500;transition:all .12s;white-space:nowrap;background:none;border:none;font-family:var(--fg);text-align:left}
+.sbi:hover{background:rgba(255,255,255,.04);color:var(--t1)}
+.sbi.act{background:linear-gradient(90deg,var(--ag),rgba(245,158,11,.03));color:var(--a3);border-left:2px solid var(--a)}
+.sbi .ico{width:18px;flex-shrink:0;font-size:15px;text-align:center}
+.sbi .lbl{opacity:0;transition:opacity .15s}
+.sidebar:hover .lbl,.sidebar.exp .lbl{opacity:1}
+.sb-bot{margin-top:auto;width:100%;border-top:1px solid var(--border);padding-top:8px}
+.topbar{position:sticky;top:0;z-index:50;height:56px;background:rgba(5,4,10,.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:14px}
+.tb-t{font-family:var(--fp);font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px;letter-spacing:-.3px}
+.tb-b{font-size:10px;background:var(--ag);color:var(--a3);padding:2px 9px;border-radius:20px;border:1px solid var(--border2);letter-spacing:.5px;font-weight:600;text-transform:uppercase}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.uchip{display:flex;align-items:center;gap:9px}
+.uava{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#0a0810;flex-shrink:0;box-shadow:0 0 12px rgba(245,158,11,.25)}
+.un{font-size:13px;font-weight:600;font-family:var(--fg)}
+.ur{font-size:10px;color:var(--t3)}
+.main{flex:1;margin-left:64px}
+.content{padding:24px 28px 80px}
 
-/* LOGIN */
-#login-screen{position:fixed;inset:0;background:linear-gradient(160deg,#0a0a14,#1a1a2e,#16213e);
-  display:none;align-items:center;justify-content:center;z-index:800;flex-direction:column;gap:20px}
-.login-card{background:#fff;border-radius:6px;width:360px;overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);border-top:3px solid var(--gold)}
-.login-top{background:linear-gradient(135deg,#1a1a2e,#16213e);padding:32px;text-align:center}
-.login-top .lt-icon{font-size:50px;margin-bottom:8px}
-.login-top .lt-title{color:var(--gold);font-family:var(--font);font-size:22px;font-weight:700;letter-spacing:3px}
-.login-top .lt-sub{color:#888;font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-top:4px}
-.login-body{padding:24px}
-.login-err{color:#e53935;font-size:12px;min-height:16px;margin-bottom:8px}
-.login-foot{color:rgba(255,255,255,.35);font-size:10px;letter-spacing:2px;text-align:center}
+/* ── PAGES ── */
+.page{display:none}
+.page.active{display:block;animation:pgIn .22s ease}
+@keyframes pgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.pg-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.pg-title{font-family:var(--fp);font-size:24px;font-weight:700;letter-spacing:-.5px}
+.pg-sub{font-size:12px;color:var(--t3);margin-top:2px}
 
-/* URTEIL */
-.urteil-box{background:linear-gradient(135deg,#fdf8ec,#f5f0e0);border:1px solid var(--gold);
-  border-radius:6px;padding:20px;font-family:var(--font);line-height:1.8}
-.urteil-box h3{font-size:18px;text-align:center;margin-bottom:8px;color:var(--navy)}
-.urteil-box .urteil-sub{text-align:center;font-size:12px;color:#888;margin-bottom:16px;font-family:var(--sans)}
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.sc{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--r14);padding:18px 20px;position:relative;overflow:hidden;transition:all .2s}
+.sc:hover{border-color:var(--border2);transform:translateY(-2px)}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px}
+.sc.gld::before{background:linear-gradient(90deg,transparent,var(--a),transparent)}
+.sc.grn::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.sc.red::before{background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.sc.pur::before{background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+.sc.blu::before{background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.sc-val{font-size:36px;font-weight:800;font-family:var(--fg);line-height:1;letter-spacing:-1px}
+.sc.gld .sc-val{background:linear-gradient(135deg,var(--a2),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sc.grn .sc-val{background:linear-gradient(135deg,var(--green),#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sc.red .sc-val{background:linear-gradient(135deg,var(--red),#f87171);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sc.pur .sc-val{background:linear-gradient(135deg,var(--purple),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sc.blu .sc-val{background:linear-gradient(135deg,var(--blue),#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sc-lbl{font-size:10px;color:var(--t3);margin-top:5px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+.sc-ico{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:38px;opacity:.05}
 
-/* AKTENZEICHEN */
-.az-badge{font-family:monospace;background:#f0ede5;border:1px solid var(--border);
-  padding:3px 10px;border-radius:4px;font-size:12px;font-weight:700;color:var(--navy)}
+/* ── CARDS ── */
+.card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--r14);padding:20px;margin-bottom:14px;transition:border-color .2s}
+.card:hover{border-color:var(--border2)}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.card-t{font-family:var(--fg);font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 
-/* MOBILE */
-@media(max-width:768px){
-  .sidebar{display:none}
-  .content{padding:12px}
-  .form-row,.form-row3{grid-template-columns:1fr}
-  .cards-grid{grid-template-columns:1fr 1fr}
-  .mobile-nav{display:flex!important}
-}
-.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--navy);
-  padding:8px;gap:4px;z-index:200;justify-content:space-around;border-top:1px solid var(--gold)}
-.mob-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;
-  border-radius:6px;cursor:pointer;color:#666;font-size:10px;border:none;background:none;font-family:var(--sans);transition:all .15s}
-.mob-btn.active,.mob-btn:hover{color:var(--gold);background:rgba(201,168,76,.1)}
-.mob-btn span{font-size:20px}
+/* ── TABLES ── */
+.tbl-wrap{border-radius:var(--r14);border:1px solid var(--border);overflow:hidden;margin-bottom:14px;background:var(--glass);backdrop-filter:blur(16px)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:rgba(245,158,11,.04)}
+th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border)}
+td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(245,158,11,.02)}
+.mono{font-family:var(--fm);font-size:12px}
+.es{text-align:center;padding:40px 20px;color:var(--t3)}
+.es-ico{font-size:32px;margin-bottom:10px;opacity:.3}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.bg-a{background:var(--ag);color:var(--a3);border:1px solid var(--border2)}
+.bg-g{background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2)}
+.bg-r{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.bg-y{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2)}
+.bg-b{background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2)}
+.bg-p{background:rgba(139,92,246,.1);color:#a78bfa;border:1px solid rgba(139,92,246,.2)}
+.bg-gray{background:var(--s3);color:var(--t3);border:1px solid var(--border)}
+.bg-o{background:rgba(249,115,22,.1);color:#fb923c;border:1px solid rgba(249,115,22,.2)}
+
+/* ── CASE CARDS ── */
+.vlist{display:flex;flex-direction:column;gap:8px}
+.vc{background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--r14);padding:14px 16px;cursor:pointer;transition:all .15s;display:flex;gap:12px}
+.vc:hover{border-color:var(--border2);background:var(--glass2);transform:translateX(3px)}
+.vc-s{width:3px;border-radius:2px;align-self:stretch;flex-shrink:0;min-height:48px}
+.vc-s.ermittlung{background:var(--blue)}.vc-s.anklage{background:var(--orange)}.vc-s.verhandlung{background:var(--a)}.vc-s.urteil{background:var(--green)}.vc-s.eingestellt{background:var(--t3)}
+.vc-b{flex:1;min-width:0}
+.vc-top{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap}
+.vc-az{font-family:var(--fm);font-size:10px;color:var(--t3)}
+.vc-name{font-family:var(--fp);font-weight:700;font-size:15px}
+.vc-sub{font-size:12px;color:var(--t2);margin-top:2px}
+.vc-meta{display:flex;gap:8px;margin-top:7px;flex-wrap:wrap}
+.vc-meta span{font-size:11px;color:var(--t3)}
+
+/* ── STATUS FLOW ── */
+.sflow{display:flex;align-items:center;gap:0;margin-bottom:16px;overflow-x:auto}
+.sf{flex:1;min-width:80px;text-align:center;padding:10px 6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);position:relative;border-bottom:2px solid var(--border)}
+.sf.done{color:var(--a3);border-color:var(--a)}
+.sf.cur{color:var(--a);border-color:var(--a);font-size:11px}
+.sf::after{content:'›';position:absolute;right:-6px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:14px;z-index:1}
+.sf:last-child::after{display:none}
+
+/* ── TIMELINE ── */
+.tline{padding-left:22px;position:relative}
+.tline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:1px;background:var(--s4)}
+.tl{position:relative;margin-bottom:10px;background:rgba(20,18,31,.9);border:1px solid var(--border);border-radius:var(--r10);padding:11px 14px}
+.tl::before{content:'';position:absolute;left:-19px;top:13px;width:8px;height:8px;border-radius:50%;background:var(--a);border:2px solid var(--bg);box-shadow:0 0 10px rgba(245,158,11,.4)}
+.tl-t{font-family:var(--fm);font-size:10px;color:var(--t3)}
+.tl-type{font-size:10px;font-weight:700;color:var(--a3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.tl-txt{font-size:13px;line-height:1.5;color:var(--t2)}
+
+/* ── INFO GRID ── */
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:rgba(245,158,11,.03);padding:14px;border-radius:var(--r10);border:1px solid var(--border);margin-bottom:14px}
+.ii .ii-l{font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.ii .ii-v{font-size:13px;font-weight:500}
+
+/* ── TEAM ── */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.tc{background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--r14);padding:14px;display:flex;align-items:center;gap:11px;transition:all .15s}
+.tc:hover{border-color:var(--border2);transform:translateY(-1px)}
+.tc-ava{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#0a0810;flex-shrink:0;background:linear-gradient(135deg,var(--a2),var(--a))}
+.tc-n{font-family:var(--fg);font-weight:600;font-size:13px}
+.tc-r{font-size:11px;color:var(--t3);margin-top:1px}
+.tc-d{font-family:var(--fm);font-size:10px;color:var(--t3);margin-top:2px}
+
+/* ── MODAL ── */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.mbg.open{display:flex}
+.modal{background:rgba(9,8,15,.97);backdrop-filter:blur(24px);border:1px solid var(--border2);border-radius:var(--r20);width:100%;max-width:600px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.8);animation:mIn .22s cubic-bezier(.34,1.56,.64,1)}
+.modal.lg{max-width:800px}
+@keyframes mIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.mhd{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(9,8,15,.97);backdrop-filter:blur(24px);z-index:1}
+.mhd h3{font-family:var(--fp);font-size:16px;font-weight:700}
+.mcl{width:26px;height:26px;background:var(--s3);border:1px solid var(--border);border-radius:var(--r6);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--t2);transition:all .12s}
+.mcl:hover{background:var(--s4);color:var(--t1)}
+.mbody{padding:22px}
+.mfoot{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:rgba(5,4,10,.5);border-radius:0 0 var(--r20) var(--r20);flex-wrap:wrap}
+
+/* ── NOTIFICATIONS ── */
+#nwrap{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.notif{background:rgba(9,8,15,.97);backdrop-filter:blur(20px);border:1px solid var(--border2);border-radius:var(--r10);padding:11px 15px;font-size:13px;max-width:310px;box-shadow:0 8px 32px rgba(0,0,0,.7);animation:nIn .35s cubic-bezier(.34,1.56,.64,1);pointer-events:all;display:flex;gap:9px;align-items:center}
+@keyframes nIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+.nb{width:3px;min-height:22px;border-radius:2px;flex-shrink:0}
+.notif.ok .nb{background:var(--green)}.notif.err .nb{background:var(--red)}.notif.warn .nb{background:var(--a)}.notif .nb{background:var(--blue)}
+
+/* ── PROFIL ── */
+.ph{background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.04));border:1px solid var(--border2);border-radius:var(--r20);padding:28px;position:relative;overflow:hidden;margin-bottom:14px}
+.ph::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,.1),transparent 70%)}
+.ph-ava{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#0a0810;margin-bottom:12px;box-shadow:0 0 24px rgba(245,158,11,.3)}
+.ph-n{font-family:var(--fp);font-size:22px;font-weight:700}
+.ph-r{font-size:13px;color:var(--a3);margin-top:3px}
+
+/* ── MOBILE ── */
+.mobnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(5,4,10,.97);backdrop-filter:blur(24px);border-top:1px solid var(--border);padding:7px 4px;justify-content:space-around}
+.mbn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 8px;cursor:pointer;color:var(--t3);font-size:10px;border:none;background:none;font-family:var(--fg);font-weight:500;border-radius:8px;transition:all .12s;min-width:48px}
+.mbn.act,.mbn:hover{color:var(--a3);background:var(--ag)}
+.mbn .mi{font-size:19px;line-height:1}
+.sep{height:1px;background:var(--border);margin:16px 0}
+.slabel{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.srch{background:rgba(20,18,31,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;width:100%;font-family:var(--f);outline:none;transition:border-color .2s}
+.srch:focus{border-color:var(--a)}
+
+@media(max-width:768px){.main{margin-left:0}.sidebar{display:none}.content{padding:14px 14px 80px}.frow{grid-template-columns:1fr!important}.g2{grid-template-columns:1fr!important}.stats{grid-template-columns:1fr 1fr!important}.mobnav{display:flex!important}}
 </style>
 </head>
 <body>
 
 <!-- BOOT -->
 <div id="boot">
-  <div class="boot-icon">⚖️</div>
-  <div class="boot-title">JustizNet</div>
-  <div class="boot-sub">Karlsruhe · Staatsanwaltschaft & Gericht</div>
-  <div class="boot-bar"><div class="boot-prog" id="boot-prog"></div></div>
-  <div class="boot-status" id="boot-status">Initialisiere…</div>
+  <div class="br"><div class="bi">⚖️</div></div>
+  <div class="bt">Justiz<em>Net</em></div>
+  <div class="bsub">Karlsruhe · Justizbehörde</div>
+  <div class="bb"><div class="bf" id="bp"></div></div>
+  <div class="bl" id="bstat">SYSTEM INITIALISIERUNG…</div>
 </div>
 
-<!-- NOTIFY -->
-<div id="notify"></div>
+<div id="nwrap"></div>
 
 <!-- LOGIN -->
-<div id="login-screen">
-  <div class="login-card">
-    <div class="login-top">
-      <div class="lt-icon">⚖️</div>
-      <div class="lt-title">JustizNet</div>
-      <div class="lt-sub">Karlsruhe · Staatsanwaltschaft & Gericht</div>
+<div id="login">
+  <div class="lbox">
+    <div class="lc">
+      <div class="lico">⚖️</div>
+      <div class="lh">Justiz<em>Net</em></div>
+      <div class="lsub">Karlsruhe · Justizbehörde</div>
     </div>
-    <div class="login-body">
-      <div class="login-err" id="lerr"></div>
-      <div class="fg"><label>Dienstnummer</label><input id="l-dienst" placeholder="z.B. JU-0001" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <div class="fg"><label>Passwort</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <div class="fg">
-        <label>Rolle</label>
-        <select id="l-rolle">
-          <option value="staatsanwalt">Staatsanwalt / Staatsanwältin</option>
-          <option value="richter">Richter / Richterin</option>
-        </select>
+    <div class="lcard">
+      <div class="role-tabs">
+        <div class="role-tab act" id="rt-sa" onclick="setRole('Staatsanwalt')">⚖️ Staatsanwalt</div>
+        <div class="role-tab" id="rt-ri" onclick="setRole('Richter')">👨‍⚖️ Richter</div>
       </div>
-      <button class="btn btn-gold" style="width:100%;justify-content:center;padding:12px" onclick="doLogin()">⚖️ Anmelden</button>
+      <div class="lerr" id="lerr"></div>
+      <div class="fg"><label>Dienstnummer</label><input id="l-d" placeholder="z.B. JU-0001" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="fg"><label>Passwort</label><input type="password" id="l-p" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn b-pri b-full" id="lbtn" onclick="doLogin()" style="padding:11px">Anmelden →</button>
     </div>
+    <div class="lfoot">JustizNet v3.0 · Vertraulich · Nur befugte Personen</div>
   </div>
-  <div class="login-foot">JUSTIZNET KARLSRUHE · ZUGRIFF PROTOKOLLIERT · VERTRAULICH</div>
 </div>
 
 <!-- APP -->
 <div id="app">
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <div class="topbar-logo"><span>⚖️</span> JustizNet</div>
-    <div class="topbar-role" id="role-badge">Staatsanwalt</div>
-    <div class="topbar-user" id="topbar-user"></div>
-    <button class="topbar-btn" onclick="doLogout()">Abmelden</button>
-  </div>
+  <div class="shell">
+    <nav class="sidebar" id="sb">
+      <div class="sb-logo">⚖️</div>
+      <div class="sb-sec">Verfahren</div>
+      <button class="sbi act" onclick="sp('dashboard')" data-p="dashboard"><span class="ico">📊</span><span class="lbl">Übersicht</span></button>
+      <button class="sbi" onclick="sp('verfahren')" data-p="verfahren"><span class="ico">📂</span><span class="lbl">Verfahren</span></button>
+      <button class="sbi" onclick="sp('new-verfahren')" data-p="new-verfahren"><span class="ico">➕</span><span class="lbl">Neues Verfahren</span></button>
+      <div class="sb-sec">Kanzlei</div>
+      <button class="sbi" onclick="sp('anzeigen')" data-p="anzeigen"><span class="ico">📋</span><span class="lbl">Strafanzeigen</span></button>
+      <button class="sbi" onclick="sp('vorladungen')" data-p="vorladungen"><span class="ico">✉️</span><span class="lbl">Vorladungen</span></button>
+      <div class="sb-sec">Personal</div>
+      <button class="sbi" onclick="sp('team')" data-p="team"><span class="ico">👥</span><span class="lbl">Kollegium</span></button>
+      <button class="sbi" id="sb-mgmt" onclick="sp('usermgmt')" data-p="usermgmt" style="display:none"><span class="ico">⚙️</span><span class="lbl">Nutzerverwaltung</span></button>
+      <div class="sb-bot">
+        <button class="sbi" onclick="sp('profil')" data-p="profil"><span class="ico">👤</span><span class="lbl">Mein Profil</span></button>
+        <button class="sbi" onclick="doLogout()"><span class="ico">🚪</span><span class="lbl">Abmelden</span></button>
+      </div>
+    </nav>
 
-  <div class="main-layout">
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <div class="sidebar-section">Übersicht</div>
-      <div class="sidebar-item active" onclick="showPage('dashboard')" data-page="dashboard"><span class="si">📊</span> Lagebild</div>
-      <div class="sidebar-section">Verfahren</div>
-      <div class="sidebar-item" onclick="showPage('verfahren')" data-page="verfahren"><span class="si">📁</span> Alle Verfahren</div>
-      <div class="sidebar-item" onclick="showPage('new-verfahren')" data-page="new-verfahren"><span class="si">➕</span> Neues Verfahren</div>
-      <div class="sidebar-item" onclick="showPage('strafanzeigen')" data-page="strafanzeigen"><span class="si">🚔</span> Strafanzeigen (Polizei)</div>
-      <div class="sidebar-section">Justiz</div>
-      <div class="sidebar-item" onclick="showPage('vorladungen')" data-page="vorladungen"><span class="si">📬</span> Vorladungen</div>
-      <div class="sidebar-item" onclick="showPage('urteile')" data-page="urteile"><span class="si">🔨</span> Urteile</div>
-      <div class="sidebar-section">System</div>
-      <div class="sidebar-item" onclick="showPage('profil')" data-page="profil"><span class="si">👤</span> Mein Profil</div>
+    <div class="main">
+      <header class="topbar">
+        <div class="tb-t"><span id="tb-pg">Übersicht</span><span class="tb-b" id="tb-bdg">JustizNet</span></div>
+        <div class="tb-r">
+          <div class="uchip"><div class="uava" id="uava">?</div><div><div class="un" id="un">–</div><div class="ur" id="ur">–</div></div></div>
+        </div>
+      </header>
+
+      <div class="content">
+
+        <!-- DASHBOARD -->
+        <div class="page active" id="page-dashboard">
+          <div class="pg-hd">
+            <div><div class="pg-title">Übersicht</div><div class="pg-sub">Justizbehörde Karlsruhe · Aktuelle Lage</div></div>
+            <button class="btn b-pri b-sm" onclick="sp('new-verfahren')">+ Verfahren</button>
+          </div>
+          <div class="stats">
+            <div class="sc gld"><div class="sc-val" id="s-lauf">–</div><div class="sc-lbl">Laufende Verfahren</div><div class="sc-ico">📂</div></div>
+            <div class="sc red"><div class="sc-val" id="s-ankl">–</div><div class="sc-lbl">In Anklage</div><div class="sc-ico">⚖️</div></div>
+            <div class="sc pur"><div class="sc-val" id="s-verh">–</div><div class="sc-lbl">In Verhandlung</div><div class="sc-ico">🔨</div></div>
+            <div class="sc grn"><div class="sc-val" id="s-urtl">–</div><div class="sc-lbl">Urteile gesamt</div><div class="sc-ico">📜</div></div>
+          </div>
+          <div class="g2">
+            <div class="card"><div class="card-hd"><span class="card-t">📂 Aktuelle Verfahren</span><button class="btn b-ghost b-sm" onclick="sp('verfahren')">Alle →</button></div><div id="d-v" class="vlist"></div></div>
+            <div class="card"><div class="card-hd"><span class="card-t">📋 Neue Strafanzeigen</span><button class="btn b-ghost b-sm" onclick="sp('anzeigen')">Alle →</button></div><div id="d-a"></div></div>
+          </div>
+        </div>
+
+        <!-- VERFAHREN -->
+        <div class="page" id="page-verfahren">
+          <div class="pg-hd">
+            <div><div class="pg-title">Verfahren</div><div class="pg-sub">Alle laufenden & abgeschlossenen Verfahren</div></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <select id="fv-s" onchange="loadV()" style="background:var(--s2);border:1px solid var(--border);color:var(--t1);padding:8px 12px;border-radius:var(--r6);font-size:12px;font-family:var(--fg);outline:none"><option value="">Alle</option><option>Ermittlung</option><option>Anklage</option><option>Verhandlung</option><option>Urteil</option><option>Eingestellt</option></select>
+              <button class="btn b-pri b-sm" onclick="sp('new-verfahren')">+ Neues Verfahren</button>
+            </div>
+          </div>
+          <div id="vlist" class="vlist"></div>
+        </div>
+
+        <!-- NEUES VERFAHREN -->
+        <div class="page" id="page-new-verfahren">
+          <div class="pg-hd"><div><div class="pg-title">Neues Verfahren</div><div class="pg-sub">Strafverfahren eröffnen</div></div></div>
+          <div class="card">
+            <div class="ac-wrap fg"><label>Beschuldigter / Bürger verknüpfen</label><input id="nv-bs" placeholder="Name, Discord oder Roblox suchen…" oninput="acSrch('nv-bs','nv-bd',fillVCit)" autocomplete="off"><div class="ac-drop" id="nv-bd"></div></div>
+            <div class="frow">
+              <div class="fg"><label>Name Beschuldigter *</label><input id="nv-n" placeholder="Vollständiger Name"></div>
+              <div class="fg"><label>Typ</label><select id="nv-t"><option>Strafverfahren</option><option>Ordnungswidrigkeiten</option><option>Zivilsache</option><option>Jugendverfahren</option></select></div>
+            </div>
+            <div class="fg"><label>Tatvorwurf *</label><input id="nv-tv" placeholder="z.B. § 249 StGB Raub, § 224 StGB Körperverletzung…"></div>
+            <div class="fg"><label>Beschreibung</label><textarea id="nv-d" placeholder="Sachverhalt, Tatumstände, Beweislage…"></textarea></div>
+            <div class="frow">
+              <div class="fg"><label>Staatsanwalt</label><input id="nv-sa" placeholder="Name"></div>
+              <div class="fg"><label>Richter</label><input id="nv-ri" placeholder="Name (falls bereits bekannt)"></div>
+            </div>
+            <div class="frow">
+              <div class="fg"><label>Status</label><select id="nv-s"><option>Ermittlung</option><option>Anklage</option><option>Verhandlung</option></select></div>
+              <div class="fg"><label>Verhandlungstermin</label><input type="datetime-local" id="nv-dt"></div>
+            </div>
+            <div class="ac-wrap fg"><label>Strafanzeige verknüpfen (optional)</label><input id="nv-az" placeholder="AK-Nummer oder Bürger suchen…" oninput="srchAnzeigen('nv-az','nv-azd')" autocomplete="off"><div class="ac-drop" id="nv-azd"></div></div>
+            <input type="hidden" id="nv-anzeige-id">
+            <div id="nv-err" style="color:#fca5a5;font-size:12px;min-height:14px;margin-bottom:10px"></div>
+            <div style="display:flex;gap:8px"><button class="btn b-pri" onclick="createV()">⚖️ Verfahren eröffnen</button><button class="btn b-ghost" onclick="sp('verfahren')">Abbrechen</button></div>
+          </div>
+        </div>
+
+        <!-- STRAFANZEIGEN -->
+        <div class="page" id="page-anzeigen">
+          <div class="pg-hd"><div><div class="pg-title">Strafanzeigen</div><div class="pg-sub">Polizeiliche Strafanzeigen aus CopNet</div></div></div>
+          <div class="card" style="padding:12px;margin-bottom:12px"><input class="srch" id="as" placeholder="🔍 Suchen (Name, Tatvorwurf…)" onkeyup="loadA()"></div>
+          <div class="tbl-wrap"><table><thead><tr><th>AK-Nr</th><th>Beschuldigter</th><th>Tatvorwurf</th><th>Beamter</th><th>Status</th><th></th></tr></thead><tbody id="a-tb"></tbody></table></div>
+        </div>
+
+        <!-- VORLADUNGEN -->
+        <div class="page" id="page-vorladungen">
+          <div class="pg-hd">
+            <div><div class="pg-title">Vorladungen</div><div class="pg-sub">Gerichtliche Vorladungen & Benachrichtigungen</div></div>
+            <button class="btn b-gold b-sm" onclick="openNewVL()">+ Vorladung erstellen</button>
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>An</th><th>Typ</th><th>Verfahren</th><th>Inhalt</th><th>DM</th><th>Erstellt</th></tr></thead><tbody id="vl-tb"></tbody></table></div>
+        </div>
+
+        <!-- TEAM -->
+        <div class="page" id="page-team">
+          <div class="pg-hd"><div><div class="pg-title">Kollegium</div><div class="pg-sub">Richter & Staatsanwälte</div></div></div>
+          <div class="tgrid" id="team-grid"></div>
+        </div>
+
+        <!-- NUTZERVERWALTUNG -->
+        <div class="page" id="page-usermgmt">
+          <div class="pg-hd">
+            <div><div class="pg-title">Nutzerverwaltung</div><div class="pg-sub">Personal anlegen & verwalten</div></div>
+            <button class="btn b-pri b-sm" onclick="openAU(null)">+ Nutzer anlegen</button>
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Dienst-Nr</th><th>Rang</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="um-tb"></tbody></table></div>
+        </div>
+
+        <!-- PROFIL -->
+        <div class="page" id="page-profil">
+          <div class="pg-hd"><div><div class="pg-title">Mein Profil</div></div></div>
+          <div style="max-width:480px" id="profil-wrap"></div>
+        </div>
+
+      </div>
     </div>
-
-    <!-- CONTENT -->
-    <div class="content">
-
-      <!-- DASHBOARD -->
-      <div class="page active" id="page-dashboard">
-        <div class="page-title"><span class="pt-icon">📊</span> Lagebild</div>
-        <div class="cards-grid">
-          <div class="stat-card"><div class="sc-val" id="s-laufend">–</div><div class="sc-label">Laufende Verfahren</div></div>
-          <div class="stat-card red"><div class="sc-val" id="s-anklage">–</div><div class="sc-label">Angeklagte</div></div>
-          <div class="stat-card blue"><div class="sc-val" id="s-verhandlung">–</div><div class="sc-label">In Verhandlung</div></div>
-          <div class="stat-card green"><div class="sc-val" id="s-urteile">–</div><div class="sc-label">Urteile gesprochen</div></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          <div class="card">
-            <div class="card-head"><span>📁 Aktuelle Verfahren</span>
-              <button class="btn btn-gold btn-sm" onclick="showPage('new-verfahren')">+ Neu</button></div>
-            <div id="dash-verfahren"></div>
-          </div>
-          <div class="card">
-            <div class="card-head"><span>🚔 Neue Strafanzeigen (Polizei)</span>
-              <button class="btn btn-gray btn-sm" onclick="showPage('strafanzeigen')">Alle →</button></div>
-            <div id="dash-anzeigen"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- VERFAHREN LISTE -->
-      <div class="page" id="page-verfahren">
-        <div class="page-title" style="justify-content:space-between">
-          <span><span class="pt-icon">📁</span> Verfahren</span>
-          <div style="display:flex;gap:8px">
-            <select id="filt-vf-status" style="width:auto" onchange="loadVerfahren()">
-              <option value="">Alle Status</option>
-              <option>Ermittlung</option><option>Anklage</option>
-              <option>Verhandlung</option><option>Urteil</option><option>Eingestellt</option>
-            </select>
-            <button class="btn btn-gold btn-sm" onclick="showPage('new-verfahren')">+ Neues Verfahren</button>
-          </div>
-        </div>
-        <div id="verfahren-list"></div>
-      </div>
-
-      <!-- NEUES VERFAHREN -->
-      <div class="page" id="page-new-verfahren">
-        <div class="page-title"><span class="pt-icon">➕</span> Neues Verfahren</div>
-        <div class="card">
-          <div class="form-row">
-            <div class="fg"><label>Aktenzeichen</label><input id="nv-az" placeholder="z.B. JV-2026-001" readonly style="background:#f9f9f9"></div>
-            <div class="fg"><label>Verfahrenstyp *</label>
-              <select id="nv-typ">
-                <option value="">– wählen –</option>
-                <option>Strafverfahren</option><option>Ordnungswidrigkeit</option>
-                <option>Zivilsache</option><option>Berufungsverfahren</option>
-              </select>
-            </div>
-          </div>
-          <div class="fg"><label>Bürger suchen / Beschuldigter</label>
-            <input id="nv-search" placeholder="Name, Roblox-Name oder Discord-Tag…" oninput="searchCitizenVf()">
-            <div id="nv-results" style="border:1px solid #ddd;border-radius:4px;display:none;max-height:150px;overflow-y:auto"></div>
-          </div>
-          <div class="form-row">
-            <div class="fg"><label>Name Beschuldigter *</label><input id="nv-name" placeholder="Vollständiger Name"></div>
-            <div class="fg"><label>Strafanzeige verknüpfen</label>
-              <select id="nv-anzeige"><option value="">– Keine –</option></select>
-            </div>
-          </div>
-          <div class="fg"><label>Tatvorwurf *</label><input id="nv-tatvorwurf" placeholder="z.B. §249 StGB – Raub, §212 StGB – Totschlag…"></div>
-          <div class="fg"><label>Sachverhalt / Beschreibung</label><textarea id="nv-desc" placeholder="Ausführliche Beschreibung des Sachverhalts…"></textarea></div>
-          <div class="form-row">
-            <div class="fg"><label>Staatsanwalt</label><input id="nv-sta" placeholder="Name des Staatsanwalts"></div>
-            <div class="fg"><label>Richter</label><input id="nv-richter" placeholder="Name des Richters (kann später zugewiesen werden)"></div>
-          </div>
-          <div id="nv-err" style="color:#e53935;font-size:12px;min-height:16px;margin-bottom:8px"></div>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-gold" onclick="createVerfahren()">⚖️ Verfahren anlegen</button>
-            <button class="btn btn-gray" onclick="showPage('verfahren')">Abbrechen</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- STRAFANZEIGEN (Polizei) -->
-      <div class="page" id="page-strafanzeigen">
-        <div class="page-title"><span class="pt-icon">🚔</span> Strafanzeigen von der Polizei</div>
-        <div class="card">
-          <table>
-            <thead><tr><th>Nr.</th><th>Datum</th><th>Beschuldigter</th><th>Vorwurf</th><th>Beamter</th><th>Status</th><th></th></tr></thead>
-            <tbody id="anzeigen-tbody"><tr class="empty-row"><td colspan="7">Laden…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- VORLADUNGEN -->
-      <div class="page" id="page-vorladungen">
-        <div class="page-title" style="justify-content:space-between">
-          <span><span class="pt-icon">📬</span> Vorladungen</span>
-          <button class="btn btn-gold btn-sm" onclick="openNewVorladung()">+ Neue Vorladung</button>
-        </div>
-        <div class="card">
-          <table>
-            <thead><tr><th>Verfahren-AZ</th><th>An</th><th>Typ</th><th>Erstellt</th><th>DM gesendet</th><th></th></tr></thead>
-            <tbody id="vorladungen-tbody"><tr class="empty-row"><td colspan="6">Laden…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- URTEILE -->
-      <div class="page" id="page-urteile">
-        <div class="page-title"><span class="pt-icon">🔨</span> Urteile</div>
-        <div id="urteile-list"></div>
-      </div>
-
-      <!-- PROFIL -->
-      <div class="page" id="page-profil">
-        <div class="page-title"><span class="pt-icon">👤</span> Mein Profil</div>
-        <div class="card" id="profil-content" style="max-width:480px"></div>
-      </div>
-
-    </div><!-- /content -->
   </div>
 
-  <!-- MOBILE NAV -->
-  <nav class="mobile-nav">
-    <button class="mob-btn active" onclick="showPage('dashboard')"><span>📊</span>Lagebild</button>
-    <button class="mob-btn" onclick="showPage('verfahren')"><span>📁</span>Verfahren</button>
-    <button class="mob-btn" onclick="showPage('new-verfahren')"><span>➕</span>Neu</button>
-    <button class="mob-btn" onclick="showPage('vorladungen')"><span>📬</span>Vorladung</button>
-    <button class="mob-btn" onclick="showPage('urteile')"><span>🔨</span>Urteile</button>
+  <nav class="mobnav">
+    <button class="mbn act" onclick="sp('dashboard')"><span class="mi">📊</span>Übersicht</button>
+    <button class="mbn" onclick="sp('verfahren')"><span class="mi">📂</span>Verfahren</button>
+    <button class="mbn" onclick="sp('new-verfahren')"><span class="mi">➕</span>Neu</button>
+    <button class="mbn" onclick="sp('anzeigen')"><span class="mi">📋</span>Anzeigen</button>
+    <button class="mbn" onclick="sp('team')"><span class="mi">👥</span>Team</button>
   </nav>
 </div>
 
 <!-- VERFAHREN DETAIL MODAL -->
-<div class="modal-bg" id="modal-vf">
-  <div class="modal" style="max-width:760px">
-    <div class="modal-head"><h3 id="modal-vf-title">Verfahren</h3><button class="modal-close" onclick="closeModal('modal-vf')">✕</button></div>
-    <div class="modal-body" id="modal-vf-body"></div>
-    <div class="modal-foot" id="modal-vf-foot"></div>
-  </div>
-</div>
-
-<!-- VORLADUNG MODAL -->
-<div class="modal-bg" id="modal-vorladung">
-  <div class="modal">
-    <div class="modal-head"><h3>📬 Neue Vorladung</h3><button class="modal-close" onclick="closeModal('modal-vorladung')">✕</button></div>
-    <div class="modal-body">
-      <div class="fg"><label>Verfahren</label><select id="vl-vf-id"><option value="">– Verfahren wählen –</option></select></div>
-      <div class="fg"><label>An (Bürger suchen)</label>
-        <input id="vl-search" placeholder="Name oder Roblox-Tag…" oninput="searchCitizenVl()">
-        <div id="vl-results" style="border:1px solid #ddd;border-radius:4px;display:none;max-height:130px;overflow-y:auto"></div>
-      </div>
-      <div class="form-row">
-        <div class="fg"><label>Name</label><input id="vl-name" placeholder="Vollständiger Name"></div>
-        <div class="fg"><label>Typ</label>
-          <select id="vl-typ">
-            <option>Vorladung</option><option>Zeugenvorladung</option>
-            <option>Anklageschrift</option><option>Urteilsmitteilung</option>
-          </select>
-        </div>
-      </div>
-      <div class="fg"><label>Inhalt / Text</label><textarea id="vl-text" placeholder="Text der Vorladung…" style="min-height:120px"></textarea></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-gold" onclick="createVorladung()">📬 Vorladung senden</button>
-      <button class="btn btn-gray" onclick="closeModal('modal-vorladung')">Abbrechen</button>
-    </div>
-  </div>
-</div>
+<div class="mbg" id="m-v"><div class="modal lg"><div class="mhd"><h3 id="m-v-t">Verfahren</h3><button class="mcl" onclick="cm('m-v')">✕</button></div><div class="mbody" id="m-v-b"></div><div class="mfoot" id="m-v-f"></div></div></div>
 
 <!-- URTEIL MODAL -->
-<div class="modal-bg" id="modal-urteil">
-  <div class="modal">
-    <div class="modal-head"><h3>🔨 Urteil fällen</h3><button class="modal-close" onclick="closeModal('modal-urteil')">✕</button></div>
-    <div class="modal-body">
-      <div class="fg"><label>Urteil</label>
-        <select id="u-urteil">
-          <option value="Freispruch">Freispruch</option>
-          <option value="Schuldig">Schuldig</option>
-          <option value="Bewährungsstrafe">Bewährungsstrafe</option>
-          <option value="Eingestellt">Verfahren eingestellt</option>
-        </select>
-      </div>
-      <div class="fg"><label>Strafmaß (bei Schuldig)</label>
-        <input id="u-strafmass" placeholder="z.B. Geldstrafe 5.000$, 3 Tage Gefängnis…"></div>
-      <div class="fg"><label>Urteilsbegründung</label>
-        <textarea id="u-begruendung" placeholder="Begründung des Urteils…" style="min-height:120px"></textarea></div>
-      <input type="hidden" id="u-vf-id">
+<div class="mbg" id="m-urteil"><div class="modal">
+  <div class="mhd"><h3>Urteil verkünden</h3><button class="mcl" onclick="cm('m-urteil')">✕</button></div>
+  <div class="mbody">
+    <div class="fg"><label>Entscheidung</label>
+      <select id="u-e"><option value="Freispruch">Freispruch</option><option value="Schuldig">Schuldig – Strafe verhängt</option><option value="Bewährung">Schuldig – Bewährungsstrafe</option><option value="Eingestellt">Verfahren eingestellt</option></select>
     </div>
-    <div class="modal-foot">
-      <button class="btn btn-gold" onclick="saveUrteil()">🔨 Urteil bestätigen</button>
-      <button class="btn btn-gray" onclick="closeModal('modal-urteil')">Abbrechen</button>
-    </div>
+    <div class="fg"><label>Strafmaß (bei Schuldig)</label><input id="u-sm" placeholder="z.B. 2 Jahre Freiheitsstrafe, 5.000€ Geldstrafe…"></div>
+    <div class="fg"><label>Begründung *</label><textarea id="u-b" placeholder="Urteilsbegründung, Berücksichtigte Faktoren…"></textarea></div>
+    <input type="hidden" id="u-vid">
+    <div id="u-err" style="color:#fca5a5;font-size:12px;min-height:14px;margin-bottom:4px"></div>
   </div>
-</div>
+  <div class="mfoot"><button class="btn b-pri" onclick="saveUrteil()">🔨 Urteil verkünden</button><button class="btn b-ghost" onclick="cm('m-urteil')">Abbrechen</button></div>
+</div></div>
+
+<!-- VORLADUNG MODAL -->
+<div class="mbg" id="m-vl"><div class="modal">
+  <div class="mhd"><h3>Vorladung erstellen</h3><button class="mcl" onclick="cm('m-vl')">✕</button></div>
+  <div class="mbody">
+    <div class="ac-wrap fg"><label>Bürger / Person *</label><input id="vl-bs" placeholder="Name suchen…" oninput="acSrch('vl-bs','vl-bd',fillVLCit)" autocomplete="off"><div class="ac-drop" id="vl-bd"></div></div>
+    <div class="fg"><label>Empfänger Name</label><input id="vl-n" placeholder="Vollständiger Name"></div>
+    <div class="frow">
+      <div class="fg"><label>Typ</label><select id="vl-t"><option>Zeugenvorladung</option><option>Beschuldigtenvorladung</option><option>Gerichtsvorladung</option><option>Akteneinsicht</option></select></div>
+      <div class="fg"><label>Verfahren-AZ (optional)</label><input id="vl-az" placeholder="z.B. AZ-2026-0001"></div>
+    </div>
+    <div class="fg"><label>Inhalt *</label><textarea id="vl-txt" placeholder="Text der Vorladung…"></textarea></div>
+    <input type="hidden" id="vl-cid">
+    <div id="vl-err" style="color:#fca5a5;font-size:12px;min-height:14px;margin-bottom:4px"></div>
+  </div>
+  <div class="mfoot"><button class="btn b-pri" onclick="saveVL()">✉️ Vorladung erstellen</button><button class="btn b-ghost" onclick="cm('m-vl')">Abbrechen</button></div>
+</div></div>
+
+<!-- ADD USER MODAL -->
+<div class="mbg" id="m-au"><div class="modal">
+  <div class="mhd"><h3 id="m-au-t">Nutzer anlegen</h3><button class="mcl" onclick="cm('m-au')">✕</button></div>
+  <div class="mbody">
+    <div class="fg"><label>Vollständiger Name *</label><input id="au-n" placeholder="Vor- und Nachname"></div>
+    <div class="frow"><div class="fg"><label>Dienst-Nr *</label><input id="au-d" placeholder="JU-0005"></div><div class="fg"><label>Passwort *</label><input type="password" id="au-pw"></div></div>
+    <div class="fg"><label>Rang</label>
+      <select id="au-rg">
+        <option value="Staatsanwalt" data-lvl="5">Staatsanwalt</option>
+        <option value="Leitender Staatsanwalt" data-lvl="7">Leitender Staatsanwalt</option>
+        <option value="Richter" data-lvl="5">Richter</option>
+        <option value="Vorsitzender Richter" data-lvl="7">Vorsitzender Richter</option>
+        <option value="Leitender Richter" data-lvl="10">Leitender Richter</option>
+        <option value="Justiz Chef" data-lvl="10">Justiz Chef</option>
+      </select>
+    </div>
+    <input type="hidden" id="au-id">
+    <div id="au-err" style="color:#fca5a5;font-size:12px;min-height:14px;margin-bottom:4px"></div>
+  </div>
+  <div class="mfoot"><button class="btn b-pri" onclick="saveUser()">💾 Speichern</button><button class="btn b-ghost" onclick="cm('m-au')">Abbrechen</button></div>
+</div></div>
 
 <script>
-const SB_URL = 'https://vekozqxmawzatvyofsxq.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZla296cXhtYXd6YXR2eW9mc3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NzIwMDksImV4cCI6MjA4ODU0ODAwOX0.ASzxEi8Tmnv7AFd5vFV4Hw12FxzA8ysjEoTlXDLMYaE';
-const db = supabase.createClient(SB_URL, SB_KEY);
-let U = null, currentRole = 'staatsanwalt';
+const SB='https://vekozqxmawzatvyofsxq.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZla296cXhtYXd6YXR2eW9mc3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NzIwMDksImV4cCI6MjA4ODU0ODAwOX0.ASzxEi8Tmnv7AFd5vFV4Hw12FxzA8ysjEoTlXDLMYaE';
+const db=supabase.createClient(SB,SK);
+let U=null,_role='Staatsanwalt',_vcid=null,_vlcid=null,_anzeigeId=null;
 
-// ── BOOT ─────────────────────────────────────────────────────
-const BOOT_STEPS = ['INITIALISIERE…','NETZWERK OK','SUPABASE VERBUNDEN','DATENBANK GELADEN','JUSTIZNET v1.0: BEREIT'];
-let bi = 0;
-function bootStep() {
-  if(bi >= BOOT_STEPS.length) { setTimeout(()=>{document.getElementById('boot').style.display='none'; document.getElementById('login-screen').style.display='flex';},400); return; }
-  document.getElementById('boot-status').textContent = '▸ ' + BOOT_STEPS[bi];
-  document.getElementById('boot-prog').style.width = ((bi+1)/BOOT_STEPS.length*100)+'%';
-  bi++; setTimeout(bootStep, 300);
+/* BOOT */
+const BL=['JUSTIZNETZ INITIALISIERUNG','KRYPTOGRAFISCHE VERBINDUNG AUFGEBAUT','DATENBANK GELADEN','PROTOKOLLIERUNG AKTIV','JUSTIZNETZ v3.0 BEREIT'];
+let bi=0;
+function btick(){
+  if(bi>=BL.length){setTimeout(()=>{document.getElementById('boot').style.display='none';document.getElementById('login').style.display='flex';},400);return;}
+  document.getElementById('bstat').textContent='▸ '+BL[bi];
+  document.getElementById('bp').style.width=((bi+1)/BL.length*100)+'%';
+  bi++;setTimeout(btick,260);
 }
-window.addEventListener('DOMContentLoaded', ()=>setTimeout(bootStep, 500));
+window.addEventListener('DOMContentLoaded',()=>setTimeout(btick,300));
 
-// ── UTILS ────────────────────────────────────────────────────
-function notify(msg, type='') {
-  const el = document.createElement('div');
-  el.className = 'notify-item'+(type?' '+type:'');
-  el.textContent = msg;
-  document.getElementById('notify').appendChild(el);
-  setTimeout(()=>el.remove(), 4000);
+/* UTILS */
+function nt(msg,type=''){
+  const w=document.getElementById('nwrap'),el=document.createElement('div');
+  el.className='notif'+(type?' '+type:'');
+  el.innerHTML='<div class="nb"></div><span>'+msg+'</span>';
+  w.appendChild(el);setTimeout(()=>el.remove(),4000);
 }
-function openModal(id){document.getElementById(id).classList.add('open')}
-function closeModal(id){document.getElementById(id).classList.remove('open')}
-function showPage(id) {
+function om(id){document.getElementById(id).classList.add('open');}
+function cm(id){document.getElementById(id).classList.remove('open');}
+function fmt(d){return d?new Date(d).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'–';}
+function fmtd(d){return d?new Date(d).toLocaleDateString('de-DE'):'–';}
+async function log(a,d){try{await db.from('logs').insert([{username:U?.name||'System',action:a,detail:d}]);}catch(e){}}
+
+function sp(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const pg = document.getElementById('page-'+id);
-  if(pg) pg.classList.add('active');
-  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.toggle('active',i.dataset.page===id));
-  if(id==='dashboard') loadDashboard();
-  else if(id==='verfahren') loadVerfahren();
-  else if(id==='strafanzeigen') loadAnzeigen();
-  else if(id==='vorladungen') loadVorladungen();
-  else if(id==='urteile') loadUrteile();
-  else if(id==='profil') loadProfil();
-  else if(id==='new-verfahren') initNewVerfahren();
-}
-async function logAction(action, detail) {
-  await db.from('logs').insert([{username:U?.name||'JustizNet', action, detail}]);
+  const pg=document.getElementById('page-'+id);if(pg)pg.classList.add('active');
+  document.querySelectorAll('.sbi').forEach(i=>i.classList.toggle('act',i.dataset.p===id));
+  const t={dashboard:'Übersicht',verfahren:'Verfahren','new-verfahren':'Neues Verfahren',anzeigen:'Strafanzeigen',vorladungen:'Vorladungen',team:'Kollegium',usermgmt:'Nutzerverwaltung',profil:'Mein Profil'};
+  document.getElementById('tb-pg').textContent=t[id]||id;
+  if(id==='dashboard')loadDash();
+  else if(id==='verfahren')loadV();
+  else if(id==='anzeigen')loadA();
+  else if(id==='vorladungen')loadVL();
+  else if(id==='team')loadTeam();
+  else if(id==='usermgmt')loadUsers();
+  else if(id==='profil')loadProfil();
 }
 
-// AZ Generator
-function genAZ() {
-  const y = new Date().getFullYear();
-  const n = Math.floor(Math.random()*900)+100;
-  return `JV-${y}-${n}`;
+/* AUTH */
+function setRole(r){
+  _role=r;
+  document.getElementById('rt-sa').classList.toggle('act',r==='Staatsanwalt');
+  document.getElementById('rt-ri').classList.toggle('act',r==='Richter');
+}
+async function doLogin(){
+  const d=document.getElementById('l-d').value.trim().toUpperCase();
+  const p=document.getElementById('l-p').value;
+  const err=document.getElementById('lerr');
+  if(!d||!p){err.textContent='Alle Felder ausfüllen.';err.style.display='block';return;}
+  const btn=document.getElementById('lbtn');btn.disabled=true;btn.textContent='…';
+  const {data}=await db.from('officers').select('*').eq('dienst',d).maybeSingle();
+  btn.disabled=false;btn.textContent='Anmelden →';
+  if(!data||data.password!==p){err.textContent='Ungültige Zugangsdaten.';err.style.display='block';return;}
+  if(data.suspended){err.textContent='Zugang gesperrt.';err.style.display='block';return;}
+  U={...data,loginRole:_role};
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('un').textContent=U.name;
+  document.getElementById('ur').textContent=_role+' · '+U.rank;
+  document.getElementById('uava').textContent=U.name.charAt(0).toUpperCase();
+  document.getElementById('tb-bdg').textContent=_role;
+  if(U.level>=7)document.getElementById('sb-mgmt').style.display='flex';
+  await log('LOGIN',U.name+' als '+_role+' angemeldet');
+  nt('Willkommen, '+_role+' '+U.name,'ok');
+  loadDash();
+}
+async function doLogout(){
+  if(U)await log('LOGOUT',U.name);
+  U=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login').style.display='flex';
+  document.getElementById('l-p').value='';
 }
 
-// ── AUTH ─────────────────────────────────────────────────────
-async function doLogin() {
-  const dienst = document.getElementById('l-dienst').value.trim().toUpperCase();
-  const pass   = document.getElementById('l-pass').value;
-  const rolle  = document.getElementById('l-rolle').value;
-  if(!dienst||!pass){document.getElementById('lerr').textContent='Alle Felder ausfüllen.';return;}
-  const {data} = await db.from('officers').select('*').eq('dienst',dienst).single();
-  if(!data||data.password!==pass){document.getElementById('lerr').textContent='Ungültige Zugangsdaten.';return;}
-  if(data.suspended){document.getElementById('lerr').textContent='Zugang gesperrt.';return;}
-  U = data; currentRole = rolle;
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('topbar-user').innerHTML = `⚖️ ${U.name} · <small style="opacity:.7">${U.rank||'Justiz'}</small>`;
-  document.getElementById('role-badge').textContent = rolle==='richter'?'Richter':'Staatsanwalt';
-  await logAction('LOGIN', `${U.name} (${rolle}) angemeldet`);
-  loadDashboard();
-  notify(`Willkommen, ${U.name}!`, 'ok');
-}
-async function doLogout() {
-  if(U) await logAction('LOGOUT',`${U.name} abgemeldet`);
-  U = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-}
+/* BADGE HELPERS */
+const VSTATUS={
+  Ermittlung:{cls:'bg-b',stripe:'ermittlung'},
+  Anklage:{cls:'bg-o',stripe:'anklage'},
+  Verhandlung:{cls:'bg-a',stripe:'verhandlung'},
+  Urteil:{cls:'bg-g',stripe:'urteil'},
+  Eingestellt:{cls:'bg-gray',stripe:'eingestellt'},
+};
 
-// ── DASHBOARD ────────────────────────────────────────────────
-async function loadDashboard() {
-  const [{data:laufend},{data:anklage},{data:verhandlung},{data:urteile}] = await Promise.all([
-    db.from('justiz_verfahren').select('id',{count:'exact'}).not('status','in','("Urteil","Eingestellt")'),
-    db.from('justiz_verfahren').select('id',{count:'exact'}).eq('status','Anklage'),
-    db.from('justiz_verfahren').select('id',{count:'exact'}).eq('status','Verhandlung'),
-    db.from('justiz_verfahren').select('id',{count:'exact'}).eq('status','Urteil'),
-  ]);
-  document.getElementById('s-laufend').textContent    = laufend?.length??'–';
-  document.getElementById('s-anklage').textContent    = anklage?.length??'–';
-  document.getElementById('s-verhandlung').textContent= verhandlung?.length??'–';
-  document.getElementById('s-urteile').textContent    = urteile?.length??'–';
-
-  const {data:vfl} = await db.from('justiz_verfahren').select('*').not('status','in','("Urteil","Eingestellt")').order('created_at',{ascending:false}).limit(5);
-  const dv = document.getElementById('dash-verfahren');
-  const statusColors = {Ermittlung:'badge-gold',Anklage:'badge-orange',Verhandlung:'badge-blue',Urteil:'badge-green',Eingestellt:'badge-gray'};
-  if(!vfl?.length){dv.innerHTML='<div style="color:#aaa;text-align:center;padding:20px;font-style:italic">Keine aktiven Verfahren</div>';}
-  else dv.innerHTML=vfl.map(v=>`<div class="vf-card status-${v.status}" onclick="openVerfahren(${v.id})" style="margin-bottom:8px">
-    <div class="vf-az">${v.az}</div>
-    <div class="vf-title">${v.tatvorwurf||'–'}</div>
-    <div class="vf-sub">👤 ${v.buerger_name||'Unbekannt'}</div>
-    <div style="margin-top:6px"><span class="badge ${statusColors[v.status]||'badge-gray'}">${v.status}</span></div>
-  </div>`).join('');
-
-  const {data:anl} = await db.from('cases').select('*').order('created_at',{ascending:false}).limit(5);
-  const da = document.getElementById('dash-anzeigen');
-  if(!anl?.length){da.innerHTML='<div style="color:#aaa;text-align:center;padding:20px;font-style:italic">Keine Strafanzeigen</div>';}
-  else da.innerHTML=anl.map(a=>`<div style="padding:8px;border-bottom:1px solid #f0ede5;cursor:pointer" onclick="createVfFromAnzeige(${a.id})">
-    <div style="font-weight:600;font-size:13px">${a.citizen_name||'–'}</div>
-    <div style="font-size:12px;color:#888">${a.description?.substring(0,60)||''}…</div>
-    <div style="font-size:11px;color:#c9a84c;margin-top:2px">+ Verfahren anlegen</div>
-  </div>`).join('');
-}
-
-// ── VERFAHREN ─────────────────────────────────────────────────
-async function loadVerfahren() {
-  const status = document.getElementById('filt-vf-status')?.value;
-  let q = db.from('justiz_verfahren').select('*').order('created_at',{ascending:false}).limit(100);
-  if(status) q = q.eq('status', status);
-  const {data} = await q;
-  const el = document.getElementById('verfahren-list');
-  const statusColors = {Ermittlung:'badge-gold',Anklage:'badge-orange',Verhandlung:'badge-blue',Urteil:'badge-green',Eingestellt:'badge-gray'};
-  if(!data?.length){el.innerHTML='<div class="card" style="color:#aaa;text-align:center;padding:32px;font-style:italic">Keine Verfahren gefunden</div>';return;}
-  el.innerHTML = data.map(v=>`
-    <div class="vf-card status-${v.status}" onclick="openVerfahren(${v.id})">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
-        <div>
-          <span class="az-badge">${v.az}</span>
-          <div class="vf-title" style="margin-top:6px">${v.tatvorwurf}</div>
-          <div class="vf-sub">👤 ${v.buerger_name||'–'} · ${new Date(v.created_at).toLocaleDateString('de-DE')}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
-          <span class="badge ${statusColors[v.status]||'badge-gray'}">${v.status}</span>
-          <span class="badge badge-gray">${v.typ||'–'}</span>
-        </div>
+function vCard(v){
+  const s=VSTATUS[v.status]||{cls:'bg-gray',stripe:'eingestellt'};
+  return `<div class="vc" onclick="openV(${v.id})">
+    <div class="vc-s ${s.stripe}"></div>
+    <div class="vc-b">
+      <div class="vc-top"><span class="vc-az">${v.az||'–'}</span><span class="badge ${s.cls}">${v.status||'–'}</span><span class="badge bg-gray">${v.typ||'Strafverfahren'}</span></div>
+      <div class="vc-name">${v.buerger_name||'Unbekannt'}</div>
+      <div class="vc-sub">${(v.tatvorwurf||'').substring(0,70)}${v.tatvorwurf?.length>70?'…':''}</div>
+      <div class="vc-meta">
+        ${v.staatsanwalt?`<span>⚖️ ${v.staatsanwalt}</span>`:''}
+        ${v.richter?`<span>👨‍⚖️ ${v.richter}</span>`:''}
+        <span>📅 ${fmtd(v.created_at)}</span>
       </div>
-      <div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:#888">
-        ${v.staatsanwalt?`<span>⚖️ StA: ${v.staatsanwalt}</span>`:''}
-        ${v.richter?`<span>👨‍⚖️ R: ${v.richter}</span>`:''}
-      </div>
-    </div>`).join('');
+    </div>
+  </div>`;
 }
 
-async function openVerfahren(id) {
-  const [{data:v},{data:beweise},{data:protos}] = await Promise.all([
-    db.from('justiz_verfahren').select('*').eq('id',id).single(),
-    db.from('justiz_beweise').select('*').eq('verfahren_id',id).order('created_at',{ascending:false}),
-    db.from('justiz_protokolle').select('*').eq('verfahren_id',id).order('created_at',{ascending:false}),
+/* DASHBOARD */
+async function loadDash(){
+  const [r1,r2,r3,r4]=await Promise.all([
+    db.from('justiz_verfahren').select('id').in('status',['Ermittlung','Anklage','Verhandlung']),
+    db.from('justiz_verfahren').select('id').eq('status','Anklage'),
+    db.from('justiz_verfahren').select('id').eq('status','Verhandlung'),
+    db.from('justiz_verfahren').select('id').eq('status','Urteil'),
   ]);
-  if(!v) return;
-  document.getElementById('modal-vf-title').textContent = `Verfahren ${v.az}`;
-  const statusColors = {Ermittlung:'badge-gold',Anklage:'badge-orange',Verhandlung:'badge-blue',Urteil:'badge-green',Eingestellt:'badge-gray'};
-  const body = document.getElementById('modal-vf-body');
-  body.innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;background:#faf7f0;padding:12px;border-radius:6px">
-      <div><div style="font-size:11px;color:#999;font-weight:700;text-transform:uppercase">Aktenzeichen</div><span class="az-badge">${v.az}</span></div>
-      <div><div style="font-size:11px;color:#999;font-weight:700;text-transform:uppercase">Status</div><span class="badge ${statusColors[v.status]||'badge-gray'}">${v.status}</span></div>
-      <div><div style="font-size:11px;color:#999;font-weight:700;text-transform:uppercase">Beschuldigter</div><strong>${v.buerger_name||'–'}</strong></div>
-      <div><div style="font-size:11px;color:#999;font-weight:700;text-transform:uppercase">Typ</div>${v.typ||'–'}</div>
-      <div style="grid-column:1/-1"><div style="font-size:11px;color:#999;font-weight:700;text-transform:uppercase">Tatvorwurf</div><strong>${v.tatvorwurf}</strong></div>
-      ${v.staatsanwalt?`<div><div style="font-size:11px;color:#999;font-weight:700;text-transform:uppercase">Staatsanwalt</div>${v.staatsanwalt}</div>`:''}
-      ${v.richter?`<div><div style="font-size:11px;color:#999;font-weight:700;text-transform:uppercase">Richter</div>${v.richter}</div>`:''}
+  document.getElementById('s-lauf').textContent=r1.data?.length??0;
+  document.getElementById('s-ankl').textContent=r2.data?.length??0;
+  document.getElementById('s-verh').textContent=r3.data?.length??0;
+  document.getElementById('s-urtl').textContent=r4.data?.length??0;
+  const {data:vd}=await db.from('justiz_verfahren').select('*').in('status',['Ermittlung','Anklage','Verhandlung']).order('created_at',{ascending:false}).limit(4);
+  document.getElementById('d-v').innerHTML=!vd?.length?'<div class="es"><div class="es-ico">📂</div><p>Keine aktiven Verfahren</p></div>':vd.map(vCard).join('');
+  const {data:ad}=await db.from('cases').select('*').eq('status','Offen').order('created_at',{ascending:false}).limit(5);
+  document.getElementById('d-a').innerHTML=!ad?.length?'<div class="es"><p>Keine neuen Strafanzeigen</p></div>':ad.map(a=>`<div style="padding:10px 12px;background:rgba(20,18,31,.8);border:1px solid var(--border);border-radius:var(--r10);margin-bottom:8px;cursor:pointer;transition:border-color .15s" onmouseenter="this.style.borderColor='rgba(245,158,11,.3)'" onmouseleave="this.style.borderColor='var(--border)'" onclick="sp('anzeigen')">
+    <div style="font-weight:600;font-family:var(--fg);font-size:13px">${a.citizen_name||'–'}</div>
+    <div style="font-size:11px;color:var(--t2);margin-top:2px">${(a.description||'').substring(0,55)}…</div>
+    <div style="margin-top:5px;display:flex;gap:5px"><span class="badge bg-gray">${a.status||'Offen'}</span><span class="badge bg-y" style="cursor:pointer" onclick="event.stopPropagation();prefillVerfahren('${a.id}','${(a.citizen_name||'').replace(/'/g,"\\'")}','${(a.description||'').replace(/'/g,"\\'")}')">→ Verfahren anlegen</span></div>
+  </div>`).join('');
+}
+
+/* VERFAHREN */
+async function loadV(){
+  const f=document.getElementById('fv-s')?.value||'';
+  let q=db.from('justiz_verfahren').select('*').order('created_at',{ascending:false}).limit(80);
+  if(f)q=q.eq('status',f);
+  const {data}=await q;
+  document.getElementById('vlist').innerHTML=!data?.length?'<div class="es"><div class="es-ico">📂</div><p>Keine Verfahren</p></div>':data.map(vCard).join('');
+}
+
+async function openV(id){
+  const {data:v}=await db.from('justiz_verfahren').select('*').eq('id',id).single();
+  if(!v)return;
+  const steps=['Ermittlung','Anklage','Verhandlung','Urteil'];
+  const si=steps.indexOf(v.status);
+  const sflow=steps.map((s,i)=>`<div class="sf ${i<si?'done':i===si?'cur':''}">${s}</div>`).join('');
+  const {data:bew}=await db.from('justiz_beweise').select('*').eq('verfahren_id',id).order('created_at',{ascending:false});
+  const {data:prot}=await db.from('justiz_protokolle').select('*').eq('verfahren_id',id).order('created_at',{ascending:false});
+  document.getElementById('m-v-t').textContent=v.az||'Verfahren';
+  document.getElementById('m-v-b').innerHTML=`
+    <div class="sflow">${sflow}</div>
+    <div class="ig">
+      <div class="ii"><div class="ii-l">Aktenzeichen</div><div class="ii-v mono" style="font-weight:800;color:var(--a3);font-size:15px">${v.az}</div></div>
+      <div class="ii"><div class="ii-l">Status</div><div class="ii-v"><span class="badge ${VSTATUS[v.status]?.cls||'bg-gray'}">${v.status}</span></div></div>
+      <div class="ii" style="grid-column:1/-1"><div class="ii-l">Beschuldigter</div><div class="ii-v" style="font-weight:700;font-family:var(--fp);font-size:15px">${v.buerger_name||'–'}</div></div>
+      <div class="ii" style="grid-column:1/-1"><div class="ii-l">Tatvorwurf</div><div class="ii-v">${v.tatvorwurf||'–'}</div></div>
+      <div class="ii"><div class="ii-l">Staatsanwalt</div><div class="ii-v">${v.staatsanwalt||'–'}</div></div>
+      <div class="ii"><div class="ii-l">Richter</div><div class="ii-v">${v.richter||'–'}</div></div>
+      ${v.verhandlungs_datum?`<div class="ii" style="grid-column:1/-1"><div class="ii-l">Verhandlungstermin</div><div class="ii-v">📅 ${fmt(v.verhandlungs_datum)}</div></div>`:''}
+      ${v.urteil?`<div class="ii" style="grid-column:1/-1"><div class="ii-l">Urteil</div><div class="ii-v" style="font-weight:700">${v.urteil}${v.strafmass?' – '+v.strafmass:''}</div></div>`:''}
     </div>
-    ${v.beschreibung?`<div style="background:#f5f5f5;padding:12px;border-radius:6px;margin-bottom:16px;font-size:13px;line-height:1.6">${v.beschreibung}</div>`:''}
-    ${v.urteil?`<div class="urteil-box"><h3>🔨 Urteil: ${v.urteil}</h3><div class="urteil-sub">Strafmaß: ${v.strafmass||'–'}</div></div><br>`:''}
-    
-    <div style="font-weight:700;margin-bottom:8px;font-family:var(--font)">📋 Beweise (${beweise?.length||0})</div>
-    ${!beweise?.length?'<div style="color:#aaa;font-size:12px;margin-bottom:16px;font-style:italic">Keine Beweise eingereicht</div>':
-    `<div style="margin-bottom:16px">${beweise.map(b=>`<div style="padding:8px 12px;border:1px solid #e0d8c8;border-radius:4px;margin-bottom:6px;font-size:12px">
-      <span class="badge badge-gray" style="margin-right:6px">${b.typ||'Beweis'}</span><strong>${b.bezeichnung}</strong>
-      ${b.beschreibung?`<div style="color:#666;margin-top:4px">${b.beschreibung}</div>`:''}
-    </div>`).join('')}</div>`}
-    
-    <div style="display:flex;gap:8px;margin-bottom:16px">
-      <button class="btn btn-gray btn-sm" onclick="addBeweis(${id})">+ Beweis</button>
-      <button class="btn btn-gray btn-sm" onclick="addProtokoll(${id})">+ Protokoll</button>
-    </div>
-    
-    <div style="font-weight:700;margin-bottom:8px;font-family:var(--font)">📜 Protokoll (${protos?.length||0})</div>
-    ${!protos?.length?'<div style="color:#aaa;font-size:12px;font-style:italic">Kein Protokoll</div>':
-    protos.map(p=>`<div style="border-left:3px solid var(--gold);padding:10px 12px;margin-bottom:8px;background:#faf7f0;border-radius:0 4px 4px 0">
-      <div style="font-size:11px;color:#999">${new Date(p.created_at).toLocaleString('de-DE')} · ${p.autor||'–'} · <strong>${p.typ||'Notiz'}</strong></div>
-      <div style="font-size:13px;margin-top:4px;line-height:1.5">${p.inhalt}</div>
-    </div>`).join('')}`;
+    ${v.beschreibung?`<div style="background:rgba(245,158,11,.03);padding:14px;border-radius:var(--r10);border:1px solid var(--border);font-size:13px;line-height:1.6;color:var(--t2);margin-bottom:14px">${v.beschreibung}</div>`:''}
+    ${bew?.length?`<div class="slabel">Beweise (${bew.length})</div><div class="tline">${bew.map(b=>`<div class="tl"><div class="tl-t">${b.eingereicht_von||'–'} · ${fmt(b.created_at)}</div><div class="tl-type">${b.typ||'Beweis'}</div><div style="font-weight:600">${b.bezeichnung||''}</div><div class="tl-txt">${b.beschreibung||''}</div></div>`).join('')}</div>`:''}
+    ${prot?.length?`<div class="slabel" style="margin-top:${bew?.length?'14px':'0'}">Protokoll (${prot.length})</div><div class="tline">${prot.map(p=>`<div class="tl"><div class="tl-t">${p.autor||'–'} · ${fmt(p.created_at)}</div><div class="tl-type">${p.typ||'Eintrag'}</div><div class="tl-txt">${p.inhalt||''}</div></div>`).join('')}</div>`:''}`;
 
-  const foot = document.getElementById('modal-vf-foot');
-  foot.innerHTML = '';
-  const statusFlow = {Ermittlung:'Anklage',Anklage:'Verhandlung',Verhandlung:'Urteil'};
-  if(statusFlow[v.status]) {
-    const b = document.createElement('button');
-    b.className = 'btn btn-gold';
-    const nextStatus = statusFlow[v.status];
-    b.textContent = nextStatus==='Urteil' ? '🔨 Urteil fällen' : `→ ${nextStatus}`;
-    b.onclick = nextStatus==='Urteil' ? ()=>{ closeModal('modal-vf'); openUrteilModal(id); } : async()=>{
-      await db.from('justiz_verfahren').update({status:nextStatus}).eq('id',id);
-      closeModal('modal-vf'); loadVerfahren(); loadDashboard();
-      notify(`Status → ${nextStatus}`, 'ok');
-      await logAction('VERFAHREN_STATUS', `${v.az}: → ${nextStatus}`);
-    };
-    foot.appendChild(b);
+  const f2=document.getElementById('m-v-f');
+  f2.innerHTML='';
+  const addBtn=(lbl,cls,fn)=>{const b=document.createElement('button');b.className='btn '+cls+' b-sm';b.textContent=lbl;b.onclick=fn;f2.appendChild(b);};
+
+  // Status advance
+  const nextMap={Ermittlung:'Anklage',Anklage:'Verhandlung',Verhandlung:'Urteil'};
+  if(nextMap[v.status]){
+    addBtn('→ '+nextMap[v.status],'b-gold',async()=>{
+      const ns=nextMap[v.status];
+      await db.from('justiz_verfahren').update({status:ns}).eq('id',id);
+      await db.from('justiz_protokolle').insert([{verfahren_id:id,typ:'Statusänderung',inhalt:'Status geändert zu: '+ns,autor:U?.name}]);
+      cm('m-v');loadV();loadDash();nt('Status → '+ns,'ok');
+    });
   }
-  if(v.status!=='Eingestellt'&&v.status!=='Urteil'){
-    const b2 = document.createElement('button');
-    b2.className='btn btn-gray btn-sm'; b2.textContent='Einstellen';
-    b2.onclick=async()=>{await db.from('justiz_verfahren').update({status:'Eingestellt'}).eq('id',id); closeModal('modal-vf'); loadVerfahren(); notify('Verfahren eingestellt');};
-    foot.appendChild(b2);
+  if(v.status==='Verhandlung'){addBtn('🔨 Urteil','b-pri',()=>{document.getElementById('u-vid').value=id;cm('m-v');om('m-urteil');});}
+  addBtn('+ Beweis','b-ghost',async()=>{
+    const bez=prompt('Bezeichnung des Beweises:');if(!bez)return;
+    const typ=prompt('Typ (Dokument/Aussage/Lichtbild/Sonstiges):','Dokument');
+    const desc=prompt('Beschreibung (optional):','');
+    await db.from('justiz_beweise').insert([{verfahren_id:id,bezeichnung:bez,typ:typ||'Sonstiges',beschreibung:desc||'',eingereicht_von:U?.name}]);
+    nt('✅ Beweis hinzugefügt','ok');openV(id);
+  });
+  addBtn('+ Protokoll','b-ghost',async()=>{
+    const txt=prompt('Protokolleintrag:');if(!txt)return;
+    const typ=prompt('Typ (Notiz/Beschluss/Protokoll):','Notiz');
+    await db.from('justiz_protokolle').insert([{verfahren_id:id,inhalt:txt,typ:typ||'Notiz',autor:U?.name}]);
+    nt('✅ Protokolleintrag','ok');openV(id);
+  });
+  if(!['Urteil','Eingestellt'].includes(v.status)){
+    addBtn('⏹ Einstellen','b-danger',async()=>{
+      if(!confirm('Verfahren einstellen?'))return;
+      await db.from('justiz_verfahren').update({status:'Eingestellt'}).eq('id',id);
+      await db.from('justiz_protokolle').insert([{verfahren_id:id,typ:'Einstellung',inhalt:'Verfahren eingestellt',autor:U?.name}]);
+      cm('m-v');loadV();loadDash();nt('Verfahren eingestellt','warn');
+    });
   }
-  const closeBtn = document.createElement('button');
-  closeBtn.className='btn btn-gray'; closeBtn.textContent='Schließen';
-  closeBtn.onclick=()=>closeModal('modal-vf');
-  foot.appendChild(closeBtn);
-  openModal('modal-vf');
+  addBtn('Schließen','b-ghost',()=>cm('m-v'));
+  om('m-v');
 }
 
-async function initNewVerfahren() {
-  document.getElementById('nv-az').value = genAZ();
-  const {data:anzeigen} = await db.from('cases').select('id,citizen_name,description').order('created_at',{ascending:false}).limit(30);
-  const sel = document.getElementById('nv-anzeige');
-  sel.innerHTML = '<option value="">– Keine –</option>';
-  if(anzeigen) anzeigen.forEach(a=>{ const o=document.createElement('option'); o.value=a.id; o.textContent=`#${a.id} – ${a.citizen_name||'–'}`; sel.appendChild(o); });
+/* AUTOCOMPLETE */
+async function acSrch(inp,drop,cb){
+  const q=document.getElementById(inp).value.trim();
+  const dr=document.getElementById(drop);
+  if(q.length<2){dr.style.display='none';return;}
+  const {data}=await db.from('citizens').select('*').or(`name.ilike.%${q}%,discord_tag.ilike.%${q}%,roblox_name.ilike.%${q}%`).limit(6);
+  if(!data?.length){dr.style.display='none';return;}
+  dr.style.display='block';
+  dr.innerHTML=data.map(c=>`<div class="ac-item" onmousedown="event.preventDefault();${cb.name}(${JSON.stringify(c).replace(/"/g,'&quot;')})"><strong>${c.name||'–'}</strong><span>${c.roblox_name||''} ${c.discord_tag?'· '+c.discord_tag:''}</span></div>`).join('');
 }
+function fillVCit(c){document.getElementById('nv-bs').value=c.name;document.getElementById('nv-bd').style.display='none';document.getElementById('nv-n').value=c.name;_vcid=c.id;}
+function fillVLCit(c){document.getElementById('vl-bs').value=c.name;document.getElementById('vl-bd').style.display='none';document.getElementById('vl-n').value=c.name;_vlcid=c.id;}
 
-async function searchCitizenVf() {
-  const q = document.getElementById('nv-search').value.trim();
-  if(q.length<2){document.getElementById('nv-results').style.display='none';return;}
-  const {data} = await db.from('citizens').select('*').or(`name.ilike.%${q}%,discord_tag.ilike.%${q}%,roblox_name.ilike.%${q}%`).limit(6);
-  const res = document.getElementById('nv-results');
-  if(!data?.length){res.style.display='none';return;}
-  res.style.display='block';
-  res.innerHTML=data.map(c=>`<div style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:12px" 
-    onmousedown="fillCitizenVf(${JSON.stringify(c).replace(/"/g,'&quot;')})">${c.name} <span style="color:#999">${c.roblox_name||''}</span></div>`).join('');
+async function srchAnzeigen(inp,drop){
+  const q=document.getElementById(inp).value.trim();
+  const dr=document.getElementById(drop);
+  if(q.length<2){dr.style.display='none';return;}
+  const {data}=await db.from('cases').select('*').or(`citizen_name.ilike.%${q}%,description.ilike.%${q}%`).limit(6);
+  if(!data?.length){dr.style.display='none';return;}
+  dr.style.display='block';
+  dr.innerHTML=data.map(a=>`<div class="ac-item" onmousedown="event.preventDefault();selectAnzeige('${a.id}','${(a.citizen_name||'').replace(/'/g,"\\'")}')"><strong>${a.citizen_name||'–'}</strong><span>${(a.description||'').substring(0,50)}</span></div>`).join('');
 }
-function fillCitizenVf(c){
-  document.getElementById('nv-name').value=c.name||'';
-  document.getElementById('nv-search').value=c.name||'';
-  document.getElementById('nv-results').style.display='none';
-  window._vfCitizenId=c.id;
-}
+function selectAnzeige(id,name){document.getElementById('nv-az').value=name;document.getElementById('nv-azd').style.display='none';document.getElementById('nv-anzeige-id').value=id;_anzeigeId=id;}
 
-async function createVerfahren() {
-  const az=document.getElementById('nv-az').value;
-  const typ=document.getElementById('nv-typ').value;
-  const name=document.getElementById('nv-name').value.trim();
-  const tatvorwurf=document.getElementById('nv-tatvorwurf').value.trim();
-  const desc=document.getElementById('nv-desc').value.trim();
-  const sta=document.getElementById('nv-sta').value.trim()||U?.name;
-  const richter=document.getElementById('nv-richter').value.trim();
-  const anzeige=document.getElementById('nv-anzeige').value;
-  const err=document.getElementById('nv-err');
-  if(!typ){err.textContent='Bitte Typ wählen.';return;}
-  if(!name){err.textContent='Bitte Beschuldigten angeben.';return;}
-  if(!tatvorwurf){err.textContent='Bitte Tatvorwurf eingeben.';return;}
-  err.textContent='';
-  const {data,error}=await db.from('justiz_verfahren').insert([{
-    az, typ, buerger_name:name, tatvorwurf, beschreibung:desc,
-    staatsanwalt:sta, richter:richter||null,
-    citizen_id:window._vfCitizenId||null,
-    strafanzeige_id:anzeige?parseInt(anzeige):null,
-    status:'Ermittlung'
-  }]).select().single();
-  if(error){err.textContent='Fehler: '+error.message;return;}
-  await logAction('VERFAHREN_ANGELEGT',`${az}: ${tatvorwurf} – ${name}`);
-  notify('⚖️ Verfahren '+az+' angelegt','ok');
-  window._vfCitizenId=null;
-  showPage('verfahren');
-}
-
-async function createVfFromAnzeige(anzeige_id) {
-  const {data:a}=await db.from('cases').select('*').eq('id',anzeige_id).single();
-  if(!a) return;
-  showPage('new-verfahren');
-  await initNewVerfahren();
+function prefillVerfahren(anzId,name,desc){
+  sp('new-verfahren');
   setTimeout(()=>{
-    document.getElementById('nv-name').value=a.citizen_name||'';
-    document.getElementById('nv-tatvorwurf').value=a.description?.substring(0,100)||'';
-    document.getElementById('nv-desc').value=a.description||'';
-    document.getElementById('nv-anzeige').value=anzeige_id;
-    if(a.citizen_id) window._vfCitizenId=a.citizen_id;
+    document.getElementById('nv-n').value=name;
+    document.getElementById('nv-tv').value=desc.substring(0,100);
+    document.getElementById('nv-anzeige-id').value=anzId;
+    _anzeigeId=anzId;
+    if(U?.loginRole==='Staatsanwalt')document.getElementById('nv-sa').value=U.name;
+    else document.getElementById('nv-ri').value=U.name;
   },100);
 }
 
-async function addBeweis(vfId) {
-  const typ=prompt('Beweistyp (z.B. Zeuge, Dokument, Foto, Polizeibericht):','Dokument');
-  if(!typ) return;
-  const bez=prompt('Bezeichnung:');
-  if(!bez) return;
-  const desc=prompt('Beschreibung (optional):')||'';
-  await db.from('justiz_beweise').insert([{verfahren_id:vfId,typ,bezeichnung:bez,beschreibung:desc,eingereicht_von:U?.name}]);
-  notify('Beweis hinzugefügt','ok');
-  openVerfahren(vfId);
-}
-
-async function addProtokoll(vfId) {
-  const typ=prompt('Protokolltyp (Beschluss, Notiz, Urteilsbegründung):','Notiz');
-  if(!typ) return;
-  const inhalt=prompt('Inhalt:');
-  if(!inhalt) return;
-  await db.from('justiz_protokolle').insert([{verfahren_id:vfId,typ,inhalt,autor:U?.name}]);
-  notify('Protokolleintrag gespeichert','ok');
-  openVerfahren(vfId);
-}
-
-// ── ANZEIGEN (Polizei Strafanzeigen) ──────────────────────────
-async function loadAnzeigen() {
-  const {data}=await db.from('cases').select('*').order('created_at',{ascending:false}).limit(100);
-  const tbody=document.getElementById('anzeigen-tbody');
-  if(!data?.length){tbody.innerHTML='<tr class="empty-row"><td colspan="7">Keine Strafanzeigen</td></tr>';return;}
-  tbody.innerHTML=data.map(a=>`
-    <tr>
-      <td style="font-family:monospace;font-weight:700">#${a.id}</td>
-      <td>${new Date(a.created_at).toLocaleDateString('de-DE')}</td>
-      <td style="font-weight:600">${a.citizen_name||'–'}</td>
-      <td>${a.description?.substring(0,60)||'–'}…</td>
-      <td>${a.officer_name||'–'}</td>
-      <td><span class="badge ${a.status==='offen'?'badge-red':'badge-gray'}">${a.status||'offen'}</span></td>
-      <td><button class="btn btn-gold btn-sm" onclick="createVfFromAnzeige(${a.id})">→ Verfahren</button></td>
-    </tr>`).join('');
-}
-
-// ── VORLADUNGEN ───────────────────────────────────────────────
-async function loadVorladungen() {
-  const {data}=await db.from('justiz_vorladungen').select('*, justiz_verfahren(az)').order('created_at',{ascending:false}).limit(100);
-  const tbody=document.getElementById('vorladungen-tbody');
-  if(!data?.length){tbody.innerHTML='<tr class="empty-row"><td colspan="6">Keine Vorladungen</td></tr>';return;}
-  tbody.innerHTML=data.map(v=>`
-    <tr>
-      <td class="az-badge">${v.justiz_verfahren?.az||'–'}</td>
-      <td style="font-weight:600">${v.an_name||'–'}</td>
-      <td><span class="badge badge-gold">${v.typ||'Vorladung'}</span></td>
-      <td>${new Date(v.created_at).toLocaleDateString('de-DE')}</td>
-      <td><span class="badge ${v.dm_gesendet?'badge-green':'badge-gray'}">${v.dm_gesendet?'Gesendet':'Ausstehend'}</span></td>
-      <td>${v.an_discord_id&&!v.dm_gesendet?`<button class="btn btn-gold btn-sm" onclick="sendDM(${v.id},${v.an_discord_id},'${v.an_name}','${v.typ}',${v.verfahren_id})">📬 DM senden</button>`:'–'}</td>
-    </tr>`).join('');
-}
-
-async function openNewVorladung() {
-  const {data:vfl}=await db.from('justiz_verfahren').select('id,az,buerger_name').not('status','in','("Urteil","Eingestellt")').order('created_at',{ascending:false}).limit(50);
-  const sel=document.getElementById('vl-vf-id');
-  sel.innerHTML='<option value="">– Verfahren wählen –</option>';
-  if(vfl) vfl.forEach(v=>{const o=document.createElement('option');o.value=v.id;o.textContent=`${v.az} – ${v.buerger_name||'–'}`;sel.appendChild(o);});
-  openModal('modal-vorladung');
-}
-
-async function searchCitizenVl() {
-  const q=document.getElementById('vl-search').value.trim();
-  if(q.length<2){document.getElementById('vl-results').style.display='none';return;}
-  const {data}=await db.from('citizens').select('*').or(`name.ilike.%${q}%,discord_tag.ilike.%${q}%,roblox_name.ilike.%${q}%`).limit(5);
-  const res=document.getElementById('vl-results');
-  if(!data?.length){res.style.display='none';return;}
-  res.style.display='block';
-  res.innerHTML=data.map(c=>`<div style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:12px"
-    onmousedown="fillVlCitizen(${JSON.stringify(c).replace(/"/g,'&quot;')})">${c.name} <span style="color:#999">${c.discord_tag||''}</span></div>`).join('');
-}
-function fillVlCitizen(c){
-  document.getElementById('vl-name').value=c.name||'';
-  document.getElementById('vl-search').value=c.name||'';
-  document.getElementById('vl-results').style.display='none';
-  window._vlDiscordId=c.discord_id||null;
-  window._vlRoblox=c.roblox_name||'';
-}
-
-async function createVorladung() {
-  const vfId=document.getElementById('vl-vf-id').value;
-  const name=document.getElementById('vl-name').value.trim();
-  const typ=document.getElementById('vl-typ').value;
-  const text=document.getElementById('vl-text').value.trim();
-  if(!vfId||!name||!text){notify('Alle Felder ausfüllen','err');return;}
-  const {data}=await db.from('justiz_vorladungen').insert([{
-    verfahren_id:parseInt(vfId), an_name:name, typ, text_inhalt:text,
-    an_discord_id:window._vlDiscordId||null, an_roblox:window._vlRoblox||null
+async function createV(){
+  const n=document.getElementById('nv-n').value.trim();
+  const tv=document.getElementById('nv-tv').value.trim();
+  const err=document.getElementById('nv-err');
+  if(!n){err.textContent='Name Beschuldigter erforderlich.';return;}
+  if(!tv){err.textContent='Tatvorwurf erforderlich.';return;}
+  err.textContent='';
+  const az='AZ-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-5);
+  const {data,error}=await db.from('justiz_verfahren').insert([{
+    az,buerger_name:n,tatvorwurf:tv,
+    beschreibung:document.getElementById('nv-d').value.trim(),
+    typ:document.getElementById('nv-t').value,
+    status:document.getElementById('nv-s').value,
+    staatsanwalt:document.getElementById('nv-sa').value.trim()||U?.name,
+    richter:document.getElementById('nv-ri').value.trim()||null,
+    citizen_id:_vcid||null,
+    strafanzeige_id:_anzeigeId||null,
+    verhandlungs_datum:document.getElementById('nv-dt').value||null,
   }]).select().single();
-  await logAction('VORLADUNG_ERSTELLT',`${typ} an ${name}`);
-  notify('📬 Vorladung erstellt','ok');
-  window._vlDiscordId=null; window._vlRoblox=null;
-  closeModal('modal-vorladung');
-  loadVorladungen();
-}
-
-async function sendDM(vorladungId, discordId, name, typ, vfId) {
-  // DM über Discord-Bot wäre ideal, hier als DB-Flag für Bot
-  await db.from('justiz_vorladungen').update({dm_gesendet:true,dm_gesendet_at:new Date().toISOString()}).eq('id',vorladungId);
-  await logAction('DM_GESENDET',`${typ} an ${name} (Discord: ${discordId})`);
-  notify(`📬 DM an ${name} als gesendet markiert – Bot sendet automatisch`,'ok');
-  loadVorladungen();
-}
-
-// ── URTEILE ───────────────────────────────────────────────────
-async function loadUrteile() {
-  const {data}=await db.from('justiz_verfahren').select('*').eq('status','Urteil').order('created_at',{ascending:false});
-  const el=document.getElementById('urteile-list');
-  if(!data?.length){el.innerHTML='<div class="card" style="color:#aaa;text-align:center;padding:32px;font-style:italic">Keine Urteile gesprochen</div>';return;}
-  el.innerHTML=data.map(v=>`
-    <div class="card" style="border-top:3px solid var(--gold);margin-bottom:16px">
-      <div class="urteil-box">
-        <h3>⚖️ Urteil: ${v.urteil||'–'}</h3>
-        <div class="urteil-sub">${v.az} · ${v.buerger_name} · ${new Date(v.created_at).toLocaleDateString('de-DE')}</div>
-        ${v.strafmass?`<div style="text-align:center;margin-bottom:8px"><strong>Strafmaß:</strong> ${v.strafmass}</div>`:''}
-        <div style="margin-top:12px;font-size:13px;font-family:var(--sans)"><strong>Tatvorwurf:</strong> ${v.tatvorwurf}</div>
-        ${v.richter?`<div style="margin-top:6px;font-size:12px;color:#888">Richter: ${v.richter} · Staatsanwalt: ${v.staatsanwalt||'–'}</div>`:''}
-      </div>
-    </div>`).join('');
-}
-
-function openUrteilModal(vfId){
-  document.getElementById('u-vf-id').value=vfId;
-  ['u-urteil','u-strafmass','u-begruendung'].forEach(id=>{ if(document.getElementById(id)) document.getElementById(id).value=document.getElementById(id).tagName==='SELECT'?document.getElementById(id).options[0].value:''; });
-  openModal('modal-urteil');
+  if(error){err.textContent='Fehler: '+error.message;return;}
+  await db.from('justiz_protokolle').insert([{verfahren_id:data.id,typ:'Eröffnung',inhalt:'Verfahren eröffnet gegen '+n+'. Tatvorwurf: '+tv,autor:U?.name}]);
+  if(_anzeigeId)await db.from('cases').update({status:'Ermittlung'}).eq('id',_anzeigeId);
+  await log('V_NEU',az+': '+n+' – '+tv);
+  nt('⚖️ Verfahren '+az+' eröffnet!','ok');
+  ['nv-bs','nv-n','nv-tv','nv-d','nv-sa','nv-ri','nv-az','nv-dt','nv-anzeige-id'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  _vcid=null;_anzeigeId=null;sp('verfahren');
 }
 
 async function saveUrteil(){
-  const vfId=parseInt(document.getElementById('u-vf-id').value);
-  const urteil=document.getElementById('u-urteil').value;
-  const strafmass=document.getElementById('u-strafmass').value.trim();
-  const begr=document.getElementById('u-begruendung').value.trim();
-  if(!begr){notify('Bitte Begründung eingeben','err');return;}
-  await db.from('justiz_verfahren').update({status:'Urteil',urteil,strafmass:strafmass||null}).eq('id',vfId);
-  if(begr) await db.from('justiz_protokolle').insert([{verfahren_id:vfId,typ:'Urteilsbegründung',inhalt:begr,autor:U?.name}]);
-  await logAction('URTEIL',`Verfahren ${vfId}: ${urteil} – ${strafmass||'kein Strafmaß'}`);
-  notify('🔨 Urteil gesprochen: '+urteil,'ok');
-  closeModal('modal-urteil');
-  loadVerfahren(); loadDashboard();
+  const vid=document.getElementById('u-vid').value;
+  const e=document.getElementById('u-e').value;
+  const b=document.getElementById('u-b').value.trim();
+  const err=document.getElementById('u-err');
+  if(!b){err.textContent='Begründung erforderlich.';return;}
+  err.textContent='';
+  const upd={status:'Urteil',urteil:e,strafmass:document.getElementById('u-sm').value.trim()||null};
+  await db.from('justiz_verfahren').update(upd).eq('id',vid);
+  await db.from('justiz_protokolle').insert([{verfahren_id:vid,typ:'Urteil',inhalt:`Urteil: ${e}${upd.strafmass?' – Strafmaß: '+upd.strafmass:''}. Begründung: ${b}`,autor:U?.name}]);
+  await log('URTEIL','Verfahren #'+vid+': '+e);
+  nt('🔨 Urteil verkündet: '+e,'ok');
+  cm('m-urteil');loadV();loadDash();
 }
 
-// ── PROFIL ────────────────────────────────────────────────────
+/* STRAFANZEIGEN */
+async function loadA(){
+  const s=document.getElementById('as')?.value?.toLowerCase()||'';
+  let {data}=await db.from('cases').select('*').order('created_at',{ascending:false}).limit(80);
+  if(s&&data)data=data.filter(a=>(a.citizen_name||'').toLowerCase().includes(s)||(a.description||'').toLowerCase().includes(s));
+  const tb=document.getElementById('a-tb');
+  if(!data?.length){tb.innerHTML='<tr><td colspan="6"><div class="es"><p>Keine Strafanzeigen</p></div></td></tr>';return;}
+  const sg={Gering:'bg-g',Mittel:'bg-y',Schwer:'bg-o',Kritisch:'bg-r'};
+  tb.innerHTML=data.map(a=>`<tr>
+    <td class="mono" style="color:var(--a3)">${a.id?.toString().substring(0,8)||'–'}</td>
+    <td style="font-weight:600;font-family:var(--fg)">${a.citizen_name||'–'}</td>
+    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.description||'–'}</td>
+    <td>${a.officer_name||'–'}</td>
+    <td><span class="badge ${sg[a.severity]||'bg-gray'}">${a.severity||'–'}</span></td>
+    <td><button class="btn b-gold b-sm" onclick="prefillVerfahren('${a.id}','${(a.citizen_name||'').replace(/'/g,"\\'")}','${(a.description||'').replace(/'/g,"\\'")}')">→ Verfahren</button></td>
+  </tr>`).join('');
+}
+
+/* VORLADUNGEN */
+async function loadVL(){
+  const {data}=await db.from('justiz_vorladungen').select('*').order('created_at',{ascending:false}).limit(60);
+  const tb=document.getElementById('vl-tb');
+  if(!data?.length){tb.innerHTML='<tr><td colspan="6"><div class="es"><div class="es-ico">✉️</div><p>Keine Vorladungen</p></div></td></tr>';return;}
+  tb.innerHTML=data.map(v=>`<tr>
+    <td style="font-weight:600">${v.an_name||'–'}</td>
+    <td><span class="badge bg-a">${v.typ||'–'}</span></td>
+    <td class="mono" style="font-size:11px">${v.verfahren_az||v.an_discord_id||'–'}</td>
+    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--t2)">${v.text_inhalt||'–'}</td>
+    <td><span class="badge ${v.dm_gesendet?'bg-g':'bg-gray'}">${v.dm_gesendet?'✓ Gesendet':'Ausstehend'}</span></td>
+    <td class="mono" style="font-size:11px">${fmt(v.created_at)}</td>
+  </tr>`).join('');
+}
+
+function openNewVL(){
+  ['vl-bs','vl-n','vl-az','vl-txt'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  document.getElementById('vl-err').textContent='';
+  _vlcid=null;om('m-vl');
+}
+
+async function saveVL(){
+  const n=document.getElementById('vl-n').value.trim();
+  const txt=document.getElementById('vl-txt').value.trim();
+  const err=document.getElementById('vl-err');
+  if(!n){err.textContent='Empfänger erforderlich.';return;}
+  if(!txt){err.textContent='Inhalt erforderlich.';return;}
+  err.textContent='';
+  const {error}=await db.from('justiz_vorladungen').insert([{
+    an_name:n,an_discord_id:_vlcid||null,
+    typ:document.getElementById('vl-t').value,
+    text_inhalt:txt,
+    verfahren_az:document.getElementById('vl-az').value.trim()||null,
+    dm_gesendet:false,
+  }]);
+  if(error){err.textContent='Fehler: '+error.message;return;}
+  await log('VORLADUNG',n+': '+document.getElementById('vl-t').value);
+  nt('✉️ Vorladung erstellt','ok');cm('m-vl');loadVL();_vlcid=null;
+}
+
+/* TEAM */
+async function loadTeam(){
+  const {data}=await db.from('officers').select('*').order('name');
+  const g=document.getElementById('team-grid');
+  if(!data?.length){g.innerHTML='<div class="es"><p>Keine Mitarbeiter</p></div>';return;}
+  g.innerHTML=data.map(o=>`<div class="tc"><div class="tc-ava">${o.name.charAt(0)}</div><div style="flex:1;min-width:0"><div class="tc-n">${o.name}</div><div class="tc-r">${o.rank||'–'}</div><div class="tc-d">${o.dienst}</div></div><span class="badge ${o.suspended?'bg-r':'bg-a'}">${o.suspended?'Gesperrt':'Aktiv'}</span></div>`).join('');
+}
+
+/* USER MANAGEMENT */
+async function loadUsers(){
+  const {data}=await db.from('officers').select('*').order('name');
+  const tb=document.getElementById('um-tb');
+  if(!data?.length){tb.innerHTML='<tr><td colspan="5"><div class="es"><p>Keine Nutzer</p></div></td></tr>';return;}
+  tb.innerHTML=data.map(o=>`<tr>
+    <td style="font-weight:600;font-family:var(--fg)">${o.name}</td>
+    <td class="mono">${o.dienst}</td>
+    <td>${o.rank||'–'}</td>
+    <td><span class="badge ${o.suspended?'bg-r':'bg-g'}">${o.suspended?'Gesperrt':'Aktiv'}</span></td>
+    <td style="display:flex;gap:5px;flex-wrap:wrap">
+      <button class="btn b-ghost b-sm" onclick='openAU(${JSON.stringify(o)})'>✏️</button>
+      <button class="btn ${o.suspended?'b-grn':'b-danger'} b-sm" onclick="toggleSusp('${o.id}',${o.suspended})">${o.suspended?'✅':'🔒'}</button>
+      ${o.id!==U?.id?`<button class="btn b-danger b-sm" onclick="delUser('${o.id}','${o.name.replace(/'/g,"\\'")}')">🗑</button>`:''}
+    </td>
+  </tr>`).join('');
+}
+
+function openAU(user){
+  document.getElementById('au-id').value='';
+  document.getElementById('au-n').value='';
+  document.getElementById('au-d').value='';
+  document.getElementById('au-pw').value='';
+  document.getElementById('au-err').textContent='';
+  if(user){
+    document.getElementById('m-au-t').textContent='Nutzer bearbeiten';
+    document.getElementById('au-id').value=user.id;
+    document.getElementById('au-n').value=user.name;
+    document.getElementById('au-d').value=user.dienst;
+    const s=document.getElementById('au-rg');
+    for(let o of s.options){if(o.value===user.rank)o.selected=true;}
+  }else{
+    document.getElementById('m-au-t').textContent='Nutzer anlegen';
+  }
+  om('m-au');
+}
+
+async function saveUser(){
+  const n=document.getElementById('au-n').value.trim();
+  const d=document.getElementById('au-d').value.trim().toUpperCase();
+  const pw=document.getElementById('au-pw').value;
+  const eid=document.getElementById('au-id').value;
+  const rs=document.getElementById('au-rg');
+  const rank=rs.value;
+  const lvl=parseInt(rs.options[rs.selectedIndex].dataset.lvl)||5;
+  const err=document.getElementById('au-err');
+  if(!n||!d){err.textContent='Name und Dienst-Nr erforderlich.';return;}
+  if(!eid&&!pw){err.textContent='Passwort erforderlich.';return;}
+  if(eid){
+    const upd={name:n,dienst:d,rank,level:lvl};if(pw)upd.password=pw;
+    const {error}=await db.from('officers').update(upd).eq('id',eid);
+    if(error){err.textContent='Fehler: '+error.message;return;}
+    nt('✅ Nutzer aktualisiert','ok');
+  }else{
+    const {error}=await db.from('officers').insert([{name:n,dienst:d,rank,level:lvl,password:pw,status:'off',abteilung:'justiz'}]);
+    if(error){err.textContent=error.code==='23505'?'Dienst-Nr vergeben.':'Fehler: '+error.message;return;}
+    nt('✅ Nutzer angelegt: '+n,'ok');
+  }
+  await log('USER',(eid?'Edit':'Neu')+': '+n);cm('m-au');loadUsers();
+}
+
+async function toggleSusp(id,s){await db.from('officers').update({suspended:!s}).eq('id',id);nt(s?'Entsperrt':'Gesperrt',s?'ok':'warn');loadUsers();}
+async function delUser(id,name){if(!confirm('"'+name+'" löschen?'))return;await db.from('officers').delete().eq('id',id);nt('Gelöscht','warn');loadUsers();}
+
+/* PROFIL */
 function loadProfil(){
-  if(!U) return;
-  document.getElementById('profil-content').innerHTML=`
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)">
-      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#1a1a2e,#c9a84c);
-        display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px">⚖️</div>
-      <div><div style="font-family:var(--font);font-size:20px;font-weight:700;color:var(--navy)">${U.name}</div>
-        <div style="font-size:13px;color:#888">${currentRole==='richter'?'Richter':'Staatsanwalt'} · ${U.dienst}</div></div>
+  if(!U)return;
+  document.getElementById('profil-wrap').innerHTML=`
+    <div class="ph">
+      <div class="ph-ava">${U.name.charAt(0)}</div>
+      <div class="ph-n">${U.name}</div>
+      <div class="ph-r">${U.loginRole||'–'} · ${U.rank||'–'} · ${U.dienst}</div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div style="background:#f9f6f0;border-radius:6px;padding:12px">
-        <div style="font-size:11px;color:#999;font-weight:700;text-transform:uppercase;margin-bottom:4px">Rolle</div>
-        <span class="badge badge-gold">${currentRole==='richter'?'Richter':'Staatsanwalt'}</span>
+    <div class="card">
+      <div class="ig" style="margin-bottom:0">
+        <div class="ii"><div class="ii-l">Rolle</div><div class="ii-v"><span class="badge bg-a">${U.loginRole||'–'}</span></div></div>
+        <div class="ii"><div class="ii-l">Rang</div><div class="ii-v">${U.rank||'–'}</div></div>
+        <div class="ii"><div class="ii-l">Dienstnummer</div><div class="ii-v mono">${U.dienst}</div></div>
+        <div class="ii"><div class="ii-l">Account</div><div class="ii-v"><span class="badge ${U.suspended?'bg-r':'bg-g'}">${U.suspended?'Gesperrt':'Aktiv'}</span></div></div>
       </div>
-      <div style="background:#f9f6f0;border-radius:6px;padding:12px">
-        <div style="font-size:11px;color:#999;font-weight:700;text-transform:uppercase;margin-bottom:4px">Dienstnummer</div>
-        <div style="font-family:monospace;font-weight:700">${U.dienst}</div>
-      </div>
-    </div>`;
+    </div>
+    <button class="btn b-ghost b-sm" style="margin-top:8px" onclick="chgPw()">🔑 Passwort ändern</button>`;
+}
+function chgPw(){
+  const p=prompt('Neues Passwort (min. 6 Zeichen):');
+  if(!p||p.length<6){nt('Zu kurz!','err');return;}
+  db.from('officers').update({password:p}).eq('id',U.id).then(()=>nt('✅ Passwort geändert','ok'));
+  log('PW_CHANGE',U.name);
 }
 </script>
 </body>
