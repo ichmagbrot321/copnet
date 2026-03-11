@@ -2,899 +2,885 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RettungsNet Karlsruhe – Notfallsystem</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>RettungsNet · Karlsruhe</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --red:#e53935;--red-dark:#b71c1c;--red-light:#ef9a9a;
-  --white:#fff;--bg:#f5f5f5;--sidebar:#1a1a2e;
-  --accent:#ff6b35;--green:#43a047;--yellow:#f9a825;
-  --text:#1a1a1a;--text2:#555;--border:#ddd;
-  --card:#fff;--shadow:0 2px 12px rgba(0,0,0,.1);
-  --font:'Segoe UI',system-ui,sans-serif;
+  --a:#ef4444;--a2:#dc2626;--a3:#f87171;--ag:rgba(239,68,68,.12);
+  --bg:#050508;--s1:#0a0b10;--s2:#0f1018;--s3:#141520;--s4:#1a1d2e;
+  --glass:rgba(10,11,16,.7);--glass2:rgba(20,21,32,.6);
+  --border:rgba(255,255,255,.05);--border2:rgba(239,68,68,.2);
+  --t1:#e8eaf6;--t2:#7c85a8;--t3:#3d4466;
+  --green:#10b981;--yellow:#f59e0b;--blue:#3b82f6;--orange:#f97316;
+  --f:'Inter',sans-serif;--fg:'Space Grotesk',sans-serif;--fm:'JetBrains Mono',monospace;
+  --r6:6px;--r10:10px;--r14:14px;--r20:20px;--r24:24px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:var(--f);background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden;font-size:14px}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 900px 600px at -5% 5%,rgba(239,68,68,.06) 0%,transparent 60%),radial-gradient(ellipse 600px 800px at 105% 95%,rgba(249,115,22,.04) 0%,transparent 60%);pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--s4)}
 
 /* ── BOOT ── */
-#boot{position:fixed;inset:0;background:#0a0a0a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
-.boot-cross{font-size:80px;animation:pulse 1s ease infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}
-.boot-title{color:#fff;font-size:28px;font-weight:700;letter-spacing:3px}
-.boot-sub{color:#e53935;font-size:13px;letter-spacing:2px;text-transform:uppercase}
-.boot-bar{width:300px;height:3px;background:#222;border-radius:2px;overflow:hidden}
-.boot-prog{height:100%;width:0;background:linear-gradient(90deg,#e53935,#ff6b35);transition:width .3s}
-.boot-status{color:#888;font-size:11px;letter-spacing:1px;margin-top:-12px}
+#boot{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
+.br{width:96px;height:96px;position:relative;display:flex;align-items:center;justify-content:center}
+.br::before{content:'';position:absolute;inset:0;border-radius:50%;border:1px solid var(--border2);animation:bspin 3s linear infinite}
+.br::after{content:'';position:absolute;inset:6px;border-radius:50%;border:1px solid rgba(239,68,68,.1);animation:bspin 4s linear infinite reverse}
+@keyframes bspin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.bi{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--s3),var(--s4));border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 40px rgba(239,68,68,.2)}
+.bt{font-family:var(--fg);font-size:28px;font-weight:800}
+.bt em{background:linear-gradient(135deg,var(--a),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.bs{font-size:10px;color:var(--t3);letter-spacing:4px;text-transform:uppercase}
+.bb{width:260px;height:1px;background:var(--s4);overflow:hidden;border-radius:1px}
+.bf{height:100%;width:0;background:linear-gradient(90deg,var(--a2),var(--a),var(--a3));transition:width .35s ease;box-shadow:0 0 8px var(--a)}
+.bl{font-family:var(--fm);font-size:11px;color:var(--t3)}
 
-/* ── LAYOUT ── */
-#app{display:none;min-height:100vh;flex-direction:column}
-.topbar{background:linear-gradient(135deg,#b71c1c 0%,#e53935 50%,#c62828 100%);
-  height:56px;display:flex;align-items:center;padding:0 20px;gap:16px;
-  box-shadow:0 2px 8px rgba(229,57,53,.4);position:sticky;top:0;z-index:100}
-.topbar-logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:18px;letter-spacing:1px}
-.topbar-logo span{font-size:24px}
-.topbar-status{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);
-  padding:4px 12px;border-radius:20px;color:#fff;font-size:12px;cursor:pointer;margin-left:auto}
-.status-dot{width:8px;height:8px;border-radius:50%;background:#4caf50;animation:blink 1.5s ease infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.status-dot.red{background:#ff5252;animation:none}
-.topbar-user{color:rgba(255,255,255,.9);font-size:13px;display:flex;align-items:center;gap:8px}
-.topbar-btn{background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 14px;
-  border-radius:4px;cursor:pointer;font-size:12px;font-family:var(--font)}
-.topbar-btn:hover{background:rgba(255,255,255,.25)}
-
-.main-layout{display:flex;flex:1;min-height:calc(100vh - 56px)}
-.sidebar{width:220px;background:var(--sidebar);padding:16px 0;flex-shrink:0;
-  box-shadow:2px 0 8px rgba(0,0,0,.15)}
-.sidebar-section{color:#666;font-size:10px;letter-spacing:2px;text-transform:uppercase;
-  padding:12px 16px 4px;font-weight:600}
-.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;
-  color:#bbb;font-size:13px;transition:all .15s;border-left:3px solid transparent}
-.sidebar-item:hover{background:rgba(255,255,255,.05);color:#fff}
-.sidebar-item.active{background:rgba(229,57,53,.15);color:#ef5350;border-left-color:#e53935}
-.sidebar-item .si{font-size:16px;width:20px;text-align:center}
-.content{flex:1;padding:24px;overflow-y:auto}
-
-/* ── CARDS ── */
-.page{display:none}
-.page.active{display:block}
-.page-title{font-size:22px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px}
-.stat-card{background:var(--card);border-radius:8px;padding:20px;box-shadow:var(--shadow);
-  border-left:4px solid var(--red);position:relative;overflow:hidden}
-.stat-card .sc-val{font-size:36px;font-weight:800;color:var(--red)}
-.stat-card .sc-label{font-size:12px;color:var(--text2);margin-top:4px;font-weight:500}
-.stat-card .sc-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:36px;opacity:.15}
-.stat-card.green{border-left-color:var(--green)} .stat-card.green .sc-val{color:var(--green)}
-.stat-card.yellow{border-left-color:var(--yellow)} .stat-card.yellow .sc-val{color:var(--yellow)}
-.stat-card.blue{border-left-color:#1976d2} .stat-card.blue .sc-val{color:#1976d2}
-
-.card{background:var(--card);border-radius:8px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
-.card-head{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;
-  justify-content:space-between;gap:8px}
-.card-head .ch-icon{font-size:18px}
-
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:#f8f8f8;padding:10px 12px;text-align:left;font-weight:600;
-  color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border)}
-td{padding:10px 12px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
-tr:hover td{background:#fafafa}
-.empty-row td{text-align:center;color:#aaa;padding:32px;font-style:italic}
-
-/* ── BADGES ── */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;
-  font-size:11px;font-weight:600;white-space:nowrap}
-.badge-red{background:#ffebee;color:#c62828}
-.badge-green{background:#e8f5e9;color:#2e7d32}
-.badge-yellow{background:#fff8e1;color:#f57f17}
-.badge-blue{background:#e3f2fd;color:#1565c0}
-.badge-gray{background:#f5f5f5;color:#616161}
-.badge-orange{background:#fff3e0;color:#e65100}
-
-/* ── PRIORITY ── */
-.prio-1{color:#b71c1c;font-weight:800} /* Notfall */
-.prio-2{color:#e65100;font-weight:700} /* Dringend */
-.prio-3{color:#f57f17;font-weight:600} /* Normal */
-.prio-4{color:#388e3c;font-weight:500} /* Gering */
-
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:4px;
-  cursor:pointer;font-size:13px;font-family:var(--font);font-weight:600;border:1px solid;
-  transition:all .15s}
-.btn-red{background:var(--red);color:#fff;border-color:var(--red-dark)}
-.btn-red:hover{background:var(--red-dark)}
-.btn-green{background:#43a047;color:#fff;border-color:#2e7d32}
-.btn-green:hover{background:#2e7d32}
-.btn-gray{background:#f5f5f5;color:var(--text);border-color:#ddd}
-.btn-gray:hover{background:#ebebeb}
-.btn-sm{padding:5px 10px;font-size:12px}
+/* ── LOGIN ── */
+#login{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+.lbox{width:100%;max-width:380px}
+.lc{text-align:center;margin-bottom:22px}
+.lico{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--s3),var(--s4));border:1px solid var(--border2);display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;box-shadow:0 8px 32px rgba(239,68,68,.2)}
+.lh{font-family:var(--fg);font-size:26px;font-weight:800}
+.lh em{background:linear-gradient(135deg,var(--a),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
+.lsub{font-size:10px;color:var(--t3);letter-spacing:3px;text-transform:uppercase;margin-top:5px}
+.lcard{background:var(--glass);backdrop-filter:blur(24px);border:1px solid var(--border2);border-radius:var(--r24);padding:28px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.lerr{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:var(--a3);font-size:12px;padding:10px 14px;border-radius:var(--r6);margin-bottom:14px;display:none}
+.lfoot{text-align:center;margin-top:12px;font-size:10px;color:var(--t3);letter-spacing:2px;text-transform:uppercase}
 
 /* ── FORMS ── */
 .fg{margin-bottom:14px}
-.fg label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
-input,select,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:4px;
-  font-size:13px;font-family:var(--font);transition:border-color .15s;background:#fff;color:var(--text)}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--red)}
-textarea{resize:vertical;min-height:80px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.form-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.fg label{display:block;font-size:10px;font-weight:600;color:var(--t3);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 14px;background:rgba(20,21,32,.8);border:1px solid var(--border);border-radius:var(--r6);font-size:13px;font-family:var(--f);color:var(--t1);outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(239,68,68,.1)}
+.fg select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%233d4466' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.fg textarea{resize:vertical;min-height:88px;line-height:1.55}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ac-wrap{position:relative}
+.ac-drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:rgba(15,16,24,.98);backdrop-filter:blur(20px);border:1px solid var(--border2);border-radius:var(--r10);z-index:300;max-height:190px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.7);display:none}
+.ac-item{padding:10px 14px;cursor:pointer;font-size:13px;transition:background .12s;border-bottom:1px solid var(--border)}
+.ac-item:last-child{border-bottom:none}
+.ac-item:hover{background:var(--s3)}
+.ac-item strong{display:block;font-weight:600}
+.ac-item span{font-size:11px;color:var(--t3)}
 
-/* ── MODAL ── */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;
-  align-items:center;justify-content:center;padding:20px}
-.modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:8px;width:100%;max-width:560px;max-height:90vh;
-  overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.modal-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between}
-.modal-head h3{font-size:16px;font-weight:700}
-.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#888;line-height:1}
-.modal-body{padding:24px}
-.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 18px;border-radius:var(--r6);cursor:pointer;font-size:13px;font-family:var(--fg);font-weight:600;border:1px solid transparent;transition:all .15s;white-space:nowrap;user-select:none}
+.b-pri{background:linear-gradient(135deg,var(--a2),var(--a));color:#fff;border-color:var(--a2);box-shadow:0 2px 16px rgba(239,68,68,.35)}
+.b-pri:hover{box-shadow:0 4px 24px rgba(239,68,68,.55);transform:translateY(-1px)}
+.b-grn{background:rgba(16,185,129,.1);color:#34d399;border-color:rgba(16,185,129,.3)}
+.b-grn:hover{background:rgba(16,185,129,.18)}
+.b-ghost{background:rgba(255,255,255,.04);color:var(--t2);border-color:var(--border)}
+.b-ghost:hover{background:rgba(255,255,255,.08);color:var(--t1);border-color:var(--border2)}
+.b-danger{background:rgba(239,68,68,.08);color:var(--a3);border-color:rgba(239,68,68,.25)}
+.b-danger:hover{background:rgba(239,68,68,.15)}
+.b-sm{padding:6px 12px;font-size:12px}
+.b-full{width:100%}
+.btn:disabled{opacity:.3;cursor:not-allowed;transform:none!important}
 
-/* ── EINSATZ KARTE ── */
-.einsatz-card{background:#fff;border-radius:8px;border-left:5px solid #e53935;
-  padding:16px;box-shadow:var(--shadow);margin-bottom:12px;cursor:pointer;transition:all .15s}
-.einsatz-card:hover{box-shadow:0 4px 20px rgba(229,57,53,.2);transform:translateY(-1px)}
-.einsatz-card.prio1{border-left-color:#b71c1c}
-.einsatz-card.prio2{border-left-color:#e65100}
-.einsatz-card.prio3{border-left-color:#f9a825}
-.einsatz-card.prio4{border-left-color:#43a047}
-.einsatz-card.done{border-left-color:#9e9e9e;opacity:.7}
-.ec-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}
-.ec-nr{font-size:11px;color:#999;font-weight:600}
-.ec-type{font-size:15px;font-weight:700}
-.ec-ort{font-size:13px;color:var(--text2);margin-top:2px}
-.ec-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.ec-time{font-size:11px;color:#999}
+/* ── LAYOUT ── */
+#app{display:none;min-height:100vh;position:relative;z-index:1}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:64px;background:var(--glass);backdrop-filter:blur(24px);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;align-items:flex-start;padding:12px 0;overflow:hidden;transition:width .22s cubic-bezier(.4,0,.2,1)}
+.sidebar:hover,.sidebar.exp{width:234px}
+.sb-logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--s3),var(--s4));border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;margin:0 12px 16px;box-shadow:0 4px 16px rgba(239,68,68,.2)}
+.sb-sec{font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;padding:10px 20px 3px;width:234px;white-space:nowrap;font-weight:700;opacity:0;transition:opacity .15s}
+.sidebar:hover .sb-sec,.sidebar.exp .sb-sec{opacity:1}
+.sbi{width:234px;display:flex;align-items:center;gap:11px;padding:9px 20px;cursor:pointer;color:var(--t3);font-size:13px;font-weight:500;transition:all .12s;white-space:nowrap;background:none;border:none;font-family:var(--fg);text-align:left}
+.sbi:hover{background:rgba(255,255,255,.04);color:var(--t1)}
+.sbi.act{background:linear-gradient(90deg,var(--ag),rgba(239,68,68,.03));color:var(--a3);border-left:2px solid var(--a)}
+.sbi .ico{width:18px;flex-shrink:0;font-size:15px;text-align:center}
+.sbi .lbl{opacity:0;transition:opacity .15s}
+.sidebar:hover .lbl,.sidebar.exp .lbl{opacity:1}
+.sb-bot{margin-top:auto;width:100%;border-top:1px solid var(--border);padding-top:8px}
+.topbar{position:sticky;top:0;z-index:50;height:56px;background:rgba(5,5,8,.8);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:14px}
+.tb-t{font-family:var(--fg);font-size:15px;font-weight:700;display:flex;align-items:center;gap:10px}
+.tb-b{font-size:10px;background:var(--ag);color:var(--a3);padding:2px 9px;border-radius:20px;border:1px solid var(--border2);letter-spacing:.5px;font-weight:600;text-transform:uppercase}
+.tb-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.dpill{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);border:1px solid var(--border);padding:5px 12px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;font-family:var(--fg)}
+.dpill.on{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3);color:#34d399}
+.dpill.off{color:var(--t3)}
+.ddot{width:7px;height:7px;border-radius:50%;background:var(--t3);transition:all .2s}
+.dpill.on .ddot{background:#34d399;box-shadow:0 0 8px #10b981;animation:dp 1.4s ease infinite}
+@keyframes dp{0%,100%{opacity:1}50%{opacity:.3}}
+.uchip{display:flex;align-items:center;gap:9px}
+.uava{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 0 12px rgba(239,68,68,.3)}
+.un{font-size:13px;font-weight:600;font-family:var(--fg)}
+.ur{font-size:10px;color:var(--t3)}
+.main{flex:1;margin-left:64px}
+.content{padding:24px 28px 80px}
 
-/* ── NOTIFY ── */
-#notify{position:fixed;top:70px;right:20px;z-index:9000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.notify-item{background:#fff;border-radius:6px;padding:12px 16px;box-shadow:0 4px 20px rgba(0,0,0,.2);
-  font-size:13px;max-width:320px;border-left:4px solid #e53935;animation:slideIn .3s ease;pointer-events:all}
-.notify-item.ok{border-left-color:#43a047}
-.notify-item.warn{border-left-color:#f9a825}
-@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+/* ── PAGES ── */
+.page{display:none}
+.page.active{display:block;animation:pgIn .22s ease}
+@keyframes pgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.pg-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.pg-title{font-family:var(--fg);font-size:22px;font-weight:800;letter-spacing:-.5px}
+.pg-sub{font-size:12px;color:var(--t3);margin-top:2px}
 
-/* ── LOGIN ── */
-#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#b71c1c 0%,#7f0000 100%);
-  display:none;align-items:center;justify-content:center;z-index:800;flex-direction:column;gap:20px}
-.login-card{background:#fff;border-radius:8px;width:360px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.login-top{background:linear-gradient(135deg,#e53935,#b71c1c);padding:32px;text-align:center;color:#fff}
-.login-top .lt-icon{font-size:48px;margin-bottom:8px}
-.login-top .lt-title{font-size:20px;font-weight:800;letter-spacing:1px}
-.login-top .lt-sub{font-size:11px;opacity:.8;letter-spacing:2px;text-transform:uppercase;margin-top:4px}
-.login-body{padding:24px}
-.login-err{color:#e53935;font-size:12px;margin-bottom:10px;min-height:16px}
-.login-foot{color:rgba(255,255,255,.5);font-size:10px;letter-spacing:2px;text-align:center}
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.sc{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--r14);padding:18px 20px;position:relative;overflow:hidden;transition:all .2s}
+.sc:hover{border-color:var(--border2);transform:translateY(-2px)}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px}
+.sc.red::before{background:linear-gradient(90deg,transparent,var(--a),transparent)}
+.sc.grn::before{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.sc.ylw::before{background:linear-gradient(90deg,transparent,var(--yellow),transparent)}
+.sc.blu::before{background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.sc-val{font-size:36px;font-weight:800;font-family:var(--fg);line-height:1;letter-spacing:-1px}
+.sc.red .sc-val{background:linear-gradient(135deg,var(--a),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sc.grn .sc-val{background:linear-gradient(135deg,var(--green),#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sc.ylw .sc-val{background:linear-gradient(135deg,var(--yellow),#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sc.blu .sc-val{background:linear-gradient(135deg,var(--blue),#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sc-lbl{font-size:10px;color:var(--t3);margin-top:5px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+.sc-ico{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:38px;opacity:.05}
 
-/* ── PATIENT AKTE ── */
-.patient-head{display:flex;align-items:center;gap:16px;background:#fff;border-radius:8px;
-  padding:20px;box-shadow:var(--shadow);margin-bottom:16px;border-top:4px solid var(--red)}
-.patient-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#e53935,#b71c1c);
-  display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;flex-shrink:0}
-.patient-info h2{font-size:18px;font-weight:700}
-.patient-info p{font-size:13px;color:var(--text2);margin-top:2px}
+/* ── CARDS ── */
+.card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--r14);padding:20px;margin-bottom:14px;transition:border-color .2s}
+.card:hover{border-color:var(--border2)}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.card-t{font-family:var(--fg);font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* ── TABLES ── */
+.tbl-wrap{border-radius:var(--r14);border:1px solid var(--border);overflow:hidden;margin-bottom:14px;background:var(--glass);backdrop-filter:blur(16px)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:rgba(239,68,68,.04)}
+th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border)}
+td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(239,68,68,.02)}
+.mono{font-family:var(--fm);font-size:12px}
+.es{text-align:center;padding:40px 20px;color:var(--t3)}
+.es-ico{font-size:32px;margin-bottom:10px;opacity:.3}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.bg-r{background:var(--ag);color:var(--a3);border:1px solid var(--border2)}
+.bg-g{background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2)}
+.bg-y{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2)}
+.bg-b{background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2)}
+.bg-gray{background:var(--s3);color:var(--t3);border:1px solid var(--border)}
+.bg-o{background:rgba(249,115,22,.1);color:#fb923c;border:1px solid rgba(249,115,22,.2)}
+
+/* ── EINSATZ CARDS ── */
+.elist{display:flex;flex-direction:column;gap:8px}
+.ec{background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--r14);padding:14px 16px;cursor:pointer;transition:all .15s;display:flex;gap:12px}
+.ec:hover{border-color:var(--border2);background:var(--glass2);transform:translateX(3px)}
+.ec-p{width:3px;border-radius:2px;align-self:stretch;flex-shrink:0;min-height:48px}
+.ec-p.p1{background:var(--a)}.ec-p.p2{background:var(--orange)}.ec-p.p3{background:var(--yellow)}.ec-p.p4{background:var(--green)}
+.ec-b{flex:1;min-width:0}
+.ec-top{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap}
+.ec-id{font-family:var(--fm);font-size:10px;color:var(--t3)}
+.ec-name{font-family:var(--fg);font-weight:700;font-size:14px}
+.ec-sub{font-size:12px;color:var(--t2);margin-top:2px}
+.ec-meta{display:flex;gap:8px;margin-top:7px;flex-wrap:wrap}
+.ec-meta span{font-size:11px;color:var(--t3)}
+
+/* ── PRIO PICKER ── */
+.prio-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pp{padding:12px 8px;border-radius:var(--r10);border:1px solid var(--border);background:var(--s2);cursor:pointer;text-align:center;font-family:var(--fg);transition:all .15s;user-select:none}
+.pp .pp-ico{font-size:20px;display:block;margin-bottom:4px}
+.pp .pp-n{font-size:13px;font-weight:700;display:block}
+.pp .pp-d{font-size:10px;color:var(--t3);display:block;margin-top:2px}
+.pp.sel.p1{background:rgba(239,68,68,.15);border-color:var(--a);color:var(--a3)}
+.pp.sel.p2{background:rgba(249,115,22,.15);border-color:var(--orange);color:#fb923c}
+.pp.sel.p3{background:rgba(245,158,11,.15);border-color:var(--yellow);color:#fbbf24}
+.pp.sel.p4{background:rgba(16,185,129,.15);border-color:var(--green);color:#34d399}
+.pp:not(.sel){color:var(--t3)}
+.pp:hover:not(.sel){border-color:var(--border2);color:var(--t1)}
 
 /* ── TIMELINE ── */
-.timeline{position:relative;padding-left:24px}
-.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:#f0f0f0}
-.tl-item{position:relative;margin-bottom:16px;padding:12px 16px;background:#fff;border-radius:6px;box-shadow:var(--shadow)}
-.tl-item::before{content:'';position:absolute;left:-20px;top:16px;width:12px;height:12px;
-  border-radius:50%;background:var(--red);border:2px solid #fff;box-shadow:0 0 0 2px var(--red)}
-.tl-time{font-size:11px;color:#999;margin-bottom:4px}
-.tl-type{font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.5px}
-.tl-text{font-size:13px;margin-top:4px;line-height:1.5}
+.tline{padding-left:22px;position:relative}
+.tline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:1px;background:var(--s4)}
+.tl{position:relative;margin-bottom:10px;background:rgba(20,21,32,.9);border:1px solid var(--border);border-radius:var(--r10);padding:11px 14px}
+.tl::before{content:'';position:absolute;left:-19px;top:13px;width:8px;height:8px;border-radius:50%;background:var(--a);border:2px solid var(--bg);box-shadow:0 0 10px rgba(239,68,68,.5)}
+.tl-t{font-family:var(--fm);font-size:10px;color:var(--t3)}
+.tl-type{font-size:10px;font-weight:700;color:var(--a3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.tl-txt{font-size:13px;line-height:1.5;color:var(--t2)}
 
-/* ── PULSATING ALARM ── */
-.alarm-banner{background:linear-gradient(90deg,#b71c1c,#e53935,#b71c1c);color:#fff;
-  padding:10px 20px;text-align:center;font-weight:700;font-size:14px;
-  animation:alarmPulse 1s ease infinite;display:none}
-@keyframes alarmPulse{0%,100%{opacity:1}50%{opacity:.7}}
+/* ── INFO GRID ── */
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:rgba(239,68,68,.03);padding:14px;border-radius:var(--r10);border:1px solid var(--border);margin-bottom:14px}
+.ii .ii-l{font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.ii .ii-v{font-size:13px;font-weight:500}
+
+/* ── TEAM ── */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.tc{background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--r14);padding:14px;display:flex;align-items:center;gap:11px;transition:all .15s}
+.tc:hover{border-color:var(--border2);transform:translateY(-1px)}
+.tc.on{border-color:rgba(16,185,129,.2)}
+.tc-ava{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;background:linear-gradient(135deg,var(--a2),var(--a))}
+.tc.on .tc-ava{background:linear-gradient(135deg,#059669,var(--green));box-shadow:0 0 12px rgba(16,185,129,.3)}
+.tc-n{font-family:var(--fg);font-weight:600;font-size:13px}
+.tc-r{font-size:11px;color:var(--t3);margin-top:1px}
+.tc-d{font-family:var(--fm);font-size:10px;color:var(--t3);margin-top:2px}
+
+/* ── MODAL ── */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.mbg.open{display:flex}
+.modal{background:rgba(10,11,16,.95);backdrop-filter:blur(24px);border:1px solid var(--border2);border-radius:var(--r20);width:100%;max-width:580px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.8);animation:mIn .22s cubic-bezier(.34,1.56,.64,1)}
+.modal.lg{max-width:760px}
+@keyframes mIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.mhd{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,11,16,.95);backdrop-filter:blur(24px);z-index:1}
+.mhd h3{font-family:var(--fg);font-size:15px;font-weight:700}
+.mcl{width:26px;height:26px;background:var(--s3);border:1px solid var(--border);border-radius:var(--r6);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--t2);transition:all .12s}
+.mcl:hover{background:var(--s4);color:var(--t1)}
+.mbody{padding:22px}
+.mfoot{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:rgba(5,5,8,.5);border-radius:0 0 var(--r20) var(--r20)}
+
+/* ── NOTIFICATIONS ── */
+#nwrap{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.notif{background:rgba(10,11,16,.95);backdrop-filter:blur(20px);border:1px solid var(--border2);border-radius:var(--r10);padding:11px 15px;font-size:13px;max-width:310px;box-shadow:0 8px 32px rgba(0,0,0,.6);animation:nIn .35s cubic-bezier(.34,1.56,.64,1);pointer-events:all;display:flex;gap:9px;align-items:center}
+@keyframes nIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+.nb{width:3px;min-height:22px;border-radius:2px;flex-shrink:0}
+.notif.ok .nb{background:var(--green)}.notif.err .nb{background:var(--a)}.notif.warn .nb{background:var(--yellow)}.notif .nb{background:var(--blue)}
+
+/* ── PROFIL ── */
+.ph{background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(239,68,68,.04));border:1px solid var(--border2);border-radius:var(--r20);padding:28px;position:relative;overflow:hidden;margin-bottom:14px}
+.ph::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(239,68,68,.1),transparent 70%)}
+.ph-ava{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;margin-bottom:12px;box-shadow:0 0 24px rgba(239,68,68,.4)}
+.ph-n{font-family:var(--fg);font-size:22px;font-weight:800}
+.ph-r{font-size:13px;color:var(--a3);margin-top:3px}
 
 /* ── MOBILE ── */
-@media(max-width:768px){
-  .sidebar{display:none}
-  .topbar{padding:0 12px}
-  .content{padding:12px}
-  .cards-grid{grid-template-columns:1fr 1fr}
-  .form-row,.form-row3{grid-template-columns:1fr}
-  .mobile-nav{display:flex!important}
-}
-.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--sidebar);
-  padding:8px;gap:4px;z-index:200;justify-content:space-around}
-.mob-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 12px;
-  border-radius:6px;cursor:pointer;color:#888;font-size:10px;border:none;background:none;
-  font-family:var(--font);transition:all .15s}
-.mob-btn.active,.mob-btn:hover{color:#ef5350;background:rgba(229,57,53,.1)}
-.mob-btn span{font-size:20px}
+.mobnav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(5,5,8,.97);backdrop-filter:blur(24px);border-top:1px solid var(--border);padding:7px 4px;justify-content:space-around}
+.mbn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 8px;cursor:pointer;color:var(--t3);font-size:10px;border:none;background:none;font-family:var(--fg);font-weight:500;border-radius:8px;transition:all .12s;min-width:48px}
+.mbn.act,.mbn:hover{color:var(--a3);background:var(--ag)}
+.mbn .mi{font-size:19px;line-height:1}
+.sep{height:1px;background:var(--border);margin:16px 0}
+.slabel{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+
+@media(max-width:768px){.main{margin-left:0}.sidebar{display:none}.content{padding:14px 14px 80px}.frow{grid-template-columns:1fr!important}.g2{grid-template-columns:1fr!important}.stats{grid-template-columns:1fr 1fr!important}.mobnav{display:flex!important}}
 </style>
 </head>
 <body>
 
 <!-- BOOT -->
 <div id="boot">
-  <div class="boot-cross">🚑</div>
-  <div class="boot-title">RettungsNet</div>
-  <div class="boot-sub">Karlsruhe · Rettungsdienst</div>
-  <div class="boot-bar"><div class="boot-prog" id="boot-prog"></div></div>
-  <div class="boot-status" id="boot-status">System startet…</div>
+  <div class="br"><div class="bi">🚑</div></div>
+  <div class="bt">Rettungs<em>Net</em></div>
+  <div class="bs">Karlsruhe · Notfallsystem</div>
+  <div class="bb"><div class="bf" id="bp"></div></div>
+  <div class="bl" id="bstat">INITIALISIERUNG…</div>
 </div>
 
-<!-- NOTIFY -->
-<div id="notify"></div>
+<div id="nwrap"></div>
 
 <!-- LOGIN -->
-<div id="login-screen">
-  <div class="login-card">
-    <div class="login-top">
-      <div class="lt-icon">🚑</div>
-      <div class="lt-title">RettungsNet</div>
-      <div class="lt-sub">Karlsruhe · Rettungsdienst</div>
+<div id="login">
+  <div class="lbox">
+    <div class="lc">
+      <div class="lico">🚑</div>
+      <div class="lh">Rettungs<em>Net</em></div>
+      <div class="lsub">Karlsruhe · Rettungsdienst</div>
     </div>
-    <div class="login-body">
-      <div class="login-err" id="lerr"></div>
-      <div class="fg"><label>Dienstnummer</label><input id="l-dienst" placeholder="z.B. RD-0001" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <div class="fg"><label>Passwort</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <button class="btn btn-red" style="width:100%;justify-content:center;padding:12px" onclick="doLogin()">🔐 Anmelden</button>
+    <div class="lcard">
+      <div class="lerr" id="lerr"></div>
+      <div class="fg"><label>Dienstnummer</label><input id="l-d" placeholder="z.B. RD-0001" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="fg"><label>Passwort</label><input type="password" id="l-p" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn b-pri b-full" id="lbtn" onclick="doLogin()" style="padding:11px">Anmelden →</button>
     </div>
+    <div class="lfoot">RettungsNet v3.0 · Zugriff wird protokolliert</div>
   </div>
-  <div class="login-foot">RETTUNGSNET KARLSRUHE · ZUGRIFF PROTOKOLLIERT</div>
 </div>
 
 <!-- APP -->
 <div id="app">
-  <!-- ALARM BANNER -->
-  <div class="alarm-banner" id="alarm-banner">🚨 AKTIVER NOTFALL – EINSATZ LÄUFT 🚨</div>
-
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <div class="topbar-logo"><span>🚑</span> RettungsNet <span style="font-size:11px;opacity:.7;font-weight:400;margin-left:4px">Karlsruhe</span></div>
-    <div id="duty-toggle" class="topbar-status" onclick="toggleDuty()" title="Dienst an/aus">
-      <div class="status-dot red" id="duty-dot"></div>
-      <span id="duty-label">Kein Dienst</span>
-    </div>
-    <div class="topbar-user" id="topbar-user"></div>
-    <button class="topbar-btn" onclick="doLogout()">Abmelden</button>
-  </div>
-
-  <div class="main-layout">
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <div class="sidebar-section">Einsatz</div>
-      <div class="sidebar-item active" onclick="showPage('dashboard')" data-page="dashboard"><span class="si">📊</span> Lagebild</div>
-      <div class="sidebar-item" onclick="showPage('einsaetze')" data-page="einsaetze"><span class="si">🚨</span> Einsätze</div>
-      <div class="sidebar-item" onclick="showPage('new-einsatz')" data-page="new-einsatz"><span class="si">➕</span> Neuer Einsatz</div>
-      <div class="sidebar-section">Patienten</div>
-      <div class="sidebar-item" onclick="showPage('patienten')" data-page="patienten"><span class="si">🏥</span> Patienten</div>
-      <div class="sidebar-item" onclick="showPage('new-patient')" data-page="new-patient"><span class="si">➕</span> Neuer Patient</div>
-      <div class="sidebar-section">Berichte</div>
-      <div class="sidebar-item" onclick="showPage('berichte')" data-page="berichte"><span class="si">📋</span> Einsatzberichte</div>
-      <div class="sidebar-section">System</div>
-      <div class="sidebar-item" onclick="showPage('team')" data-page="team"><span class="si">👨‍⚕️</span> Team</div>
-      <div class="sidebar-item" onclick="showPage('profil')" data-page="profil"><span class="si">👤</span> Mein Profil</div>
-    </div>
-
-    <!-- CONTENT -->
-    <div class="content">
-
-      <!-- DASHBOARD -->
-      <div class="page active" id="page-dashboard">
-        <div class="page-title">📊 Lagebild</div>
-        <div class="cards-grid">
-          <div class="stat-card" id="stat-aktiv"><div class="sc-val" id="s-aktiv">–</div><div class="sc-label">Aktive Einsätze</div><div class="sc-icon">🚨</div></div>
-          <div class="stat-card green" id="stat-duty"><div class="sc-val" id="s-duty">–</div><div class="sc-label">Personal im Dienst</div><div class="sc-icon">👨‍⚕️</div></div>
-          <div class="stat-card yellow"><div class="sc-val" id="s-today">–</div><div class="sc-label">Einsätze heute</div><div class="sc-icon">📊</div></div>
-          <div class="stat-card blue"><div class="sc-val" id="s-patients">–</div><div class="sc-label">Patienten gesamt</div><div class="sc-icon">🏥</div></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          <div class="card">
-            <div class="card-head"><span><span class="ch-icon">🚨</span> Aktive Einsätze</span>
-              <button class="btn btn-red btn-sm" onclick="showPage('new-einsatz')">+ Neu</button></div>
-            <div id="dash-einsaetze"><div style="color:#aaa;text-align:center;padding:20px;font-style:italic">Laden…</div></div>
-          </div>
-          <div class="card">
-            <div class="card-head"><span><span class="ch-icon">👨‍⚕️</span> Personal im Dienst</span></div>
-            <div id="dash-team"><div style="color:#aaa;text-align:center;padding:20px;font-style:italic">Laden…</div></div>
-          </div>
-        </div>
+  <div class="shell">
+    <nav class="sidebar" id="sb">
+      <div class="sb-logo">🚑</div>
+      <div class="sb-sec">Einsatz</div>
+      <button class="sbi act" onclick="sp('dashboard')" data-p="dashboard"><span class="ico">📊</span><span class="lbl">Lagebild</span></button>
+      <button class="sbi" onclick="sp('einsaetze')" data-p="einsaetze"><span class="ico">🚨</span><span class="lbl">Einsätze</span></button>
+      <button class="sbi" onclick="sp('new-einsatz')" data-p="new-einsatz"><span class="ico">➕</span><span class="lbl">Neuer Einsatz</span></button>
+      <div class="sb-sec">Patienten</div>
+      <button class="sbi" onclick="sp('patienten')" data-p="patienten"><span class="ico">🏥</span><span class="lbl">Patientenakten</span></button>
+      <button class="sbi" onclick="sp('new-patient')" data-p="new-patient"><span class="ico">🩺</span><span class="lbl">Neue Behandlung</span></button>
+      <div class="sb-sec">Personal</div>
+      <button class="sbi" onclick="sp('team')" data-p="team"><span class="ico">👥</span><span class="lbl">Team</span></button>
+      <button class="sbi" id="sb-mgmt" onclick="sp('usermgmt')" data-p="usermgmt" style="display:none"><span class="ico">⚙️</span><span class="lbl">Nutzerverwaltung</span></button>
+      <div class="sb-bot">
+        <button class="sbi" onclick="sp('profil')" data-p="profil"><span class="ico">👤</span><span class="lbl">Mein Profil</span></button>
+        <button class="sbi" onclick="doLogout()"><span class="ico">🚪</span><span class="lbl">Abmelden</span></button>
       </div>
+    </nav>
 
-      <!-- EINSÄTZE -->
-      <div class="page" id="page-einsaetze">
-        <div class="page-title" style="justify-content:space-between">
-          <span>🚨 Einsätze</span>
-          <div style="display:flex;gap:8px;align-items:center">
-            <select id="filt-status" style="width:auto" onchange="loadEinsaetze()">
-              <option value="">Alle</option><option value="Aktiv">Aktiv</option>
-              <option value="Abgeschlossen">Abgeschlossen</option></select>
-            <button class="btn btn-red btn-sm" onclick="showPage('new-einsatz')">+ Neuer Einsatz</button>
+    <div class="main">
+      <header class="topbar">
+        <div class="tb-t"><span id="tb-pg">Lagebild</span><span class="tb-b" id="tb-bdg">RettungsNet</span></div>
+        <div class="tb-r">
+          <div class="dpill off" id="dpill" onclick="toggleDuty()"><div class="ddot"></div><span id="dlbl">Außer Dienst</span></div>
+          <div class="uchip"><div class="uava" id="uava">?</div><div><div class="un" id="un">–</div><div class="ur" id="ur">–</div></div></div>
+        </div>
+      </header>
+
+      <div class="content">
+
+        <!-- DASHBOARD -->
+        <div class="page active" id="page-dashboard">
+          <div class="pg-hd">
+            <div><div class="pg-title">Lagebild</div><div class="pg-sub">Echtzeit-Übersicht · Rettungsdienst Karlsruhe</div></div>
+            <button class="btn b-pri b-sm" onclick="sp('new-einsatz')">+ Einsatz</button>
+          </div>
+          <div class="stats">
+            <div class="sc red"><div class="sc-val" id="s-aktiv">–</div><div class="sc-lbl">Aktive Einsätze</div><div class="sc-ico">🚨</div></div>
+            <div class="sc grn"><div class="sc-val" id="s-duty">–</div><div class="sc-lbl">Im Dienst</div><div class="sc-ico">👨‍⚕️</div></div>
+            <div class="sc ylw"><div class="sc-val" id="s-heute">–</div><div class="sc-lbl">Heute</div><div class="sc-ico">📅</div></div>
+            <div class="sc blu"><div class="sc-val" id="s-pat">–</div><div class="sc-lbl">Patienten</div><div class="sc-ico">🏥</div></div>
+          </div>
+          <div class="g2">
+            <div class="card"><div class="card-hd"><span class="card-t">🚨 Aktive Einsätze</span><button class="btn b-ghost b-sm" onclick="sp('einsaetze')">Alle →</button></div><div id="d-e" class="elist"></div></div>
+            <div class="card"><div class="card-hd"><span class="card-t">👥 Im Dienst</span></div><div id="d-t"></div></div>
           </div>
         </div>
-        <div id="einsatz-list"></div>
-      </div>
 
-      <!-- NEUER EINSATZ -->
-      <div class="page" id="page-new-einsatz">
-        <div class="page-title">➕ Neuer Einsatz</div>
-        <div class="card">
-          <div class="form-row">
-            <div class="fg"><label>Einsatzart *</label>
-              <select id="ne-type">
-                <option value="">– Bitte wählen –</option>
-                <option>Verkehrsunfall</option><option>Herzstillstand / Reanimation</option>
-                <option>Atemnot / Asthmaanfall</option><option>Bewusstlosigkeit</option>
-                <option>Schlaganfall</option><option>Schussverletzung</option>
-                <option>Schnittverletzung</option><option>Sturz / Trauma</option>
-                <option>Vergiftung / Überdosis</option><option>Brand / Rauchgasvergiftung</option>
-                <option>Psychische Krise</option><option>Geburt</option>
-                <option>Sonstiges</option>
-              </select>
+        <!-- EINSÄTZE -->
+        <div class="page" id="page-einsaetze">
+          <div class="pg-hd">
+            <div><div class="pg-title">Einsätze</div><div class="pg-sub">Alle Einsatzmeldungen</div></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <select id="fe-s" onchange="loadE()" style="background:var(--s2);border:1px solid var(--border);color:var(--t1);padding:8px 12px;border-radius:var(--r6);font-size:12px;font-family:var(--fg);outline:none"><option value="">Alle</option><option>Aktiv</option><option>Abgeschlossen</option></select>
+              <button class="btn b-pri b-sm" onclick="sp('new-einsatz')">+ Neuer Einsatz</button>
             </div>
+          </div>
+          <div id="elist" class="elist"></div>
+        </div>
+
+        <!-- NEUER EINSATZ -->
+        <div class="page" id="page-new-einsatz">
+          <div class="pg-hd"><div><div class="pg-title">Neuer Einsatz</div><div class="pg-sub">Einsatz eröffnen & Einheiten alarmieren</div></div></div>
+          <div class="card">
             <div class="fg"><label>Priorität *</label>
-              <select id="ne-prio">
-                <option value="1">🔴 Priorität 1 – Notfall (lebensbedrohlich)</option>
-                <option value="2">🟠 Priorität 2 – Dringend</option>
-                <option value="3" selected>🟡 Priorität 3 – Normal</option>
-                <option value="4">🟢 Priorität 4 – Gering</option>
-              </select>
+              <div class="prio-grid">
+                <div class="pp p1 sel" onclick="setPrio(1)" data-prio="1"><span class="pp-ico">🔴</span><span class="pp-n">PRIO 1</span><span class="pp-d">Lebensbedrohlich</span></div>
+                <div class="pp p2" onclick="setPrio(2)" data-prio="2"><span class="pp-ico">🟠</span><span class="pp-n">PRIO 2</span><span class="pp-d">Dringend</span></div>
+                <div class="pp p3" onclick="setPrio(3)" data-prio="3"><span class="pp-ico">🟡</span><span class="pp-n">PRIO 3</span><span class="pp-d">Normal</span></div>
+                <div class="pp p4" onclick="setPrio(4)" data-prio="4"><span class="pp-ico">🟢</span><span class="pp-n">PRIO 4</span><span class="pp-d">Gering</span></div>
+              </div>
             </div>
-          </div>
-          <div class="fg"><label>Einsatzort *</label><input id="ne-ort" placeholder="z.B. Kaiserstraße 12, Karlsruhe"></div>
-          <div class="form-row">
-            <div class="fg"><label>Anzahl Patienten</label><input type="number" id="ne-anz" value="1" min="0"></div>
-            <div class="fg"><label>Eingesetzte Einheiten</label><input id="ne-einheiten" placeholder="z.B. RTW-1, NEF-2"></div>
-          </div>
-          <div class="fg"><label>Beschreibung / Lage</label><textarea id="ne-desc" placeholder="Einsatzbeschreibung, Lage vor Ort, besondere Hinweise…"></textarea></div>
-          <div id="ne-err" style="color:#e53935;font-size:12px;min-height:16px;margin-bottom:8px"></div>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-red" onclick="createEinsatz()">🚨 Einsatz starten</button>
-            <button class="btn btn-gray" onclick="showPage('einsaetze')">Abbrechen</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- PATIENTEN -->
-      <div class="page" id="page-patienten">
-        <div class="page-title" style="justify-content:space-between">
-          <span>🏥 Patientenakten</span>
-          <button class="btn btn-red btn-sm" onclick="showPage('new-patient')">+ Neue Akte</button>
-        </div>
-        <div class="card">
-          <input id="p-search" placeholder="🔍 Name suchen…" onkeyup="loadPatienten()" style="margin-bottom:14px">
-          <table>
-            <thead><tr><th>Name</th><th>Roblox</th><th>Geburtsdatum</th><th>Letzte Behandlung</th><th>Status</th><th></th></tr></thead>
-            <tbody id="patienten-tbody"><tr class="empty-row"><td colspan="6">Laden…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- NEUE PATIENTEN AKTE -->
-      <div class="page" id="page-new-patient">
-        <div class="page-title">➕ Neuer Patient / Eintrag</div>
-        <div class="card">
-          <div class="form-row">
-            <div class="fg"><label>Bürger suchen (optional)</label>
-              <input id="np-search" placeholder="Discord-Tag oder Roblox-Name" oninput="searchCitizen()">
-              <div id="np-results" style="border:1px solid #ddd;border-radius:4px;display:none;max-height:150px;overflow-y:auto"></div>
+            <div class="frow">
+              <div class="fg"><label>Einsatzart *</label>
+                <select id="ne-t"><option value="">– wählen –</option><option>Verkehrsunfall</option><option>Herzstillstand / Reanimation</option><option>Atemnot</option><option>Bewusstlosigkeit</option><option>Schlaganfall</option><option>Schussverletzung</option><option>Trauma / Sturz</option><option>Vergiftung / Überdosis</option><option>Brand / Rauchgas</option><option>Psychische Krise</option><option>Geburt</option><option>Sonstiges</option></select>
+              </div>
+              <div class="fg"><label>Einsatzort *</label><input id="ne-o" placeholder="Straße, Hausnummer, Karlsruhe"></div>
             </div>
-            <div class="fg"><label>Vollständiger Name</label><input id="np-name" placeholder="Vor- und Nachname"></div>
-          </div>
-          <div class="form-row">
-            <div class="fg"><label>Roblox-Name</label><input id="np-roblox" placeholder="RobloxName"></div>
-            <div class="fg"><label>Geburtsdatum (RP)</label><input type="date" id="np-dob"></div>
-          </div>
-          <div class="fg"><label>Allergien / Vorerkrankungen</label><input id="np-allergien" placeholder="z.B. Penicillin-Allergie, Diabetes"></div>
-          <div class="fg"><label>Blutgruppe</label>
-            <select id="np-blut">
-              <option value="">Unbekannt</option><option>A+</option><option>A-</option>
-              <option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
-              <option>0+</option><option>0-</option>
-            </select>
-          </div>
-          <hr style="margin:16px 0;border:none;border-top:1px solid #f0f0f0">
-          <div style="font-weight:700;margin-bottom:12px;font-size:14px">Behandlungseintrag</div>
-          <div class="form-row">
-            <div class="fg"><label>Diagnose *</label><input id="np-diagnose" placeholder="z.B. Polytrauma nach Verkehrsunfall"></div>
-            <div class="fg"><label>Einsatz-Typ</label>
-              <select id="np-typ">
-                <option>Notfallbehandlung</option><option>Erstversorgung</option>
-                <option>Krankentransport</option><option>Nachsorge</option><option>Sonstige Behandlung</option>
-              </select>
+            <div class="frow">
+              <div class="fg"><label>Einheiten</label><input id="ne-e" placeholder="z.B. RTW-1, NEF-2, KTW-3"></div>
+              <div class="fg"><label>Patienten</label><input type="number" id="ne-a" value="1" min="0"></div>
             </div>
-          </div>
-          <div class="fg"><label>Behandlung / Maßnahmen</label>
-            <textarea id="np-behandlung" placeholder="Durchgeführte Maßnahmen, verabreichte Medikamente, Vitalwerte…"></textarea></div>
-          <div class="fg"><label>Outcome / Ergebnis</label>
-            <select id="np-outcome">
-              <option value="Transportiert">Transportiert (Krankenhaus)</option>
-              <option value="Vor Ort behandelt">Vor Ort behandelt (entlassen)</option>
-              <option value="Verstorben">Verstorben</option>
-              <option value="Abgebrochen">Behandlung verweigert</option>
-            </select>
-          </div>
-          <div id="np-err" style="color:#e53935;font-size:12px;min-height:16px;margin-bottom:8px"></div>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-red" onclick="createPatient()">💾 Akte speichern</button>
-            <button class="btn btn-gray" onclick="showPage('patienten')">Abbrechen</button>
+            <div class="fg"><label>Beschreibung</label><textarea id="ne-d" placeholder="Lage vor Ort, besondere Hinweise, Patientenzustand…"></textarea></div>
+            <div id="ne-err" style="color:var(--a3);font-size:12px;min-height:14px;margin-bottom:10px"></div>
+            <div style="display:flex;gap:8px"><button class="btn b-pri" onclick="createE()">🚨 Einsatz starten</button><button class="btn b-ghost" onclick="sp('einsaetze')">Abbrechen</button></div>
           </div>
         </div>
-      </div>
 
-      <!-- BERICHTE -->
-      <div class="page" id="page-berichte">
-        <div class="page-title">📋 Einsatzberichte</div>
-        <div class="card">
-          <table>
-            <thead><tr><th>#</th><th>Datum</th><th>Art</th><th>Ort</th><th>Prio</th><th>Personal</th><th>Status</th></tr></thead>
-            <tbody id="berichte-tbody"><tr class="empty-row"><td colspan="7">Laden…</td></tr></tbody>
-          </table>
+        <!-- PATIENTEN -->
+        <div class="page" id="page-patienten">
+          <div class="pg-hd">
+            <div><div class="pg-title">Patientenakten</div><div class="pg-sub">Behandlungshistorie aller Patienten</div></div>
+            <button class="btn b-pri b-sm" onclick="sp('new-patient')">+ Neue Behandlung</button>
+          </div>
+          <div class="card" style="padding:12px;margin-bottom:12px"><input id="ps" placeholder="🔍 Patient suchen (Name, Roblox…)" onkeyup="loadP()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;width:100%;font-family:var(--f);outline:none"></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Roblox</th><th>Blutgruppe</th><th>Allergien</th><th>Letzte Behandlung</th><th></th></tr></thead><tbody id="p-tb"></tbody></table></div>
         </div>
-      </div>
 
-      <!-- TEAM -->
-      <div class="page" id="page-team">
-        <div class="page-title">👨‍⚕️ Team – Aktueller Dienststatus</div>
-        <div class="card">
-          <table>
-            <thead><tr><th>Name</th><th>Dienstnummer</th><th>Rang</th><th>Status</th></tr></thead>
-            <tbody id="team-tbody"><tr class="empty-row"><td colspan="4">Laden…</td></tr></tbody>
-          </table>
+        <!-- NEUE BEHANDLUNG -->
+        <div class="page" id="page-new-patient">
+          <div class="pg-hd"><div><div class="pg-title">Neue Behandlung</div><div class="pg-sub">Patient anlegen oder bestehenden verknüpfen</div></div></div>
+          <div class="card">
+            <div class="slabel">Patientendaten</div>
+            <div class="ac-wrap fg"><label>Bürger verknüpfen (optional)</label><input id="nps" placeholder="Name, Discord oder Roblox suchen…" oninput="acSrch('nps','npd',fillPat)" autocomplete="off"><div class="ac-drop" id="npd"></div></div>
+            <div class="frow"><div class="fg"><label>Name *</label><input id="np-n" placeholder="Vollständiger Name"></div><div class="fg"><label>Roblox-Name</label><input id="np-rb"></div></div>
+            <div class="frow"><div class="fg"><label>Geburtsdatum (RP)</label><input type="date" id="np-dob"></div><div class="fg"><label>Blutgruppe</label><select id="np-bt"><option value="">Unbekannt</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>0+</option><option>0-</option></select></div></div>
+            <div class="fg"><label>Allergien / Vorerkrankungen</label><input id="np-al" placeholder="z.B. Penicillin-Allergie, Diabetes, Herzinsuffizienz…"></div>
+            <div class="sep"></div>
+            <div class="slabel">Behandlungseintrag</div>
+            <div class="frow"><div class="fg"><label>Diagnose *</label><input id="np-diag" placeholder="z.B. Polytrauma nach VKU"></div><div class="fg"><label>Typ</label><select id="np-typ"><option>Notfallbehandlung</option><option>Erstversorgung</option><option>Krankentransport</option><option>Nachsorge</option><option>Sonstige</option></select></div></div>
+            <div class="fg"><label>Maßnahmen & Medikamente</label><textarea id="np-beh" placeholder="Durchgeführte Maßnahmen, Medikamente, Vitalwerte…"></textarea></div>
+            <div class="fg"><label>Outcome</label><select id="np-out"><option value="Transportiert">Transportiert (Krankenhaus)</option><option value="Vor Ort behandelt">Vor Ort behandelt (entlassen)</option><option value="Verstorben">Verstorben</option><option value="Verweigert">Behandlung verweigert</option></select></div>
+            <div id="np-err" style="color:var(--a3);font-size:12px;min-height:14px;margin-bottom:10px"></div>
+            <div style="display:flex;gap:8px"><button class="btn b-pri" onclick="savePat()">💾 Akte speichern</button><button class="btn b-ghost" onclick="sp('patienten')">Abbrechen</button></div>
+          </div>
         </div>
-      </div>
 
-      <!-- PROFIL -->
-      <div class="page" id="page-profil">
-        <div class="page-title">👤 Mein Profil</div>
-        <div class="card" id="profil-content" style="max-width:480px"></div>
-      </div>
+        <!-- TEAM -->
+        <div class="page" id="page-team">
+          <div class="pg-hd"><div><div class="pg-title">Team</div><div class="pg-sub">Dienststatus aller Mitarbeiter</div></div></div>
+          <div class="tgrid" id="team-grid"></div>
+        </div>
 
-    </div><!-- /content -->
-  </div><!-- /main-layout -->
+        <!-- NUTZERVERWALTUNG -->
+        <div class="page" id="page-usermgmt">
+          <div class="pg-hd">
+            <div><div class="pg-title">Nutzerverwaltung</div><div class="pg-sub">Personal anlegen & verwalten</div></div>
+            <button class="btn b-pri b-sm" onclick="openAU(null)">+ Nutzer anlegen</button>
+          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Dienst-Nr</th><th>Rang</th><th>Dienst</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="um-tb"></tbody></table></div>
+        </div>
 
-  <!-- MOBILE NAV -->
-  <nav class="mobile-nav">
-    <button class="mob-btn active" onclick="showPage('dashboard')"><span>📊</span>Lagebild</button>
-    <button class="mob-btn" onclick="showPage('einsaetze')"><span>🚨</span>Einsätze</button>
-    <button class="mob-btn" onclick="showPage('new-einsatz')"><span>➕</span>Neu</button>
-    <button class="mob-btn" onclick="showPage('patienten')"><span>🏥</span>Patienten</button>
-    <button class="mob-btn" onclick="showPage('profil')"><span>👤</span>Profil</button>
+        <!-- PROFIL -->
+        <div class="page" id="page-profil">
+          <div class="pg-hd"><div><div class="pg-title">Mein Profil</div></div></div>
+          <div style="max-width:480px" id="profil-wrap"></div>
+        </div>
+
+      </div><!-- /content -->
+    </div><!-- /main -->
+  </div>
+
+  <nav class="mobnav">
+    <button class="mbn act" onclick="sp('dashboard')"><span class="mi">📊</span>Lagebild</button>
+    <button class="mbn" onclick="sp('einsaetze')"><span class="mi">🚨</span>Einsätze</button>
+    <button class="mbn" onclick="sp('new-einsatz')"><span class="mi">➕</span>Neu</button>
+    <button class="mbn" onclick="sp('patienten')"><span class="mi">🏥</span>Patienten</button>
+    <button class="mbn" onclick="sp('team')"><span class="mi">👥</span>Team</button>
   </nav>
-</div><!-- /app -->
-
-<!-- PATIENT DETAIL MODAL -->
-<div class="modal-bg" id="modal-patient">
-  <div class="modal" style="max-width:700px">
-    <div class="modal-head">
-      <h3>🏥 Patientenakte</h3>
-      <button class="modal-close" onclick="closeModal('modal-patient')">✕</button>
-    </div>
-    <div class="modal-body" id="modal-patient-body"></div>
-  </div>
 </div>
 
-<!-- EINSATZ DETAIL MODAL -->
-<div class="modal-bg" id="modal-einsatz">
-  <div class="modal" style="max-width:700px">
-    <div class="modal-head">
-      <h3>🚨 Einsatz</h3>
-      <button class="modal-close" onclick="closeModal('modal-einsatz')">✕</button>
+<!-- EINSATZ MODAL -->
+<div class="mbg" id="m-e"><div class="modal lg"><div class="mhd"><h3 id="m-e-t">Einsatz</h3><button class="mcl" onclick="cm('m-e')">✕</button></div><div class="mbody" id="m-e-b"></div><div class="mfoot" id="m-e-f"></div></div></div>
+
+<!-- PATIENT MODAL -->
+<div class="mbg" id="m-p"><div class="modal lg"><div class="mhd"><h3>Patientenakte</h3><button class="mcl" onclick="cm('m-p')">✕</button></div><div class="mbody" id="m-p-b"></div></div></div>
+
+<!-- ADD/EDIT USER MODAL -->
+<div class="mbg" id="m-au"><div class="modal">
+  <div class="mhd"><h3 id="m-au-t">Nutzer anlegen</h3><button class="mcl" onclick="cm('m-au')">✕</button></div>
+  <div class="mbody">
+    <div class="fg"><label>Vollständiger Name *</label><input id="au-n" placeholder="Vor- und Nachname"></div>
+    <div class="frow">
+      <div class="fg"><label>Dienst-Nr *</label><input id="au-d" placeholder="RD-0005"></div>
+      <div class="fg"><label>Passwort *</label><input type="password" id="au-pw" placeholder="Passwort setzen"></div>
     </div>
-    <div class="modal-body" id="modal-einsatz-body"></div>
-    <div class="modal-foot" id="modal-einsatz-foot"></div>
+    <div class="fg"><label>Rang</label>
+      <select id="au-rg">
+        <option value="Rettungshelfer" data-lvl="1">Rettungshelfer</option>
+        <option value="Rettungssanitäter" data-lvl="2">Rettungssanitäter</option>
+        <option value="Rettungsassistent" data-lvl="3">Rettungsassistent</option>
+        <option value="Notfallsanitäter" data-lvl="4">Notfallsanitäter</option>
+        <option value="Leitender Notarzt" data-lvl="7">Leitender Notarzt</option>
+        <option value="Rettungs Chef" data-lvl="10">Rettungs Chef</option>
+      </select>
+    </div>
+    <input type="hidden" id="au-id">
+    <div id="au-err" style="color:var(--a3);font-size:12px;min-height:14px;margin-bottom:4px"></div>
   </div>
-</div>
+  <div class="mfoot"><button class="btn b-pri" onclick="saveUser()">💾 Speichern</button><button class="btn b-ghost" onclick="cm('m-au')">Abbrechen</button></div>
+</div></div>
 
 <script>
-const SB_URL = 'https://vekozqxmawzatvyofsxq.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZla296cXhtYXd6YXR2eW9mc3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NzIwMDksImV4cCI6MjA4ODU0ODAwOX0.ASzxEi8Tmnv7AFd5vFV4Hw12FxzA8ysjEoTlXDLMYaE';
-const db = supabase.createClient(SB_URL, SB_KEY);
+const SB='https://vekozqxmawzatvyofsxq.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZla296cXhtYXd6YXR2eW9mc3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NzIwMDksImV4cCI6MjA4ODU0ODAwOX0.ASzxEi8Tmnv7AFd5vFV4Hw12FxzA8ysjEoTlXDLMYaE';
+const db=supabase.createClient(SB,SK);
+let U=null,_prio=1,_eid=null,_cid=null;
 
-let U = null; // aktueller Nutzer
-
-// ── BOOT ─────────────────────────────────────────────────────
-const BOOT_STEPS = [
-  'BIOS OK','CPU OK','NETZWERK: VERBUNDEN',
-  'SUPABASE: VERBUNDEN','DATENBANK GELADEN','RETTUNGSNET v1.0: BEREIT'
-];
-let bi = 0;
-function bootStep() {
-  if(bi >= BOOT_STEPS.length) {
-    setTimeout(() => {
-      document.getElementById('boot').style.display = 'none';
-      document.getElementById('login-screen').style.display = 'flex';
-    }, 400);
-    return;
-  }
-  document.getElementById('boot-status').textContent = '▸ ' + BOOT_STEPS[bi];
-  document.getElementById('boot-prog').style.width = ((bi+1)/BOOT_STEPS.length*100) + '%';
-  bi++;
-  setTimeout(bootStep, 250);
+/* BOOT */
+const BL=['CPU OK','NETZWERK OK','SUPABASE VERBUNDEN','DATENBANK GELADEN','RETTUNGSNET v3.0 BEREIT'];
+let bi=0;
+function btick(){
+  if(bi>=BL.length){setTimeout(()=>{document.getElementById('boot').style.display='none';document.getElementById('login').style.display='flex';},400);return;}
+  document.getElementById('bstat').textContent='▸ '+BL[bi];
+  document.getElementById('bp').style.width=((bi+1)/BL.length*100)+'%';
+  bi++;setTimeout(btick,230);
 }
-window.addEventListener('DOMContentLoaded', () => setTimeout(bootStep, 400));
+window.addEventListener('DOMContentLoaded',()=>setTimeout(btick,300));
 
-// ── NOTIFY ───────────────────────────────────────────────────
-function notify(msg, type='info') {
-  const el = document.createElement('div');
-  el.className = 'notify-item' + (type==='ok'?' ok':type==='warn'?' warn':'');
-  el.textContent = msg;
-  document.getElementById('notify').appendChild(el);
-  setTimeout(() => el.remove(), 4000);
+/* UTILS */
+function nt(msg,type=''){
+  const w=document.getElementById('nwrap'),el=document.createElement('div');
+  el.className='notif'+(type?' '+type:'');
+  el.innerHTML='<div class="nb"></div><span>'+msg+'</span>';
+  w.appendChild(el);setTimeout(()=>el.remove(),4000);
 }
+function om(id){document.getElementById(id).classList.add('open');}
+function cm(id){document.getElementById(id).classList.remove('open');}
+function fmt(d){return d?new Date(d).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'–';}
+function fmtd(d){return d?new Date(d).toLocaleDateString('de-DE'):'–';}
+async function log(a,d){try{await db.from('logs').insert([{username:U?.name||'System',action:a,detail:d}]);}catch(e){}}
 
-// ── MODAL ────────────────────────────────────────────────────
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-// ── PAGES ────────────────────────────────────────────────────
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const pg = document.getElementById('page-'+id);
-  if(pg) pg.classList.add('active');
-  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.toggle('active', i.dataset.page===id));
-  document.querySelectorAll('.mob-btn').forEach(b => b.classList.remove('active'));
-  if(id==='dashboard') loadDashboard();
-  else if(id==='einsaetze') loadEinsaetze();
-  else if(id==='patienten') loadPatienten();
-  else if(id==='berichte') loadBerichte();
-  else if(id==='team') loadTeam();
-  else if(id==='profil') loadProfil();
+function sp(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);
+  if(pg)pg.classList.add('active');
+  document.querySelectorAll('.sbi').forEach(i=>i.classList.toggle('act',i.dataset.p===id));
+  const titles={dashboard:'Lagebild',einsaetze:'Einsätze','new-einsatz':'Neuer Einsatz',patienten:'Patientenakten','new-patient':'Neue Behandlung',team:'Team',usermgmt:'Nutzerverwaltung',profil:'Mein Profil'};
+  document.getElementById('tb-pg').textContent=titles[id]||id;
+  if(id==='dashboard')loadDash();
+  else if(id==='einsaetze')loadE();
+  else if(id==='patienten')loadP();
+  else if(id==='team')loadTeam();
+  else if(id==='usermgmt')loadUsers();
+  else if(id==='profil')loadProfil();
 }
 
-// ── AUTH ─────────────────────────────────────────────────────
-async function doLogin() {
-  const dienst = document.getElementById('l-dienst').value.trim().toUpperCase();
-  const pass   = document.getElementById('l-pass').value;
-  if(!dienst || !pass) { document.getElementById('lerr').textContent='Alle Felder ausfüllen.'; return; }
-  const {data, error} = await db.from('officers').select('*').eq('dienst', dienst).single();
-  if(!data || data.password !== pass) {
-    document.getElementById('lerr').textContent = 'Ungültige Zugangsdaten.'; return;
-  }
-  if(data.suspended) { document.getElementById('lerr').textContent = 'Zugang gesperrt.'; return; }
-  U = data;
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  document.getElementById('topbar-user').innerHTML = `<span>👨‍⚕️</span> ${U.name} · <small style="opacity:.8">${U.rank||'Sanitäter'}</small>`;
-  await logAction('LOGIN', `${U.name} (${U.dienst}) angemeldet`);
-  loadDashboard();
-  notify(`👋 Willkommen, ${U.name}!`, 'ok');
+/* AUTH */
+async function doLogin(){
+  const d=document.getElementById('l-d').value.trim().toUpperCase();
+  const p=document.getElementById('l-p').value;
+  const err=document.getElementById('lerr');
+  if(!d||!p){err.textContent='Alle Felder ausfüllen.';err.style.display='block';return;}
+  const btn=document.getElementById('lbtn');btn.disabled=true;btn.textContent='…';
+  const {data}=await db.from('officers').select('*').eq('dienst',d).maybeSingle();
+  btn.disabled=false;btn.textContent='Anmelden →';
+  if(!data||data.password!==p){err.textContent='Ungültige Zugangsdaten.';err.style.display='block';return;}
+  if(data.suspended){err.textContent='Zugang gesperrt.';err.style.display='block';return;}
+  U=data;
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('un').textContent=U.name;
+  document.getElementById('ur').textContent=U.rank||'Sanitäter';
+  document.getElementById('uava').textContent=U.name.charAt(0).toUpperCase();
+  document.getElementById('tb-bdg').textContent=U.rank||'Sanitäter';
+  if(U.status==='on'){const p=document.getElementById('dpill');p.classList.remove('off');p.classList.add('on');document.getElementById('dlbl').textContent='Im Dienst';}
+  if(U.level>=8)document.getElementById('sb-mgmt').style.display='flex';
+  await log('LOGIN',U.name+' angemeldet');
+  nt('Willkommen, '+U.name+'!','ok');
+  loadDash();
+}
+async function doLogout(){
+  if(U){if(U.status==='on')await db.from('officers').update({status:'off'}).eq('id',U.id);await log('LOGOUT',U.name);}
+  U=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login').style.display='flex';
+  document.getElementById('l-p').value='';
+}
+async function toggleDuty(){
+  if(!U)return;
+  const ns=U.status==='on'?'off':'on';
+  await db.from('officers').update({status:ns}).eq('id',U.id);U.status=ns;
+  const p=document.getElementById('dpill');
+  if(ns==='on'){p.classList.remove('off');p.classList.add('on');document.getElementById('dlbl').textContent='Im Dienst';nt('✅ Dienst gestartet','ok');}
+  else{p.classList.remove('on');p.classList.add('off');document.getElementById('dlbl').textContent='Außer Dienst';nt('Dienst beendet');}
+  await log('DIENST',U.name+' '+(ns==='on'?'gestartet':'beendet'));
+  loadDash();
 }
 
-async function doLogout() {
-  if(U) {
-    if(U.status==='on') await db.from('officers').update({status:'off'}).eq('id',U.id);
-    await logAction('LOGOUT', `${U.name} abgemeldet`);
-  }
-  U = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-}
-
-async function toggleDuty() {
-  if(!U) return;
-  const newStatus = U.status==='on' ? 'off' : 'on';
-  await db.from('officers').update({status:newStatus}).eq('id',U.id);
-  U.status = newStatus;
-  const dot = document.getElementById('duty-dot');
-  const lbl = document.getElementById('duty-label');
-  if(newStatus==='on') {
-    dot.classList.remove('red'); lbl.textContent='Im Dienst';
-    notify('✅ Dienst gestartet', 'ok');
-    document.getElementById('alarm-banner').style.display = 'block';
-  } else {
-    dot.classList.add('red'); lbl.textContent='Kein Dienst';
-    notify('🔴 Dienst beendet');
-    document.getElementById('alarm-banner').style.display = 'none';
-  }
-  await logAction('DIENST', `${U.name}: ${newStatus==='on'?'Dienst begonnen':'Dienst beendet'}`);
-  loadDashboard();
-}
-
-// ── LOG ──────────────────────────────────────────────────────
-async function logAction(action, detail) {
-  await db.from('logs').insert([{username: U?.name||'System', action, detail}]);
-}
-
-// ── DASHBOARD ────────────────────────────────────────────────
-async function loadDashboard() {
-  // Stats
-  const [{data:aktiv},{data:heute},{data:duty},{data:patients}] = await Promise.all([
-    db.from('rettung_einsaetze').select('id',{count:'exact'}).eq('status','Aktiv'),
-    db.from('rettung_einsaetze').select('id',{count:'exact'}).gte('created_at', new Date().toISOString().split('T')[0]),
-    db.from('officers').select('id',{count:'exact'}).eq('status','on'),
-    db.from('rettung_patienten').select('id',{count:'exact'}),
+/* DASHBOARD */
+async function loadDash(){
+  const today=new Date().toISOString().split('T')[0];
+  const [r1,r2,r3,r4]=await Promise.all([
+    db.from('rettung_einsaetze').select('id').eq('status','Aktiv'),
+    db.from('officers').select('id').eq('status','on'),
+    db.from('rettung_einsaetze').select('id').gte('created_at',today),
+    db.from('rettung_patienten').select('id'),
   ]);
-  document.getElementById('s-aktiv').textContent  = aktiv?.length ?? '–';
-  document.getElementById('s-today').textContent  = heute?.length ?? '–';
-  document.getElementById('s-duty').textContent   = duty?.length  ?? '–';
-  document.getElementById('s-patients').textContent = patients?.length ?? '–';
-
-  // Aktive Einsätze
-  const {data:activeE} = await db.from('rettung_einsaetze').select('*').eq('status','Aktiv').order('created_at',{ascending:false}).limit(5);
-  const de = document.getElementById('dash-einsaetze');
-  if(!activeE?.length) { de.innerHTML='<div style="color:#aaa;text-align:center;padding:20px;font-style:italic">Keine aktiven Einsätze</div>'; }
-  else de.innerHTML = activeE.map(e=>`
-    <div class="einsatz-card prio${e.prioritaet}" onclick="openEinsatz(${e.id})" style="margin-bottom:8px">
-      <div class="ec-head"><div><div class="ec-nr">E-${e.id}</div><div class="ec-type">${e.typ}</div></div>
-        <span class="badge badge-red">Prio ${e.prioritaet}</span></div>
-      <div class="ec-ort">📍 ${e.ort}</div>
-      <div class="ec-time">${new Date(e.created_at).toLocaleString('de-DE')}</div>
-    </div>`).join('');
-
-  // Dienst-Team
-  const {data:onDuty} = await db.from('officers').select('*').eq('status','on').order('name');
-  const dt = document.getElementById('dash-team');
-  if(!onDuty?.length) { dt.innerHTML='<div style="color:#aaa;text-align:center;padding:20px;font-style:italic">Kein Personal im Dienst</div>'; }
-  else dt.innerHTML = onDuty.map(o=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:4px;background:#f9f9f9;margin-bottom:6px">
-      <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#e53935,#b71c1c);
-        display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px">👨‍⚕️</div>
-      <div><div style="font-weight:600;font-size:13px">${o.name}</div>
-        <div style="font-size:11px;color:#888">${o.rank||'Sanitäter'} · ${o.dienst}</div></div>
-      <span class="badge badge-green" style="margin-left:auto">Im Dienst</span>
-    </div>`).join('');
+  document.getElementById('s-aktiv').textContent=r1.data?.length??0;
+  document.getElementById('s-duty').textContent=r2.data?.length??0;
+  document.getElementById('s-heute').textContent=r3.data?.length??0;
+  document.getElementById('s-pat').textContent=r4.data?.length??0;
+  const {data:ae}=await db.from('rettung_einsaetze').select('*').eq('status','Aktiv').order('created_at',{ascending:false}).limit(5);
+  document.getElementById('d-e').innerHTML=!ae?.length?'<div class="es"><div class="es-ico">✅</div><p>Keine aktiven Einsätze</p></div>':ae.map(eCard).join('');
+  const {data:od}=await db.from('officers').select('*').eq('status','on').order('name').limit(8);
+  document.getElementById('d-t').innerHTML=!od?.length?'<div class="es"><p>Niemand im Dienst</p></div>':`<div class="tgrid" style="grid-template-columns:1fr">${od.map(o=>`<div class="tc on"><div class="tc-ava">${o.name.charAt(0)}</div><div style="flex:1;min-width:0"><div class="tc-n">${o.name}</div><div class="tc-r">${o.rank||'–'}</div><div class="tc-d">${o.dienst}</div></div><span class="badge bg-g">Im Dienst</span></div>`).join('')}</div>`;
 }
 
-// ── EINSÄTZE ─────────────────────────────────────────────────
-async function loadEinsaetze() {
-  const status = document.getElementById('filt-status')?.value;
-  let q = db.from('rettung_einsaetze').select('*').order('created_at',{ascending:false}).limit(50);
-  if(status) q = q.eq('status', status);
-  const {data} = await q;
-  const el = document.getElementById('einsatz-list');
-  if(!data?.length) { el.innerHTML='<div class="card" style="color:#aaa;text-align:center;padding:32px;font-style:italic">Keine Einsätze gefunden</div>'; return; }
-  el.innerHTML = data.map(e=>`
-    <div class="einsatz-card prio${e.prioritaet}${e.status==='Abgeschlossen'?' done':''}" onclick="openEinsatz(${e.id})">
-      <div class="ec-head">
-        <div><div class="ec-nr">E-${e.id} · ${new Date(e.created_at).toLocaleString('de-DE')}</div>
-          <div class="ec-type">${e.typ}</div></div>
-        <div style="display:flex;gap:6px;flex-direction:column;align-items:flex-end">
-          <span class="badge ${e.status==='Aktiv'?'badge-red':'badge-gray'}">${e.status}</span>
-          <span class="badge badge-orange">Prio ${e.prioritaet}</span>
-        </div>
-      </div>
-      <div class="ec-ort">📍 ${e.ort}</div>
-      <div class="ec-meta">
-        ${e.einheiten?`<span style="font-size:11px;color:#888">🚑 ${e.einheiten}</span>`:''}
-        <span style="font-size:11px;color:#888">👤 ${e.bearbeiter||'–'}</span>
-        ${e.anzahl_patienten?`<span style="font-size:11px;color:#888">🏥 ${e.anzahl_patienten} Patient(en)</span>`:''}
-      </div>
-    </div>`).join('');
-}
+const PC={1:'p1',2:'p2',3:'p3',4:'p4'};
+const PN={1:'PRIO 1',2:'PRIO 2',3:'PRIO 3',4:'PRIO 4'};
+const PB={1:'bg-r',2:'bg-o',3:'bg-y',4:'bg-g'};
 
-async function openEinsatz(id) {
-  const {data:e} = await db.from('rettung_einsaetze').select('*').eq('id',id).single();
-  if(!e) return;
-  const body = document.getElementById('modal-einsatz-body');
-  const prios = ['','🔴 Notfall (lebensbedrohlich)','🟠 Dringend','🟡 Normal','🟢 Gering'];
-  body.innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Einsatz-Nr</div><div style="font-size:20px;font-weight:800;color:#e53935">E-${e.id}</div></div>
-      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Status</div><span class="badge ${e.status==='Aktiv'?'badge-red':'badge-gray'}">${e.status}</span></div>
-      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Art</div><div style="font-weight:600">${e.typ}</div></div>
-      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Priorität</div><div class="prio-${e.prioritaet}">${prios[e.prioritaet]||e.prioritaet}</div></div>
-      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Ort</div><div>${e.ort}</div></div>
-      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Bearbeiter</div><div>${e.bearbeiter||'–'}</div></div>
-      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Einheiten</div><div>${e.einheiten||'–'}</div></div>
-      <div><div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase">Patienten</div><div>${e.anzahl_patienten||0}</div></div>
+function eCard(e){
+  const t=fmt(e.created_at);
+  return `<div class="ec" onclick="openE(${e.id})">
+    <div class="ec-p ${PC[e.prioritaet]||'p3'}"></div>
+    <div class="ec-b">
+      <div class="ec-top"><span class="ec-id">E-${e.id}</span><span class="badge ${e.status==='Aktiv'?'bg-r':'bg-gray'}">${e.status}</span><span class="badge ${PB[e.prioritaet]||'bg-y'}">${PN[e.prioritaet]||'?'}</span></div>
+      <div class="ec-name">${e.typ}</div>
+      <div class="ec-sub">📍 ${e.ort}</div>
+      <div class="ec-meta">${e.einheiten?`<span>🚑 ${e.einheiten}</span>`:''} ${e.bearbeiter?`<span>👤 ${e.bearbeiter}</span>`:''} ${e.anzahl_patienten?`<span>🏥 ${e.anzahl_patienten}</span>`:''}</div>
     </div>
-    ${e.beschreibung?`<div style="background:#f9f9f9;border-radius:6px;padding:12px;margin-bottom:12px"><div style="font-size:11px;color:#999;font-weight:600;margin-bottom:6px;text-transform:uppercase">Beschreibung</div>${e.beschreibung}</div>`:''}
-    <div style="font-size:11px;color:#999">Erstellt: ${new Date(e.created_at).toLocaleString('de-DE')}</div>`;
-  const foot = document.getElementById('modal-einsatz-foot');
-  foot.innerHTML = '';
-  if(e.status==='Aktiv') {
-    const btn = document.createElement('button');
-    btn.className='btn btn-green'; btn.textContent='✅ Einsatz abschließen';
-    btn.onclick = async() => { await db.from('rettung_einsaetze').update({status:'Abgeschlossen'}).eq('id',id); closeModal('modal-einsatz'); loadEinsaetze(); loadDashboard(); notify('Einsatz abgeschlossen','ok'); await logAction('EINSATZ_ABGESCHLOSSEN',`E-${id}: ${e.typ}`); };
-    foot.appendChild(btn);
+    <div style="font-family:var(--fm);font-size:10px;color:var(--t3);flex-shrink:0;text-align:right">${t.split(',')[0]||''}<br>${t.split(',')[1]||''}</div>
+  </div>`;
+}
+
+/* EINSÄTZE */
+async function loadE(){
+  const f=document.getElementById('fe-s')?.value||'';
+  let q=db.from('rettung_einsaetze').select('*').order('created_at',{ascending:false}).limit(80);
+  if(f)q=q.eq('status',f);
+  const {data}=await q;
+  document.getElementById('elist').innerHTML=!data?.length?'<div class="es"><div class="es-ico">🚑</div><p>Keine Einsätze</p></div>':data.map(eCard).join('');
+}
+
+async function openE(id){
+  const {data:e}=await db.from('rettung_einsaetze').select('*').eq('id',id).single();
+  if(!e)return;
+  document.getElementById('m-e-t').textContent='Einsatz E-'+e.id;
+  const pn={1:'🔴 PRIO 1 – Lebensbedrohlich',2:'🟠 PRIO 2 – Dringend',3:'🟡 PRIO 3 – Normal',4:'🟢 PRIO 4 – Gering'};
+  document.getElementById('m-e-b').innerHTML=`
+    <div class="ig">
+      <div class="ii"><div class="ii-l">Einsatz-Nr</div><div class="ii-v mono" style="font-size:22px;font-weight:800;color:var(--a3)">E-${e.id}</div></div>
+      <div class="ii"><div class="ii-l">Status</div><div class="ii-v"><span class="badge ${e.status==='Aktiv'?'bg-r':'bg-gray'}">${e.status}</span></div></div>
+      <div class="ii" style="grid-column:1/-1"><div class="ii-l">Einsatzart</div><div class="ii-v" style="font-weight:700;font-family:var(--fg)">${e.typ}</div></div>
+      <div class="ii"><div class="ii-l">Priorität</div><div class="ii-v">${pn[e.prioritaet]||'–'}</div></div>
+      <div class="ii" style="grid-column:1/-1"><div class="ii-l">Einsatzort</div><div class="ii-v">📍 ${e.ort}</div></div>
+      <div class="ii"><div class="ii-l">Bearbeiter</div><div class="ii-v">${e.bearbeiter||'–'}</div></div>
+      <div class="ii"><div class="ii-l">Einheiten</div><div class="ii-v">${e.einheiten||'–'}</div></div>
+      <div class="ii"><div class="ii-l">Patienten</div><div class="ii-v">${e.anzahl_patienten||0}</div></div>
+      <div class="ii"><div class="ii-l">Erstellt</div><div class="ii-v mono" style="font-size:11px">${fmt(e.created_at)}</div></div>
+    </div>
+    ${e.beschreibung?`<div style="background:rgba(239,68,68,.03);padding:14px;border-radius:var(--r10);border:1px solid var(--border);font-size:13px;line-height:1.6;color:var(--t2)">${e.beschreibung}</div>`:''}`;
+  const f2=document.getElementById('m-e-f');f2.innerHTML='';
+  if(e.status==='Aktiv'){
+    const b=document.createElement('button');b.className='btn b-grn b-sm';b.textContent='✅ Abschließen';
+    b.onclick=async()=>{await db.from('rettung_einsaetze').update({status:'Abgeschlossen'}).eq('id',id);cm('m-e');loadE();loadDash();nt('Einsatz abgeschlossen','ok');await log('E_DONE','E-'+id);};
+    f2.appendChild(b);
   }
-  const closeBtn = document.createElement('button');
-  closeBtn.className='btn btn-gray'; closeBtn.textContent='Schließen';
-  closeBtn.onclick=()=>closeModal('modal-einsatz');
-  foot.appendChild(closeBtn);
-  openModal('modal-einsatz');
+  const cl=document.createElement('button');cl.className='btn b-ghost b-sm';cl.textContent='Schließen';cl.onclick=()=>cm('m-e');f2.appendChild(cl);
+  om('m-e');
 }
 
-async function createEinsatz() {
-  const typ  = document.getElementById('ne-type').value;
-  const ort  = document.getElementById('ne-ort').value.trim();
-  const prio = document.getElementById('ne-prio').value;
-  const desc = document.getElementById('ne-desc').value.trim();
-  const anz  = parseInt(document.getElementById('ne-anz').value)||0;
-  const einh = document.getElementById('ne-einheiten').value.trim();
-  const err  = document.getElementById('ne-err');
-  if(!typ) { err.textContent='Bitte Einsatzart wählen.'; return; }
-  if(!ort) { err.textContent='Bitte Einsatzort eingeben.'; return; }
+function setPrio(p){
+  _prio=p;
+  document.querySelectorAll('.pp').forEach(b=>{
+    const bp=parseInt(b.dataset.prio);
+    ['p1','p2','p3','p4'].forEach(c=>b.classList.remove(c));
+    b.classList.add('p'+bp);
+    b.classList.toggle('sel',bp===p);
+  });
+}
+
+async function createE(){
+  const t=document.getElementById('ne-t').value,o=document.getElementById('ne-o').value.trim();
+  const err=document.getElementById('ne-err');
+  if(!t){err.textContent='Bitte Einsatzart wählen.';return;}
+  if(!o){err.textContent='Bitte Einsatzort eingeben.';return;}
   err.textContent='';
-  const {data,error} = await db.from('rettung_einsaetze').insert([{
-    typ, ort, prioritaet:parseInt(prio), beschreibung:desc,
-    anzahl_patienten:anz, einheiten:einh, status:'Aktiv',
-    bearbeiter: U?.name||'Unbekannt'
+  const {data,error}=await db.from('rettung_einsaetze').insert([{
+    typ:t,ort:o,prioritaet:_prio,
+    beschreibung:document.getElementById('ne-d').value.trim(),
+    anzahl_patienten:parseInt(document.getElementById('ne-a').value)||0,
+    einheiten:document.getElementById('ne-e').value.trim(),
+    status:'Aktiv',bearbeiter:U?.name
   }]).select().single();
-  if(error) { err.textContent='Fehler: '+error.message; return; }
-  await logAction('EINSATZ_ERSTELLT', `E-${data.id}: ${typ} – ${ort}`);
-  notify('🚨 Einsatz E-'+data.id+' gestartet!','ok');
-  ['ne-type','ne-ort','ne-desc','ne-einheiten'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('ne-anz').value='1';
-  showPage('einsaetze');
+  if(error){err.textContent='Fehler: '+error.message;return;}
+  await log('E_NEU','E-'+data.id+': '+t+' – '+o+' (Prio '+_prio+')');
+  nt('🚨 Einsatz E-'+data.id+' gestartet!','ok');
+  ['ne-t','ne-o','ne-d','ne-e'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('ne-a').value='1';setPrio(1);sp('einsaetze');
 }
 
-// ── PATIENTEN ────────────────────────────────────────────────
-async function loadPatienten() {
-  const search = document.getElementById('p-search')?.value?.toLowerCase()||'';
-  let {data} = await db.from('rettung_patienten').select('*').order('created_at',{ascending:false}).limit(100);
-  if(search && data) data = data.filter(p=>(p.name||'').toLowerCase().includes(search)||(p.roblox_name||'').toLowerCase().includes(search));
-  const tbody = document.getElementById('patienten-tbody');
-  if(!data?.length) { tbody.innerHTML='<tr class="empty-row"><td colspan="6">Keine Patienten gefunden</td></tr>'; return; }
-  tbody.innerHTML = data.map(p=>`
-    <tr>
-      <td style="font-weight:600">${p.name||'–'}</td>
-      <td>${p.roblox_name||'–'}</td>
-      <td>${p.dob ? new Date(p.dob).toLocaleDateString('de-DE') : '–'}</td>
-      <td>${p.letzte_behandlung ? new Date(p.letzte_behandlung).toLocaleDateString('de-DE') : '–'}</td>
-      <td><span class="badge ${p.blutgruppe?'badge-red':'badge-gray'}">${p.blutgruppe||'Unbekannt'}</span></td>
-      <td><button class="btn btn-gray btn-sm" onclick="openPatient(${p.id})">Akte →</button></td>
-    </tr>`).join('');
+/* AUTOCOMPLETE */
+async function acSrch(inp,drop,cb){
+  const q=document.getElementById(inp).value.trim();
+  const dr=document.getElementById(drop);
+  if(q.length<2){dr.style.display='none';return;}
+  const {data}=await db.from('citizens').select('*').or(`name.ilike.%${q}%,discord_tag.ilike.%${q}%,roblox_name.ilike.%${q}%`).limit(6);
+  if(!data?.length){dr.style.display='none';return;}
+  dr.style.display='block';
+  dr.innerHTML=data.map(c=>`<div class="ac-item" onmousedown="event.preventDefault();${cb.name}(${JSON.stringify(c).replace(/"/g,'&quot;')})"><strong>${c.name||'–'}</strong><span>${c.roblox_name||''} ${c.discord_tag?'· '+c.discord_tag:''}</span></div>`).join('');
+}
+function fillPat(c){
+  document.getElementById('nps').value=c.name;document.getElementById('npd').style.display='none';
+  document.getElementById('np-n').value=c.name;document.getElementById('np-rb').value=c.roblox_name||'';
+  if(c.dob)document.getElementById('np-dob').value=c.dob;_cid=c.id;
 }
 
-async function openPatient(id) {
-  const [{data:p},{data:behandlungen}] = await Promise.all([
+/* PATIENTEN */
+async function loadP(){
+  const s=document.getElementById('ps')?.value?.toLowerCase()||'';
+  let {data}=await db.from('rettung_patienten').select('*').order('created_at',{ascending:false}).limit(100);
+  if(s&&data)data=data.filter(p=>(p.name||'').toLowerCase().includes(s)||(p.roblox_name||'').toLowerCase().includes(s));
+  const tb=document.getElementById('p-tb');
+  if(!data?.length){tb.innerHTML='<tr><td colspan="6"><div class="es"><div class="es-ico">🏥</div><p>Keine Patienten</p></div></td></tr>';return;}
+  tb.innerHTML=data.map(p=>`<tr>
+    <td style="font-weight:600;font-family:var(--fg)">${p.name||'–'}</td>
+    <td class="mono">${p.roblox_name||'–'}</td>
+    <td>${p.blutgruppe?`<span class="badge bg-r">🩸 ${p.blutgruppe}</span>`:'<span class="badge bg-gray">–</span>'}</td>
+    <td style="font-size:12px;color:var(--t2)">${p.allergien||'–'}</td>
+    <td class="mono" style="font-size:11px">${fmt(p.letzte_behandlung)}</td>
+    <td><button class="btn b-ghost b-sm" onclick="openPat(${p.id})">Akte →</button></td>
+  </tr>`).join('');
+}
+
+async function openPat(id){
+  const [{data:p},{data:beh}]=await Promise.all([
     db.from('rettung_patienten').select('*').eq('id',id).single(),
     db.from('rettung_behandlungen').select('*').eq('patient_id',id).order('created_at',{ascending:false})
   ]);
-  if(!p) return;
-  const body = document.getElementById('modal-patient-body');
-  body.innerHTML = `
-    <div class="patient-head">
-      <div class="patient-avatar">🏥</div>
-      <div class="patient-info">
-        <h2>${p.name||'Unbekannt'}</h2>
-        <p>Roblox: ${p.roblox_name||'–'} · Geb.: ${p.dob?new Date(p.dob).toLocaleDateString('de-DE'):'–'}</p>
-        <p style="margin-top:4px">${p.blutgruppe?`🩸 Blutgruppe: <strong>${p.blutgruppe}</strong>`:''} ${p.allergien?`⚠️ Allergien: <strong>${p.allergien}</strong>`:''}</p>
+  if(!p)return;
+  document.getElementById('m-p-b').innerHTML=`
+    <div style="background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(239,68,68,.04));border:1px solid var(--border2);border-radius:var(--r14);padding:18px;display:flex;align-items:center;gap:14px;margin-bottom:16px">
+      <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 0 20px rgba(239,68,68,.3)">🏥</div>
+      <div>
+        <div style="font-family:var(--fg);font-size:17px;font-weight:700">${p.name||'–'}</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:3px">Roblox: ${p.roblox_name||'–'} · Geb.: ${fmtd(p.dob)}</div>
+        <div style="margin-top:5px">${p.blutgruppe?`<span class="badge bg-r">🩸 ${p.blutgruppe}</span>`:''} ${p.allergien?`<span class="badge bg-o" style="margin-left:4px">⚠️ ${p.allergien}</span>`:''}</div>
       </div>
     </div>
-    <div style="font-weight:700;margin-bottom:12px">Behandlungshistorie</div>
-    ${!behandlungen?.length?'<div style="color:#aaa;text-align:center;padding:20px;font-style:italic">Keine Behandlungen</div>':
-    `<div class="timeline">${behandlungen.map(b=>`
-      <div class="tl-item">
-        <div class="tl-time">${new Date(b.created_at).toLocaleString('de-DE')} · ${b.bearbeiter||'–'}</div>
-        <div class="tl-type">${b.typ||'Behandlung'}</div>
-        <div style="font-weight:600;margin-top:2px">${b.diagnose||''}</div>
-        <div class="tl-text">${b.behandlung||''}</div>
-        ${b.outcome?`<span class="badge ${b.outcome==='Transportiert'?'badge-blue':b.outcome==='Verstorben'?'badge-red':'badge-green'}" style="margin-top:6px">${b.outcome}</span>`:''}
-      </div>`).join('')}</div>`}
-    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f0f0f0">
-      <button class="btn btn-red btn-sm" onclick="quickNewTreatment(${id})">+ Neue Behandlung</button>
+    <div class="slabel">Behandlungshistorie (${beh?.length||0})</div>
+    ${!beh?.length?'<div class="es"><p>Keine Behandlungen eingetragen</p></div>':
+    `<div class="tline">${beh.map(b=>`<div class="tl">
+      <div class="tl-t">${fmt(b.created_at)} · ${b.bearbeiter||'–'}</div>
+      <div class="tl-type">${b.typ||'Behandlung'}</div>
+      <div style="font-weight:700;margin-top:4px;font-size:14px;font-family:var(--fg)">${b.diagnose||''}</div>
+      <div class="tl-txt">${b.behandlung||''}</div>
+      ${b.outcome?`<span class="badge ${b.outcome==='Transportiert'?'bg-b':b.outcome==='Verstorben'?'bg-r':'bg-g'}" style="margin-top:6px">${b.outcome}</span>`:''}
+    </div>`).join('')}</div>`}
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+      <button class="btn b-pri b-sm" onclick="cm('m-p');sp('new-patient');window._pid=${id}">+ Neue Behandlung</button>
     </div>`;
-  openModal('modal-patient');
+  om('m-p');
 }
 
-function quickNewTreatment(patientId) {
-  closeModal('modal-patient');
-  document.getElementById('np-name').value = '';
-  showPage('new-patient');
-  window._currentPatientId = patientId;
-}
-
-async function searchCitizen() {
-  const q = document.getElementById('np-search').value.trim();
-  if(q.length < 2) { document.getElementById('np-results').style.display='none'; return; }
-  const {data} = await db.from('citizens').select('*').or(`name.ilike.%${q}%,discord_tag.ilike.%${q}%,roblox_name.ilike.%${q}%`).limit(5);
-  const res = document.getElementById('np-results');
-  if(!data?.length) { res.style.display='none'; return; }
-  res.style.display='block';
-  res.innerHTML = data.map(c=>`<div style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:12px" onmousedown="fillCitizen(${JSON.stringify(c).replace(/"/g,'&quot;')})">${c.name} <span style="color:#999">(${c.discord_tag||c.roblox_name||''})</span></div>`).join('');
-}
-
-function fillCitizen(c) {
-  document.getElementById('np-name').value    = c.name||'';
-  document.getElementById('np-roblox').value  = c.roblox_name||'';
-  document.getElementById('np-dob').value     = c.dob||'';
-  document.getElementById('np-search').value  = c.name||'';
-  document.getElementById('np-results').style.display = 'none';
-  window._linkedCitizenId = c.id;
-}
-
-async function createPatient() {
-  const name      = document.getElementById('np-name').value.trim();
-  const diagnose  = document.getElementById('np-diagnose').value.trim();
-  const behandlung= document.getElementById('np-behandlung').value.trim();
-  const err       = document.getElementById('np-err');
-  if(!name)     { err.textContent='Name erforderlich.'; return; }
-  if(!diagnose) { err.textContent='Diagnose erforderlich.'; return; }
+async function savePat(){
+  const name=document.getElementById('np-n').value.trim();
+  const diag=document.getElementById('np-diag').value.trim();
+  const err=document.getElementById('np-err');
+  if(!name){err.textContent='Name erforderlich.';return;}
+  if(!diag){err.textContent='Diagnose erforderlich.';return;}
   err.textContent='';
-
-  // Patient anlegen oder bestehenden finden
-  let patientId = window._currentPatientId||null;
-  if(!patientId) {
-    const existing = await db.from('rettung_patienten').select('id').eq('name',name).maybeSingle();
-    if(existing.data) {
-      patientId = existing.data.id;
-    } else {
-      const {data:np} = await db.from('rettung_patienten').insert([{
-        name, roblox_name:document.getElementById('np-roblox').value.trim(),
+  let pid=window._pid||null;
+  if(!pid){
+    const ex=await db.from('rettung_patienten').select('id').eq('name',name).maybeSingle();
+    if(ex.data){pid=ex.data.id;}
+    else{
+      const {data:np,error}=await db.from('rettung_patienten').insert([{
+        name,roblox_name:document.getElementById('np-rb').value.trim(),
         dob:document.getElementById('np-dob').value||null,
-        blutgruppe:document.getElementById('np-blut').value||null,
-        allergien:document.getElementById('np-allergien').value.trim()||null,
-        citizen_id:window._linkedCitizenId||null,
+        blutgruppe:document.getElementById('np-bt').value||null,
+        allergien:document.getElementById('np-al').value.trim()||null,
+        citizen_id:_cid||null,
         letzte_behandlung:new Date().toISOString()
       }]).select().single();
-      if(!np) { err.textContent='Fehler beim Anlegen des Patienten.'; return; }
-      patientId = np.id;
+      if(error||!np){err.textContent='Fehler beim Anlegen.';return;}
+      pid=np.id;
     }
   }
-
-  // Behandlung speichern
   await db.from('rettung_behandlungen').insert([{
-    patient_id:patientId, diagnose, behandlung,
+    patient_id:pid,diagnose:diag,
+    behandlung:document.getElementById('np-beh').value.trim(),
     typ:document.getElementById('np-typ').value,
-    outcome:document.getElementById('np-outcome').value,
-    bearbeiter:U?.name||'Unbekannt'
+    outcome:document.getElementById('np-out').value,
+    bearbeiter:U?.name
   }]);
-  // letzte_behandlung aktualisieren
-  await db.from('rettung_patienten').update({letzte_behandlung:new Date().toISOString()}).eq('id',patientId);
-  await logAction('PATIENT_BEHANDELT',`${name}: ${diagnose}`);
-  notify('✅ Patientenakte gespeichert','ok');
-  window._currentPatientId = null;
-  window._linkedCitizenId  = null;
-  ['np-search','np-name','np-roblox','np-diagnose','np-behandlung','np-allergien'].forEach(id=>document.getElementById(id).value='');
-  showPage('patienten');
+  await db.from('rettung_patienten').update({letzte_behandlung:new Date().toISOString()}).eq('id',pid);
+  await log('PATIENT',name+': '+diag);
+  nt('✅ Patientenakte gespeichert','ok');
+  window._pid=null;_cid=null;
+  ['nps','np-n','np-rb','np-diag','np-beh','np-al'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  sp('patienten');
 }
 
-// ── BERICHTE ─────────────────────────────────────────────────
-async function loadBerichte() {
-  const {data} = await db.from('rettung_einsaetze').select('*').order('created_at',{ascending:false}).limit(100);
-  const tbody = document.getElementById('berichte-tbody');
-  const prios=['','🔴','🟠','🟡','🟢'];
-  if(!data?.length) { tbody.innerHTML='<tr class="empty-row"><td colspan="7">Keine Einsätze</td></tr>'; return; }
-  tbody.innerHTML = data.map(e=>`
-    <tr style="cursor:pointer" onclick="openEinsatz(${e.id})">
-      <td style="font-weight:700;color:#e53935">E-${e.id}</td>
-      <td>${new Date(e.created_at).toLocaleDateString('de-DE')}</td>
-      <td>${e.typ}</td><td>${e.ort}</td>
-      <td>${prios[e.prioritaet]||''} ${e.prioritaet}</td>
-      <td>${e.bearbeiter||'–'}</td>
-      <td><span class="badge ${e.status==='Aktiv'?'badge-red':'badge-gray'}">${e.status}</span></td>
-    </tr>`).join('');
+/* TEAM */
+async function loadTeam(){
+  const {data}=await db.from('officers').select('*').order('name');
+  const g=document.getElementById('team-grid');
+  if(!data?.length){g.innerHTML='<div class="es"><p>Keine Mitarbeiter</p></div>';return;}
+  g.innerHTML=data.map(o=>`
+    <div class="tc ${o.status==='on'?'on':''}">
+      <div class="tc-ava">${o.name.charAt(0)}</div>
+      <div style="flex:1;min-width:0">
+        <div class="tc-n">${o.name}</div>
+        <div class="tc-r">${o.rank||'–'}</div>
+        <div class="tc-d">${o.dienst}</div>
+      </div>
+      <span class="badge ${o.status==='on'?'bg-g':'bg-gray'}">${o.status==='on'?'Im Dienst':'Frei'}</span>
+    </div>`).join('');
 }
 
-// ── TEAM ─────────────────────────────────────────────────────
-async function loadTeam() {
-  const {data} = await db.from('officers').select('*').order('name');
-  const tbody = document.getElementById('team-tbody');
-  if(!data?.length) { tbody.innerHTML='<tr class="empty-row"><td colspan="4">Keine Einträge</td></tr>'; return; }
-  tbody.innerHTML = data.map(o=>`
-    <tr>
-      <td style="font-weight:600">${o.name}</td>
-      <td style="font-family:monospace">${o.dienst}</td>
-      <td>${o.rank||'Sanitäter'}</td>
-      <td><span class="badge ${o.status==='on'?'badge-green':'badge-gray'}">${o.status==='on'?'Im Dienst':'Außer Dienst'}</span></td>
-    </tr>`).join('');
+/* USER MANAGEMENT */
+async function loadUsers(){
+  const {data}=await db.from('officers').select('*').order('name');
+  const tb=document.getElementById('um-tb');
+  if(!data?.length){tb.innerHTML='<tr><td colspan="6"><div class="es"><p>Keine Nutzer</p></div></td></tr>';return;}
+  tb.innerHTML=data.map(o=>`<tr>
+    <td style="font-weight:600;font-family:var(--fg)">${o.name}</td>
+    <td class="mono">${o.dienst}</td>
+    <td>${o.rank||'–'}</td>
+    <td><span class="badge ${o.status==='on'?'bg-g':'bg-gray'}">${o.status==='on'?'Im Dienst':'Frei'}</span></td>
+    <td><span class="badge ${o.suspended?'bg-r':'bg-g'}">${o.suspended?'Gesperrt':'Aktiv'}</span></td>
+    <td style="display:flex;gap:5px;flex-wrap:wrap">
+      <button class="btn b-ghost b-sm" onclick='openAU(${JSON.stringify(o)})'>✏️ Edit</button>
+      <button class="btn ${o.suspended?'b-grn':'b-danger'} b-sm" onclick="toggleSusp('${o.id}',${o.suspended})">${o.suspended?'✅ Entsperren':'🔒 Sperren'}</button>
+      ${o.id!==U?.id?`<button class="btn b-danger b-sm" onclick="delUser('${o.id}','${o.name.replace(/'/g,"\\'")}')">🗑</button>`:''}
+    </td>
+  </tr>`).join('');
 }
 
-// ── PROFIL ───────────────────────────────────────────────────
-function loadProfil() {
-  if(!U) return;
-  document.getElementById('profil-content').innerHTML = `
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
-      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#e53935,#b71c1c);
-        display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px">👨‍⚕️</div>
-      <div><div style="font-size:20px;font-weight:800">${U.name}</div>
-        <div style="font-size:13px;color:#888">${U.rank||'Sanitäter'} · ${U.dienst}</div></div>
+function openAU(user){
+  document.getElementById('au-id').value='';
+  document.getElementById('au-n').value='';
+  document.getElementById('au-d').value='';
+  document.getElementById('au-pw').value='';
+  document.getElementById('au-err').textContent='';
+  if(user){
+    document.getElementById('m-au-t').textContent='Nutzer bearbeiten';
+    document.getElementById('au-id').value=user.id;
+    document.getElementById('au-n').value=user.name;
+    document.getElementById('au-d').value=user.dienst;
+    const s=document.getElementById('au-rg');
+    for(let o of s.options){if(o.value===user.rank)o.selected=true;}
+  }else{
+    document.getElementById('m-au-t').textContent='Nutzer anlegen';
+  }
+  om('m-au');
+}
+
+async function saveUser(){
+  const n=document.getElementById('au-n').value.trim();
+  const d=document.getElementById('au-d').value.trim().toUpperCase();
+  const pw=document.getElementById('au-pw').value;
+  const eid=document.getElementById('au-id').value;
+  const rs=document.getElementById('au-rg');
+  const rank=rs.value;
+  const lvl=parseInt(rs.options[rs.selectedIndex].dataset.lvl)||1;
+  const err=document.getElementById('au-err');
+  if(!n||!d){err.textContent='Name und Dienst-Nr erforderlich.';return;}
+  if(!eid&&!pw){err.textContent='Passwort erforderlich.';return;}
+  if(eid){
+    const upd={name:n,dienst:d,rank,level:lvl};
+    if(pw)upd.password=pw;
+    const {error}=await db.from('officers').update(upd).eq('id',eid);
+    if(error){err.textContent='Fehler: '+error.message;return;}
+    nt('✅ Nutzer aktualisiert','ok');
+  }else{
+    const {error}=await db.from('officers').insert([{name:n,dienst:d,rank,level:lvl,password:pw,status:'off',abteilung:'rettung'}]);
+    if(error){err.textContent=error.code==='23505'?'Dienst-Nr bereits vergeben.':'Fehler: '+error.message;return;}
+    nt('✅ Nutzer angelegt: '+n,'ok');
+  }
+  await log('USER',(eid?'Edit':'Neu')+': '+n+' ('+d+')');
+  cm('m-au');loadUsers();
+}
+
+async function toggleSusp(id,s){
+  await db.from('officers').update({suspended:!s}).eq('id',id);
+  nt(s?'Nutzer entsperrt':'Nutzer gesperrt',s?'ok':'warn');
+  loadUsers();
+}
+
+async function delUser(id,name){
+  if(!confirm('"'+name+'" wirklich löschen?'))return;
+  await db.from('officers').delete().eq('id',id);
+  nt('Gelöscht','warn');
+  await log('USER_DEL',name);
+  loadUsers();
+}
+
+/* PROFIL */
+function loadProfil(){
+  if(!U)return;
+  document.getElementById('profil-wrap').innerHTML=`
+    <div class="ph">
+      <div class="ph-ava">${U.name.charAt(0)}</div>
+      <div class="ph-n">${U.name}</div>
+      <div class="ph-r">${U.rank||'–'} · ${U.dienst}</div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div style="background:#f9f9f9;border-radius:6px;padding:12px">
-        <div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase;margin-bottom:4px">Status</div>
-        <span class="badge ${U.status==='on'?'badge-green':'badge-gray'}">${U.status==='on'?'Im Dienst':'Außer Dienst'}</span>
+    <div class="card">
+      <div class="ig" style="margin-bottom:0">
+        <div class="ii"><div class="ii-l">Dienststatus</div><div class="ii-v"><span class="badge ${U.status==='on'?'bg-g':'bg-gray'}">${U.status==='on'?'Im Dienst':'Außer Dienst'}</span></div></div>
+        <div class="ii"><div class="ii-l">Dienstnummer</div><div class="ii-v mono">${U.dienst}</div></div>
+        <div class="ii"><div class="ii-l">Level</div><div class="ii-v">${U.level||1}</div></div>
+        <div class="ii"><div class="ii-l">Account</div><div class="ii-v"><span class="badge ${U.suspended?'bg-r':'bg-g'}">${U.suspended?'Gesperrt':'Aktiv'}</span></div></div>
       </div>
-      <div style="background:#f9f9f9;border-radius:6px;padding:12px">
-        <div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase;margin-bottom:4px">Dienstnummer</div>
-        <div style="font-family:monospace;font-weight:700">${U.dienst}</div>
-      </div>
-    </div>`;
+    </div>
+    <button class="btn b-ghost b-sm" style="margin-top:8px" onclick="chgPw()">🔑 Passwort ändern</button>`;
+}
+function chgPw(){
+  const p=prompt('Neues Passwort (min. 6 Zeichen):');
+  if(!p||p.length<6){nt('Zu kurz!','err');return;}
+  db.from('officers').update({password:p}).eq('id',U.id).then(()=>nt('✅ Passwort geändert','ok'));
+  log('PW_CHANGE',U.name);
 }
 </script>
 </body>
 </html>
-PYEOF
