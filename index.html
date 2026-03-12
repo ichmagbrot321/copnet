@@ -989,7 +989,7 @@ async function loadDashCitizen(){
     const myPlates=myVehicles.map(v=>(v.plate||'').toLowerCase());
     return pn===myName||myPlates.includes(pl)||(f.citizen_id&&f.citizen_id===U.id);
   });
-  const sg={Gering:'bg-g',Mittel:'bg-y',Schwer:'bg-o',Kritisch:'bg-r'};
+  const sg={'':'bg-gray'};
   const dashEl=document.getElementById('page-dashboard');
   if(!dashEl)return;
   dashEl.innerHTML=`
@@ -1265,7 +1265,7 @@ async function loadDash(){
   document.getElementById('s-fahndung').textContent=r3.data?.length??0;
   document.getElementById('s-akten').textContent=r4.data?.length??0;
   const {data:ea}=await db.from('einsatz').select('*').eq('status','Aktiv').order('created_at',{ascending:false}).limit(4);
-  document.getElementById('d-einsatz').innerHTML=!ea?.length?'<div class="es"><div class="es-ico">✅</div><p>Keine aktiven Einsätze</p></div>':ea.map(e=>`<div class="cc"><div class="cc-l aktiv"></div><div class="cc-b"><div class="cc-top"><span class="cc-id">E-${e.id.toString().substring(0,6)}</span><span class="badge bg-r">Aktiv</span></div><div class="cc-name">${e.type||'Einsatz'}</div><div class="cc-sub">📍 ${e.location||'–'}</div></div></div>`).join('');
+  document.getElementById('d-einsatz').innerHTML=!ea?.length?'<div class="es"><div class="es-ico">✅</div><p>Keine aktiven Einsätze</p></div>':ea.map(e=>`<div class="cc"><div class="cc-l aktiv"></div><div class="cc-b"><div class="cc-top"><span class="cc-id">${e.einsatz_number||'EN-?'}</span><span class="badge bg-r">Aktiv</span></div><div class="cc-name">${e.type||'Einsatz'}</div><div class="cc-sub">📍 ${e.ort||'–'}</div></div></div>`).join('');
   const {data:od}=await db.from('officers').select('*').eq('status','on').order('name').limit(6);
   document.getElementById('d-team').innerHTML=!od?.length?'<div class="es"><p>Niemand im Dienst</p></div>':`<div class="tgrid" style="grid-template-columns:1fr">${od.map(o=>`<div class="tc on"><div class="tc-ava">${o.name.charAt(0)}</div><div style="flex:1;min-width:0"><div class="tc-n">${o.name}</div><div class="tc-r">${o.rank||'–'}</div><div class="tc-d">${o.dienst}</div></div><span class="badge bg-g">Im Dienst</span></div>`).join('')}</div>`;
   const {data:fa}=await db.from('alerts').select('*').eq('active',true).order('created_at',{ascending:false}).limit(4);
@@ -1280,16 +1280,14 @@ async function loadAnzeigen(){
   if(f)q=q.eq('status',f);
   let {data}=await q;
   if(s&&data)data=data.filter(a=>(a.citizen_name||'').toLowerCase().includes(s)||(a.description||'').toLowerCase().includes(s));
-  const sg={Gering:'bg-g',Mittel:'bg-y',Schwer:'bg-o',Kritisch:'bg-r'};
   const st={Offen:'offen',Ermittlung:'aktiv',Abgeschlossen:'geschlossen'};
-  document.getElementById('sa-list').innerHTML=!data?.length?'<div class="es"><div class="es-ico">📋</div><p>Keine Strafanzeigen</p></div>':data.map(a=>`<div class="cc" onclick="openAnzeige('${a.id}')"><div class="cc-l ${st[a.status]||'offen'}"></div><div class="cc-b"><div class="cc-top"><span class="cc-id">AZ-${a.id.toString().substring(0,8).toUpperCase()}</span><span class="badge ${sg[a.severity]||'bg-gray'}">${a.severity||'–'}</span><span class="badge bg-gray">${a.status||'Offen'}</span></div><div class="cc-name">${a.citizen_name||'Unbekannt'}</div><div class="cc-sub">${(a.description||'').substring(0,80)}${a.description?.length>80?'…':''}</div><div class="cc-meta"><span>👮 ${a.officer_name||'–'}</span><span>📅 ${fmtd(a.created_at)}</span></div></div></div>`).join('');
+  document.getElementById('sa-list').innerHTML=!data?.length?'<div class="es"><div class="es-ico">📋</div><p>Keine Strafanzeigen</p></div>':data.map(a=>`<div class="cc" onclick="openAnzeige('${a.id}')"><div class="cc-l ${st[a.status]||'offen'}"></div><div class="cc-b"><div class="cc-top"><span class="cc-id">${a.case_number||'AZ-?'}</span><span class="badge bg-gray">${a.status||'Offen'}</span></div><div class="cc-name">${a.citizen_name||'Unbekannt'}</div><div class="cc-sub">${(a.description||'').substring(0,80)}${(a.description?.length||0)>80?'…':''}</div><div class="cc-meta"><span>👮 ${a.officer_name||'–'}</span><span>📅 ${fmtd(a.created_at)}</span></div></div></div>`).join('');
 }
 async function openAnzeige(id){
   const {data:a}=await db.from('cases').select('*').eq('id',id).single();
   if(!a)return;
-  const sg={Gering:'bg-g',Mittel:'bg-y',Schwer:'bg-o',Kritisch:'bg-r'};
-  document.getElementById('m-sa-t').textContent='Strafanzeige '+a.id.toString().substring(0,8).toUpperCase();
-  document.getElementById('m-sa-b').innerHTML=`<div class="ig"><div class="ii"><div class="ii-l">Beschuldigter</div><div class="ii-v" style="font-weight:700">${a.citizen_name||'–'}</div></div><div class="ii"><div class="ii-l">Status</div><div class="ii-v"><span class="badge bg-gray">${a.status||'–'}</span></div></div><div class="ii" style="grid-column:1/-1"><div class="ii-l">Tatvorwurf</div><div class="ii-v" style="font-weight:600">${a.description||'–'}</div></div><div class="ii"><div class="ii-l">Schweregrad</div><div class="ii-v"><span class="badge ${sg[a.severity]||'bg-gray'}">${a.severity||'–'}</span></div></div><div class="ii"><div class="ii-l">Beamter</div><div class="ii-v">${a.officer_name||'–'}</div></div><div class="ii"><div class="ii-l">Discord ID</div><div class="ii-v mono" style="font-size:11px">${a.citizen_discord_id||'–'}</div></div><div class="ii"><div class="ii-l">Datum</div><div class="ii-v mono" style="font-size:11px">${fmt(a.created_at)}</div></div></div>`;
+  document.getElementById('m-sa-t').textContent='Strafanzeige '+( a.case_number||a.id.toString().substring(0,8).toUpperCase());
+  document.getElementById('m-sa-b').innerHTML=`<div class="ig"><div class="ii"><div class="ii-l">Beschuldigter</div><div class="ii-v" style="font-weight:700">${a.citizen_name||'–'}</div></div><div class="ii"><div class="ii-l">Status</div><div class="ii-v"><span class="badge bg-gray">${a.status||'–'}</span></div></div><div class="ii" style="grid-column:1/-1"><div class="ii-l">Tatvorwurf / Beschreibung</div><div class="ii-v" style="font-weight:600;white-space:pre-wrap">${a.description||'–'}</div></div><div class="ii"><div class="ii-l">Beamter</div><div class="ii-v">${a.officer_name||'–'}</div></div><div class="ii"><div class="ii-l">Discord ID</div><div class="ii-v mono" style="font-size:11px">${a.citizen_discord_id||'–'}</div></div><div class="ii"><div class="ii-l">Datum</div><div class="ii-v mono" style="font-size:11px">${fmt(a.created_at)}</div></div></div>`;
   const f=document.getElementById('m-sa-f');f.innerHTML='';
   // Share button
   const sh=document.createElement('button');sh.className='btn b-ghost b-sm';sh.textContent='🔗 Teilen';
@@ -1316,11 +1314,10 @@ async function saveAnzeige(){
   if(!tv){err.textContent='Tatvorwurf erforderlich.';return;}
   err.textContent='';
   const casePayload={
-    case_number:'SA-'+Date.now()+'-'+Math.floor(Math.random()*1000),
+    case_number:'SA-'+Date.now().toString(36).toUpperCase(),
     citizen_name:n,
     description:tv+(document.getElementById('nsa-desc').value.trim()?'\n\n'+document.getElementById('nsa-desc').value.trim():''),
     status:document.getElementById('nsa-s').value,
-    severity:document.getElementById('nsa-sg').value,
     officer_name:U?.name,
     citizen_id:_anzCid?.id||null,
   };
@@ -1342,16 +1339,14 @@ async function loadAkten(){
   const s=document.getElementById('a-search')?.value?.toLowerCase()||'';
   let {data}=await db.from('cases').select('*').order('created_at',{ascending:false}).limit(100);
   if(s&&data)data=data.filter(a=>(a.citizen_name||'').toLowerCase().includes(s)||(a.description||'').toLowerCase().includes(s));
-  const sg={Gering:'bg-g',Mittel:'bg-y',Schwer:'bg-o',Kritisch:'bg-r'};
-  const st={Offen:'offen',Ermittlung:'aktiv',Abgeschlossen:'geschlossen'};
-  document.getElementById('a-list').innerHTML=!data?.length?'<div class="es"><div class="es-ico">📁</div><p>Keine Akten</p></div>':data.map(a=>`<div class="cc" onclick="openAkte('${a.id}')"><div class="cc-l ${st[a.status]||'offen'}"></div><div class="cc-b"><div class="cc-top"><span class="cc-id">AK-${a.id.toString().substring(0,8)}</span><span class="badge ${sg[a.severity]||'bg-gray'}">${a.severity||'–'}</span><span class="badge bg-gray">${a.status||'Offen'}</span></div><div class="cc-name">${a.citizen_name||'Unbekannt'}</div><div class="cc-sub">${(a.description||'').substring(0,80)}${a.description?.length>80?'…':''}</div><div class="cc-meta"><span>👤 ${a.officer_name||'–'}</span><span>📅 ${fmtd(a.created_at)}</span></div></div></div>`).join('');
+  const st2={Offen:'offen',Ermittlung:'aktiv',Abgeschlossen:'geschlossen'};
+  document.getElementById('a-list').innerHTML=!data?.length?'<div class="es"><div class="es-ico">📁</div><p>Keine Akten</p></div>':data.map(a=>`<div class="cc" onclick="openAkte('${a.id}')"><div class="cc-l ${st2[a.status]||'offen'}"></div><div class="cc-b"><div class="cc-top"><span class="cc-id">${a.case_number||'AK-?'}</span><span class="badge bg-gray">${a.status||'Offen'}</span></div><div class="cc-name">${a.citizen_name||'Unbekannt'}</div><div class="cc-sub">${(a.description||'').substring(0,80)}${(a.description?.length||0)>80?'…':''}</div><div class="cc-meta"><span>👤 ${a.officer_name||'–'}</span><span>📅 ${fmtd(a.created_at)}</span></div></div></div>`).join('');
 }
 async function openAkte(id){
   const {data:a}=await db.from('cases').select('*').eq('id',id).single();
   if(!a)return;
-  const sg={Gering:'bg-g',Mittel:'bg-y',Schwer:'bg-o',Kritisch:'bg-r'};
-  document.getElementById('m-a-t').textContent='Akte '+a.id.toString().substring(0,8).toUpperCase();
-  document.getElementById('m-a-b').innerHTML=`<div class="ig"><div class="ii"><div class="ii-l">Beschuldigter</div><div class="ii-v" style="font-weight:700">${a.citizen_name||'–'}</div></div><div class="ii"><div class="ii-l">Status</div><div class="ii-v"><span class="badge bg-gray">${a.status||'–'}</span></div></div><div class="ii" style="grid-column:1/-1"><div class="ii-l">Tatvorwurf</div><div class="ii-v" style="font-weight:600">${a.description||'–'}</div></div><div class="ii"><div class="ii-l">Schweregrad</div><div class="ii-v"><span class="badge ${sg[a.severity]||'bg-gray'}">${a.severity||'–'}</span></div></div><div class="ii"><div class="ii-l">Beamter</div><div class="ii-v">${a.officer_name||'–'}</div></div><div class="ii"><div class="ii-l">Datum</div><div class="ii-v mono" style="font-size:11px">${fmt(a.created_at)}</div></div></div>`;
+  document.getElementById('m-a-t').textContent='Akte '+(a.case_number||a.id.toString().substring(0,8).toUpperCase());
+  document.getElementById('m-a-b').innerHTML=`<div class="ig"><div class="ii"><div class="ii-l">Beschuldigter</div><div class="ii-v" style="font-weight:700">${a.citizen_name||'–'}</div></div><div class="ii"><div class="ii-l">Status</div><div class="ii-v"><span class="badge bg-gray">${a.status||'–'}</span></div></div><div class="ii" style="grid-column:1/-1"><div class="ii-l">Beschreibung</div><div class="ii-v" style="font-weight:600;white-space:pre-wrap">${a.description||'–'}</div></div><div class="ii"><div class="ii-l">Beamter</div><div class="ii-v">${a.officer_name||'–'}</div></div><div class="ii"><div class="ii-l">Datum</div><div class="ii-v mono" style="font-size:11px">${fmt(a.created_at)}</div></div></div>`;
   const f=document.getElementById('m-a-f');f.innerHTML='';
   // Share button
   const sh=document.createElement('button');sh.className='btn b-ghost b-sm';sh.textContent='🔗 Teilen';
@@ -1377,7 +1372,7 @@ async function saveAkte(){
   if(!n){err.textContent='Name erforderlich.';return;}
   if(!tv){err.textContent='Tatvorwurf erforderlich.';return;}
   err.textContent='';
-  const {error}=await db.from('cases').insert([{case_number:'AK-'+Date.now()+'-'+Math.floor(Math.random()*1000),citizen_name:n,description:tv+'\n\n'+document.getElementById('na-desc').value.trim(),status:document.getElementById('na-s').value,severity:document.getElementById('na-sg').value,officer_name:U?.name,citizen_id:_cid||null}]);
+  const {error}=await db.from('cases').insert([{case_number:'AK-'+Date.now().toString(36).toUpperCase(),citizen_name:n,description:tv+'\n\n'+document.getElementById('na-desc').value.trim(),status:document.getElementById('na-s').value,officer_name:U?.name,citizen_id:_cid||null}]);
   if(error){err.textContent='Fehler: '+error.message;return;}
   nt('✅ Akte angelegt','ok');cm('m-new-akte');loadAkten();_cid=null;
 }
@@ -1387,14 +1382,15 @@ async function loadEinsatz(){
   const {data}=await db.from('einsatz').select('*').order('created_at',{ascending:false}).limit(80);
   const tb=document.getElementById('e-tb');
   if(!data?.length){tb.innerHTML='<tr><td colspan="7"><div class="es"><div class="es-ico">🚨</div><p>Keine Einsätze</p></div></td></tr>';return;}
-  tb.innerHTML=data.map(e=>`<tr><td class="mono">${e.id.toString().substring(0,8)}</td><td style="font-weight:600">${e.type||'–'}</td><td>${e.location||'–'}</td><td>${e.officer_name||'–'}</td><td><span class="badge ${e.status==='Aktiv'?'bg-r':e.status==='Abgeschlossen'?'bg-g':'bg-gray'}">${e.status||'–'}</span></td><td class="mono" style="font-size:11px">${fmt(e.created_at)}</td><td>${e.status==='Aktiv'&&U?.type==='officer'?`<button class="btn b-grn b-sm" onclick="closeEinsatz('${e.id}')">✅</button>`:''}</td></tr>`).join('');
+  tb.innerHTML=data.map(e=>`<tr><td class="mono">${e.einsatz_number||e.id.toString().substring(0,8)}</td><td style="font-weight:600">${e.type||'–'}</td><td>${e.ort||'–'}</td><td>${e.officer_name||'–'}</td><td><span class="badge ${e.status==='Aktiv'?'bg-r':e.status==='Abgeschlossen'?'bg-g':'bg-gray'}">${e.status||'–'}</span></td><td class="mono" style="font-size:11px">${fmt(e.created_at)}</td><td>${e.status==='Aktiv'&&U?.type==='officer'?`<button class="btn b-grn b-sm" onclick="closeEinsatz('${e.id}')">✅</button>`:''}</td></tr>`).join('');
 }
 function openNewEinsatz(){['ne-t','ne-o','ne-d'].forEach(i=>document.getElementById(i).value='');document.getElementById('ne-err').textContent='';om('m-new-einsatz');}
 async function saveEinsatz(){
   const t=document.getElementById('ne-t').value,o=document.getElementById('ne-o').value.trim();
   const err=document.getElementById('ne-err');
   if(!t){err.textContent='Art wählen.';return;}if(!o){err.textContent='Ort eingeben.';return;}
-  await db.from('einsatz').insert([{type:t,location:o,description:document.getElementById('ne-d').value.trim(),officer_name:U?.name,status:'Aktiv'}]);
+  const _enNum='EN-'+Date.now().toString(36).toUpperCase();
+  await db.from('einsatz').insert([{einsatz_number:_enNum,type:t,ort:o,description:document.getElementById('ne-d').value.trim(),officer_name:U?.name,status:'Aktiv'}]);
   nt('🚨 Einsatz gestartet','ok');cm('m-new-einsatz');loadDash();
 }
 async function closeEinsatz(id){await db.from('einsatz').update({status:'Abgeschlossen'}).eq('id',id);nt('Einsatz abgeschlossen','ok');loadEinsatz();}
