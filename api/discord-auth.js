@@ -1,85 +1,147 @@
-// api/discord-auth.js
-// Vercel Serverless Function – Token Exchange für Discord OAuth
-// Speichern unter: /api/discord-auth.js in deinem Vercel Projekt
-//
-// SETUP:
-// 1. Diese Datei in /api/discord-auth.js in deinem Repo speichern
-// 2. In Vercel Dashboard → Settings → Environment Variables:
-//    DISCORD_CLIENT_SECRET = <dein Discord Client Secret>
-// 3. Pushen → fertig
+// /api/discord-auth.js
+// Vercel Serverless Function – Discord OAuth + Guild Roles
 
-const DISCORD_CLIENT_ID    = '1443410909098807337';
-const DISCORD_REDIRECT_URI = 'https://copnet-rho.vercel.app';
+const DISCORD_CLIENT_ID = '1443410909098807337'
+const DEFAULT_REDIRECT = 'https://copnet-rho.vercel.app'
+const DEFAULT_GUILD = '1421878116271251558'
 
 export default async function handler(req, res) {
-  // CORS Headers
-  res.setHeader('Access-Control-Allow-Origin', 'https://copnet-rho.vercel.app');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // Preflight
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  // CORS
+  res.setHeader('Access-Control-Allow-Origin', 'https://copnet-rho.vercel.app')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end()
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { code } = req.body;
+  const { code, redirect_uri } = req.body || {}
+
   if (!code) {
-    return res.status(400).json({ error: 'Kein Code übergeben' });
+    return res.status(400).json({ error: 'OAuth code fehlt' })
   }
 
-  const clientSecret = process.env.DISCORD_CLIENT_SECRET;
-  if (!clientSecret) {
-    return res.status(500).json({ error: 'DISCORD_CLIENT_SECRET fehlt in Vercel Environment Variables' });
+  const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET
+  const GUILD_ID = process.env.GUILD_ID || DEFAULT_GUILD
+  const REDIRECT = redirect_uri || process.env.DISCORD_REDIRECT_URI || DEFAULT_REDIRECT
+
+  if (!CLIENT_SECRET) {
+    return res.status(500).json({
+      error: 'DISCORD_CLIENT_SECRET fehlt in Vercel Environment Variables'
+    })
   }
 
   try {
-    // Token Exchange bei Discord
+
+    // 1️⃣ Token Exchange
     const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
       body: new URLSearchParams({
-        client_id:     DISCORD_CLIENT_ID,
-        client_secret: clientSecret,
-        grant_type:    'authorization_code',
-        code:          code,
-        redirect_uri:  DISCORD_REDIRECT_URI,
-      }),
-    });
+        client_id: DISCORD_CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: REDIRECT
+      })
+    })
 
     if (!tokenRes.ok) {
-      const err = await tokenRes.text();
-      return res.status(400).json({ error: 'Token Exchange fehlgeschlagen', details: err });
+      const text = await tokenRes.text()
+      return res.status(400).json({
+        error: 'Token exchange fehlgeschlagen',
+        details: text
+      })
     }
 
-    const tokenData = await tokenRes.json();
+    const tokenData = await tokenRes.json()
+
     if (!tokenData.access_token) {
-      return res.status(400).json({ error: 'Kein Access Token erhalten', raw: tokenData });
+      return res.status(400).json({
+        error: 'Kein Access Token erhalten',
+        raw: tokenData
+      })
     }
 
-    // Nutzerdaten von Discord holen
+    const accessToken = tokenData.access_token
+
+    // 2️⃣ User Daten holen
     const userRes = await fetch('https://discord.com/api/users/@me', {
-      headers: { Authorization: `Bearer ${tokenData.access_token}` },
-    });
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
 
     if (!userRes.ok) {
-      return res.status(400).json({ error: 'Nutzerinfo fehlgeschlagen' });
+      return res.status(400).json({
+        error: 'Discord User Anfrage fehlgeschlagen'
+      })
     }
 
-    const user = await userRes.json();
+    const user = await userRes.json()
 
+    // 3️⃣ Guild Member Daten (Rollen)
+    let roles = []
+    let displayName = user.global_name || user.username
+
+    try {
+
+      const memberRes = await fetch(
+        `https://discord.com/api/users/@me/guilds/${GUILD_ID}/member`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        }
+      )
+
+      if (memberRes.ok) {
+        const member = await memberRes.json()
+
+        roles = member.roles || []
+
+        if (member.nick) {
+          displayName = member.nick
+        }
+      }
+
+    } catch (err) {
+      console.warn("Guild Member konnte nicht geladen werden:", err.message)
+    }
+
+    // 4️⃣ Avatar URL bauen
+    let avatar = null
+    if (user.avatar) {
+      avatar = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+    }
+
+    // 5️⃣ Response
     return res.status(200).json({
-      id:          user.id,
-      username:    user.username,
+
+      discord_id: user.id,
+
+      username: displayName,
       global_name: user.global_name,
-      avatar:      user.avatar,
-      email:       user.email,
-    });
+      discriminator: user.discriminator,
+
+      avatar,
+
+      email: user.email,
+
+      roles
+
+    })
 
   } catch (err) {
-    return res.status(500).json({ error: 'Interner Fehler', details: err.message });
+
+    console.error("Discord Auth Fehler:", err)
+
+    return res.status(500).json({
+      error: 'Internal Server Error',
+      details: err.message
+    })
+
   }
 }
