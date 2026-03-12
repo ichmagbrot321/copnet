@@ -352,19 +352,19 @@ tr:hover td{background:rgba(14,165,233,.03)}
   <div class="shell">
     <nav class="sidebar" id="sb">
       <div class="sb-logo">🚔</div>
-      <div class="sb-sec">Einsatz</div>
+      <div class="sb-sec off-only">Einsatz</div>
       <button class="sbi act" onclick="sp('dashboard')" data-p="dashboard"><span class="ico">📊</span><span class="lbl">Lagebild</span></button>
-      <button class="sbi" onclick="sp('einsatz')" data-p="einsatz"><span class="ico">🚨</span><span class="lbl">Einsatz</span></button>
-      <div class="sb-sec">Datenbank</div>
-      <button class="sbi" onclick="sp('strafanzeigen')" data-p="strafanzeigen"><span class="ico">📋</span><span class="lbl">Strafanzeigen</span></button>
-      <button class="sbi" onclick="sp('akten')" data-p="akten"><span class="ico">📁</span><span class="lbl">Akten</span></button>
-      <button class="sbi" onclick="sp('buerger')" data-p="buerger"><span class="ico">👥</span><span class="lbl">Bürgerdatenbank</span></button>
-      <button class="sbi" onclick="sp('fahrzeuge')" data-p="fahrzeuge"><span class="ico">🚗</span><span class="lbl">Fahrzeugregister</span></button>
-      <button class="sbi" onclick="sp('fahndung')" data-p="fahndung"><span class="ico">🔍</span><span class="lbl">Fahndung</span></button>
-      <div class="sb-sec">Personal</div>
-      <button class="sbi" onclick="sp('team')" data-p="team"><span class="ico">👮</span><span class="lbl">Team</span></button>
-      <button class="sbi" onclick="sp('dienstnummern')" data-p="dienstnummern"><span class="ico">🪪</span><span class="lbl">Dienstnummern</span></button>
-      <button class="sbi" id="sb-mgmt" onclick="sp('usermgmt')" data-p="usermgmt" style="display:none"><span class="ico">⚙️</span><span class="lbl">Nutzerverwaltung</span></button>
+      <button class="sbi off-only" onclick="sp('einsatz')" data-p="einsatz"><span class="ico">🚨</span><span class="lbl">Einsatz</span></button>
+      <div class="sb-sec off-only">Datenbank</div>
+      <button class="sbi off-only" onclick="sp('strafanzeigen')" data-p="strafanzeigen"><span class="ico">📋</span><span class="lbl">Strafanzeigen</span></button>
+      <button class="sbi off-only" onclick="sp('akten')" data-p="akten"><span class="ico">📁</span><span class="lbl">Akten</span></button>
+      <button class="sbi off-only" onclick="sp('buerger')" data-p="buerger"><span class="ico">👥</span><span class="lbl">Bürgerdatenbank</span></button>
+      <button class="sbi off-only" onclick="sp('fahrzeuge')" data-p="fahrzeuge"><span class="ico">🚗</span><span class="lbl">Fahrzeugregister</span></button>
+      <button class="sbi off-only" onclick="sp('fahndung')" data-p="fahndung"><span class="ico">🔍</span><span class="lbl">Fahndung</span></button>
+      <div class="sb-sec off-only">Personal</div>
+      <button class="sbi off-only" onclick="sp('team')" data-p="team"><span class="ico">👮</span><span class="lbl">Team</span></button>
+      <button class="sbi off-only" onclick="sp('dienstnummern')" data-p="dienstnummern"><span class="ico">🪪</span><span class="lbl">Dienstnummern</span></button>
+      <button class="sbi off-only" id="sb-mgmt" onclick="sp('usermgmt')" data-p="usermgmt" style="display:none"><span class="ico">⚙️</span><span class="lbl">Nutzerverwaltung</span></button>
       <div class="sb-bot">
         <button class="sbi" onclick="sp('profil')" data-p="profil"><span class="ico">👤</span><span class="lbl">Mein Profil</span></button>
         <button class="sbi" onclick="doLogout()"><span class="ico">🚪</span><span class="lbl">Abmelden</span></button>
@@ -535,12 +535,14 @@ tr:hover td{background:rgba(14,165,233,.03)}
     </div><!-- /main -->
   </div>
 
-  <nav class="mobnav">
-    <button class="mbn act" onclick="sp('dashboard')"><span class="mi">📊</span>Lagebild</button>
-    <button class="mbn" onclick="sp('strafanzeigen')"><span class="mi">📋</span>Anzeigen</button>
-    <button class="mbn" onclick="sp('buerger')"><span class="mi">👥</span>Bürger</button>
-    <button class="mbn" onclick="sp('fahndung')"><span class="mi">🔍</span>Fahndung</button>
-    <button class="mbn" onclick="sp('profil')"><span class="mi">👤</span>Profil</button>
+  <nav class="mobnav" id="mobnav">
+    <button class="mbn act off-only" onclick="sp('dashboard')"><span class="mi">📊</span>Lagebild</button>
+    <button class="mbn off-only" onclick="sp('strafanzeigen')"><span class="mi">📋</span>Anzeigen</button>
+    <button class="mbn off-only" onclick="sp('buerger')"><span class="mi">👥</span>Bürger</button>
+    <button class="mbn off-only" onclick="sp('fahndung')"><span class="mi">🔍</span>Fahndung</button>
+    <button class="mbn off-only" onclick="sp('profil')"><span class="mi">👤</span>Profil</button>
+    <button class="mbn cit-only" onclick="sp('dashboard')"><span class="mi">🏠</span>Übersicht</button>
+    <button class="mbn cit-only" onclick="doLogout()"><span class="mi">🚪</span>Abmelden</button>
   </nav>
 </div>
 
@@ -725,7 +727,7 @@ const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6I
 const db=supabase.createClient(SB,SK);
 // Bot API URL - same Vercel deployment
 const BOT_API='https://copnet-rho.vercel.app/api';
-const DISCORD_CLIENT='1443410909098807337';
+const DISCORD_CLIENT='1458870244365041849';
 const REDIRECT_URI='https://copnet-rho.vercel.app';
 
 // Discord Rollen → Polizei-Rang Mapping
@@ -750,6 +752,18 @@ function btick(){
   if(bi>=BL.length){
     setTimeout(()=>{
       document.getElementById('boot').style.display='none';
+      // Shared akte link? → zeige Akte ohne Login
+      const _sp=new URLSearchParams(window.location.search);
+      if(_sp.get('akte')){
+        document.getElementById('app').style.display='block';
+        document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+        const dp=document.getElementById('page-dashboard');if(dp)dp.classList.add('active');
+        document.getElementById('sidebar')?.style.setProperty('display','none');
+        document.querySelector('.sidebar')?.style.setProperty('display','none');
+        document.querySelector('.topbar')?.style.setProperty('display','none');
+        showSharedAkte(_sp.get('akte'));
+        return;
+      }
       // Check for Discord OAuth callback
       handleOAuthCallback();
     },400);return;
@@ -765,6 +779,7 @@ async function handleOAuthCallback(){
   const params=new URLSearchParams(window.location.search);
   const code=params.get('code');
   const state=params.get('state');
+  // Shared akte link hat keinen code → zeige Login
   if(!code){showLoginScreen();return;}
   // Clear URL
   window.history.replaceState({},'','/');
@@ -778,7 +793,12 @@ async function handleOAuthCallback(){
     if(!data.discord_id){throw new Error(data.error||'Auth fehlgeschlagen');}
     document.getElementById('bp').style.width='95%';
     document.getElementById('bs').textContent='▸ IDENTITÄT BESTÄTIGT…';
-    const type=state||'citizen';
+    let type=state||'';
+    // Auto-detect wenn kein state: prüfe ob Discord-ID in officers Tabelle
+    if(!type||type==='auto'){
+      const {data:offCheck}=await db.from('officers').select('id').eq('discord_id',data.discord_id.toString()).maybeSingle();
+      type=offCheck?'officer':'citizen';
+    }
     if(type==='officer'){
       await handleDiscordOfficerLogin(data);
     }else if(type==='register'){
@@ -801,7 +821,7 @@ function showLoginScreen(){
 // DISCORD LOGIN FUNCTIONS
 function loginDiscord(type='citizen'){
   const state=type;
-  window.location.href=`https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify+guilds.members.read&state=${state}`;
+  window.location.href=`https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify+email+guilds.members.read&state=${state}`;
 }
 function regAndDiscord(){
   const rn=document.getElementById('r-name').value.trim();
@@ -822,28 +842,43 @@ async function handleDiscordOfficerLogin(discordData){
   let detectedRank=null,detectedLevel=1;
   if(roles){
     for(const roleId of roles){
-      if(ROLLEN_MAP[roleId]){
-        const r=ROLLEN_MAP[roleId];
+      const key=String(roleId);
+      if(ROLLEN_MAP[key]){
+        const r=ROLLEN_MAP[key];
         if(r.level>detectedLevel){detectedRank=r.rank;detectedLevel=r.level;}
       }
     }
   }
   if(!detectedRank){
+    // Check if they have an existing officer account by discord_id
+    const {data:existOff}=await db.from('officers').select('*').eq('discord_id',discord_id.toString()).maybeSingle();
+    if(existOff&&existOff.rank){
+      U={type:'officer',...existOff};
+      document.getElementById('boot').style.display='none';
+      startApp();
+      nt('Willkommen, '+existOff.rank+' '+existOff.name+'! 🎖 (Rolle aus DB)','ok');
+      await log('LOGIN_DISCORD_FALLBACK',existOff.name+' - Rollen nicht erkannt, DB-Fallback');
+      return;
+    }
+    // No police role found → switch to citizen login automatically
     document.getElementById('boot').style.display='none';
     showLoginScreen();
-    showErr('Keine Polizei-Rolle gefunden. Du bist kein Beamter oder hast keine Berechtigung.');
+    // Switch to citizen tab
+    document.querySelectorAll('.login-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.login-panel').forEach(p=>p.style.display='none');
+    const citTab=document.querySelector('.login-tab[data-tab="citizen"]');
+    const citPanel=document.getElementById('panel-citizen');
+    if(citTab)citTab.classList.add('active');
+    if(citPanel)citPanel.style.display='';
+    nt('⚠️ Keine Polizei-Rolle gefunden. Bitte als Bürger anmelden oder zuerst die Rolle auf dem Server erhalten.','');
     return;
   }
-  // Find Dienstnummer from API
-  let dienst='UNBEKANNT';
+  // Find Dienstnummer from Supabase officers table (assigned later by admin)
+  let dienst='–';
   try{
-    const dnRes=await fetch(BOT_API+'/dienstnummern');
-    const dnData=await dnRes.json();
-    Object.assign(_dnLoaded,dnData);
-    for(const[nr,info]of Object.entries(dnData)){
-      if(info.user_id&&info.user_id.toString()===discord_id.toString()){dienst=nr;break;}
-    }
-  }catch(e){console.warn('DN fetch failed',e);}
+    const {data:offDN}=await db.from('officers').select('dienst').eq('discord_id',discord_id.toString()).maybeSingle();
+    if(offDN?.dienst&&offDN.dienst!=='–')dienst=offDN.dienst;
+  }catch(e){console.warn('DN lookup failed (non-critical)',e);}
   // Upsert officer
   const {data:officer,error}=await db.from('officers').upsert([{
     discord_id:discord_id.toString(),
@@ -866,18 +901,26 @@ async function handleDiscordOfficerLogin(discordData){
   nt('Willkommen, '+detectedRank+' '+U.name+'! 🎖','ok');
 }
 
-// Handle Discord OAuth for CITIZENS
+// Handle Discord OAuth für BÜRGER
+// WICHTIG: Auch wenn jemand Polizei-Rollen hat aber state=citizen → Bürger-Ansicht
 async function handleDiscordCitizenLogin(discordData){
-  const {discord_id,username,avatar}=discordData;
-  // Find existing citizen
+  const {discord_id,username,avatar,roles}=discordData;
+  document.getElementById('boot').style.display='none';
+  // Prüfen ob diese Person ein Beamter ist (Polizei-Rolle auf Discord)
+  // Falls ja → warnen aber trotzdem als Bürger einloggen (state=citizen gewählt)
+  let hatPolizeiRolle=false;
+  if(roles){for(const r of roles){if(ROLLEN_MAP[String(r)]){hatPolizeiRolle=true;break;}}}
+  if(hatPolizeiRolle){
+    // Polizist der Bürger-Tab gewählt hat → Hinweis, aber als Bürger fortfahren
+    nt('ℹ️ Du hast Polizei-Rollen – für Beamten-Zugang bitte "Beamter" Tab nutzen','warn');
+  }
+  // Bürger-Login: eigene citizen-Zeile suchen/erstellen
   const {data:cit}=await db.from('citizens').select('*').eq('discord_id',discord_id.toString()).maybeSingle();
   if(cit){
     U={type:'citizen',...cit};
-    document.getElementById('boot').style.display='none';
     startApp();
-    nt('Willkommen zurück, '+U.name+'!','ok');
+    nt('Willkommen zurück, '+U.name+'! 👤','ok');
   }else{
-    // New citizen - auto-create with Discord info
     const name=username;
     const shareId=Math.random().toString(36).substr(2,14).toUpperCase();
     const {data:nc,error}=await db.from('citizens').insert([{
@@ -886,13 +929,11 @@ async function handleDiscordCitizenLogin(discordData){
     }]).select().single();
     if(error){showLoginScreen();showErr('Fehler beim Erstellen: '+error.message);return;}
     await db.from('citizen_akten').insert([{akte_number:'AK-'+Date.now(),citizen_id:nc.id,citizen_name:name,status:'Aktiv',share_id:shareId}]);
-    // Send welcome DM via bot
     await sendBotDM(discord_id,'willkommen',{name,shareId});
     U={type:'citizen',...nc};
-    document.getElementById('boot').style.display='none';
     startApp();
-    nt('✅ Willkommen in CopNet, '+name+'!','ok');
-    await log('REG_DISCORD',name+' ('+discord_id+') registriert');
+    nt('✅ Willkommen in CopNet, '+name+'! 👤','ok');
+    await log('REG_DISCORD',name+' ('+discord_id+') als Bürger registriert');
   }
 }
 
@@ -921,11 +962,189 @@ async function handleDiscordRegister(discordData){
   await log('REG_DISCORD_FULL',name+' registriert · Discord: '+discord_id);
 }
 
-// BOT DM SENDER - calls our Vercel API which calls the bot
+
+// CITIZEN DASHBOARD — nur eigene Daten sichtbar
+async function loadDashCitizen(){
+  document.getElementById('tb-pg').textContent='Mein Bereich';
+  document.getElementById('tb-bdg').textContent='Bürger';
+  // Check ob Akte geteilt werden soll (URL ?akte=SHAREID)
+  const shareParam=new URLSearchParams(window.location.search).get('akte');
+  if(shareParam){showSharedAkte(shareParam);return;}
+  // Lade alle eigenen Daten parallel
+  const [r1,r2,r3,r4]=await Promise.all([
+    db.from('cases').select('*').eq('citizen_id',U.id).order('created_at',{ascending:false}).limit(20),
+    db.from('citizen_akten').select('*').eq('citizen_id',U.id).order('created_at',{ascending:false}).limit(1),
+    db.from('vehicles').select('*').eq('citizen_id',U.id).order('created_at',{ascending:false}).limit(20),
+    db.from('alerts').select('*').eq('active',true).order('created_at',{ascending:false}).limit(20),
+  ]);
+  const myCases   = r1.data||[];
+  const myAkte    = r2.data?.[0]||null;
+  const myVehicles= r3.data||[];
+  // Fahndungen die MEINEN Namen oder mein Kennzeichen betreffen
+  const allAlerts = r4.data||[];
+  const myAlerts  = allAlerts.filter(f=>{
+    const pn=(f.person_name||'').toLowerCase();
+    const pl=(f.plate||'').toLowerCase();
+    const myName=(U.name||'').toLowerCase();
+    const myPlates=myVehicles.map(v=>(v.plate||'').toLowerCase());
+    return pn===myName||myPlates.includes(pl)||(f.citizen_id&&f.citizen_id===U.id);
+  });
+  const sg={Gering:'bg-g',Mittel:'bg-y',Schwer:'bg-o',Kritisch:'bg-r'};
+  const dashEl=document.getElementById('page-dashboard');
+  if(!dashEl)return;
+  dashEl.innerHTML=`
+    <div class="pg-hd">
+      <div><div class="pg-title">👋 ${U.name}</div><div class="pg-sub">Dein Bürger-Bereich · CopNet Karlsruhe</div></div>
+      <button class="btn b-ghost b-sm" onclick="doLogout()">🚪 Abmelden</button>
+    </div>
+    <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+      <div class="sc ylw"><div class="sc-val">${myCases.length}</div><div class="sc-lbl">Strafanzeigen</div><div class="sc-ico">📋</div></div>
+      <div class="sc blu"><div class="sc-val">${myVehicles.length}</div><div class="sc-lbl">Fahrzeuge</div><div class="sc-ico">🚗</div></div>
+      <div class="sc ${myAlerts.length?'red':'grn'}"><div class="sc-val">${myAlerts.length}</div><div class="sc-lbl">Fahndungen</div><div class="sc-ico">🔍</div></div>
+    </div>
+    ${myAlerts.length?`<div class="card" style="border-color:rgba(244,63,94,.35);margin-bottom:14px">
+      <div class="card-hd"><span class="card-t" style="color:#f87171">⚠️ Aktive Fahndungen gegen dich</span></div>
+      <div class="case-list">${myAlerts.map(f=>`<div class="cc" style="cursor:default;border-color:rgba(244,63,94,.2)">
+        <div class="cc-l gesucht"></div>
+        <div class="cc-b">
+          <div class="cc-top"><span class="badge bg-r">${f.alert_type==='kfz'?'Fahrzeug':'Person'}</span></div>
+          <div class="cc-name">${f.reason||'–'}</div>
+          <div class="cc-sub">${f.notes||''}</div>
+          <div class="cc-meta"><span>👮 ${f.officer_name||'–'}</span><span>📅 ${fmtd(f.created_at)}</span></div>
+        </div>
+      </div>`).join('')}</div>
+    </div>`:''}
+    <div class="g2">
+      <div>
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-hd"><span class="card-t">📋 Strafanzeigen</span></div>
+          <div class="case-list" style="max-height:280px;overflow-y:auto">
+            ${!myCases.length?'<div class="es"><div class="es-ico">✅</div><p>Keine Strafanzeigen</p></div>':
+            myCases.map(a=>`<div class="cc" style="cursor:default">
+              <div class="cc-l ${a.status==='Abgeschlossen'?'geschlossen':'offen'}"></div>
+              <div class="cc-b">
+                <div class="cc-top">
+                  <span class="cc-id">AZ-${a.id.toString().substring(0,8).toUpperCase()}</span>
+                  <span class="badge ${sg[a.severity]||'bg-gray'}">${a.severity||'–'}</span>
+                  <span class="badge bg-gray">${a.status||'Offen'}</span>
+                </div>
+                <div class="cc-name">${(a.description||'').substring(0,70)}${(a.description||'').length>70?'…':''}</div>
+                <div class="cc-meta"><span>👮 ${a.officer_name||'–'}</span><span>📅 ${fmtd(a.created_at)}</span></div>
+              </div>
+            </div>`).join('')}
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><span class="card-t">📁 Meine Akte</span><div style="display:flex;gap:6px">
+            ${myAkte?.share_id?`<button class="btn b-ghost b-sm" onclick="copyShareLink('${myAkte.share_id}')">🔗 Teilen</button>`:''}
+          </div></div>
+          ${!myAkte?'<div class="es"><p>Keine Akte vorhanden</p></div>':`
+          <div style="padding:6px 0">
+            <div style="font-family:var(--fm);color:var(--a3);font-weight:700;font-size:15px">${myAkte.akte_number||'–'}</div>
+            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+              <span class="badge ${myAkte.status==='Aktiv'?'bg-g':'bg-gray'}">${myAkte.status||'–'}</span>
+            </div>
+            ${myAkte.share_id?`<div style="margin-top:10px;padding:8px 10px;background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.15);border-radius:var(--r6);font-size:11px;color:var(--t2)">
+              🔗 Akte teilbar — andere sehen sie schreibgeschützt<br>
+              <span style="font-family:var(--fm);color:var(--a3);font-size:10px;cursor:pointer" onclick="copyShareLink('${myAkte.share_id}')">${location.origin}?akte=${myAkte.share_id}</span>
+            </div>`:''}
+          </div>`}
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-hd"><span class="card-t">🚗 Meine Fahrzeuge</span>
+            <button class="btn b-pri b-sm" onclick="openCitizenFahrzeug()">+ Anmelden</button>
+          </div>
+          ${!myVehicles.length?'<div class="es"><div class="es-ico">🚗</div><p>Noch kein Fahrzeug</p></div>':
+          myVehicles.map(v=>`<div style="background:rgba(20,21,32,.8);border:1px solid var(--border);border-radius:var(--r10);padding:11px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-family:var(--fm);font-weight:700;color:var(--a3)">${v.plate||'–'}</div>
+              <div style="font-size:12px;color:var(--t2);margin-top:2px">${v.make||''} ${v.model||''} ${v.color?'· '+v.color:''}</div>
+            </div>
+            <span class="badge ${v.status==='Gestohlen'?'bg-r':v.status==='Beschlagnahmt'?'bg-o':'bg-g'}">${v.status||'OK'}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px;text-align:center;color:var(--t3);font-size:11px">CopNet Karlsruhe · Nur deine eigenen Daten sind sichtbar</div>`;
+}
+
+// Fahrzeug anmelden Modal für Bürger
+function openCitizenFahrzeug(){
+  // Bürger-Fahrzeug-Modal anzeigen
+  document.getElementById('cit-fz-err').textContent='';
+  ['cit-fz-kz','cit-fz-mk','cit-fz-mod','cit-fz-col'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  om('m-cit-fahrzeug');
+}
+async function saveCitizenFahrzeug(){
+  const kz=(document.getElementById('cit-fz-kz')?.value||'').trim().toUpperCase();
+  const mk=(document.getElementById('cit-fz-mk')?.value||'').trim();
+  const err=document.getElementById('cit-fz-err');
+  if(!kz){err.textContent='Kennzeichen erforderlich.';return;}
+  if(!mk){err.textContent='Marke erforderlich.';return;}
+  err.textContent='';
+  const {error}=await db.from('vehicles').insert([{
+    plate:kz,make:mk,
+    model:(document.getElementById('cit-fz-mod')?.value||'').trim(),
+    color:(document.getElementById('cit-fz-col')?.value||'').trim(),
+    owner_name:U.name,citizen_id:U.id,status:'OK'
+  }]);
+  if(error){err.textContent='Fehler: '+error.message;return;}
+  nt('✅ Fahrzeug angemeldet','ok');
+  cm('m-cit-fahrzeug');
+  loadDashCitizen();
+}
+
+function copyShareLink(shareId){
+  const url=location.origin+'?akte='+shareId;
+  navigator.clipboard.writeText(url).then(()=>nt('🔗 Link kopiert!','ok')).catch(()=>nt('Link: '+url,''));
+}
+
+// Geteilte Akte schreibgeschützt anzeigen (kein Login nötig)
+async function showSharedAkte(shareId){
+  const {data:akte}=await db.from('citizen_akten').select('*').eq('share_id',shareId).maybeSingle();
+  if(!akte){document.getElementById('page-dashboard').innerHTML='<div class="es" style="padding:60px"><div class="es-ico">❌</div><p>Akte nicht gefunden oder Link ungültig</p></div>';return;}
+  const {data:cases}=await db.from('cases').select('*').eq('citizen_id',akte.citizen_id).order('created_at',{ascending:false}).limit(20);
+  const sg={Gering:'bg-g',Mittel:'bg-y',Schwer:'bg-o',Kritisch:'bg-r'};
+  document.getElementById('page-dashboard').innerHTML=`
+    <div style="max-width:600px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:24px;padding:20px;background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.2);border-radius:var(--r14)">
+        <div style="font-size:32px;margin-bottom:8px">📁</div>
+        <div style="font-family:var(--fg);font-size:20px;font-weight:800">${akte.akte_number||'–'}</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:4px;letter-spacing:2px">SCHREIBGESCHÜTZTE ANSICHT</div>
+        <span class="badge bg-a" style="margin-top:8px">Nur lesen</span>
+      </div>
+      <div class="ig" style="margin-bottom:14px">
+        <div class="ii"><div class="ii-l">Name</div><div class="ii-v">${akte.citizen_name||'–'}</div></div>
+        <div class="ii"><div class="ii-l">Status</div><div class="ii-v"><span class="badge ${akte.status==='Aktiv'?'bg-g':'bg-gray'}">${akte.status||'–'}</span></div></div>
+      </div>
+      <div class="slabel">Strafakten (${cases?.length||0})</div>
+      ${!cases?.length?'<div class="es"><p>Keine Strafakten</p></div>':cases.map(a=>`<div style="padding:11px 14px;background:rgba(20,21,32,.8);border:1px solid var(--border);border-radius:var(--r10);margin-bottom:8px">
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
+          <span class="badge ${sg[a.severity]||'bg-gray'}">${a.severity||'–'}</span>
+          <span class="badge bg-gray">${a.status||'–'}</span>
+        </div>
+        <div style="font-weight:600;font-size:13px">${(a.description||'').substring(0,100)}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:4px">${a.officer_name||'–'} · ${fmtd(a.created_at)}</div>
+      </div>`).join('')}
+      <div style="margin-top:16px;text-align:center"><button class="btn b-ghost b-sm" onclick="window.history.replaceState({},'','/');location.reload()">← Zurück zum Login</button></div>
+    </div>`;
+}
+
+// BOT DM SENDER - calls Vercel API → inserts into bot_queue with service key → bot polls & sends DM
 async function sendBotDM(discordId,type,data){
+  if(!discordId||discordId==='null'||discordId==='undefined'){console.warn('sendBotDM: keine Discord-ID');return false;}
   try{
-    await fetch(BOT_API+'/send-dm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({discord_id:discordId.toString(),type,data})});
-  }catch(e){console.warn('DM send failed',e);}
+    const res=await fetch(BOT_API+'/send-dm',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({discord_id:discordId.toString(),type,data:data||{}})
+    });
+    const result=await res.json();
+    if(!result.ok&&!result.queued){console.error('DM queue Fehler:',result);return false;}
+    return true;
+  }catch(e){console.warn('DM send failed (API nicht erreichbar):',e);return false;}
 }
 
 // UTILS
@@ -936,7 +1155,13 @@ function fmt(d){return d?new Date(d).toLocaleString('de-DE',{day:'2-digit',month
 function fmtd(d){return d?new Date(d).toLocaleDateString('de-DE'):'–'}
 async function log(a,d){try{await db.from('logs').insert([{username:U?.name||'System',action:a,detail:d}]);}catch(e){}}
 
+// Seiten die Bürger NICHT sehen dürfen
+const OFFICER_PAGES=['einsatz','strafanzeigen','akten','buerger','fahrzeuge','team','dienstnummern','usermgmt'];
 function sp(id){
+  // Zugriffsschutz: Bürger darf keine Polizei-Seiten sehen
+  if(U?.type==='citizen'&&OFFICER_PAGES.includes(id)){
+    nt('⚠️ Kein Zugriff','err');return;
+  }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const pg=document.getElementById('page-'+id);if(pg)pg.classList.add('active');
   document.querySelectorAll('.sbi').forEach(i=>i.classList.toggle('act',i.dataset.p===id));
@@ -985,11 +1210,30 @@ function startApp(){
   document.getElementById('u-r').textContent=U.type==='officer'?(U.rank||'Beamter'):'Bürger';
   document.getElementById('u-ava').textContent=U.name.charAt(0).toUpperCase();
   document.getElementById('tb-bdg').textContent=U.type==='officer'?(U.rank||'CopNet'):'Bürger';
+  // Show/hide officer-only / citizen-only nav items
+  document.querySelectorAll('.off-only').forEach(el=>{
+    el.style.display=U.type==='officer'?'':'none';
+  });
+  document.querySelectorAll('.cit-only').forEach(el=>{
+    el.style.display=U.type==='citizen'?'flex':'none';
+  });
+  // Duty toggle only for officers
+  const dpill=document.getElementById('dpill');
+  if(dpill)dpill.style.display=U.type==='officer'?'flex':'none';
   if(U.type==='officer'){
     if(U.status==='on'){const p=document.getElementById('dpill');p.classList.remove('off');p.classList.add('on');document.getElementById('dlbl').textContent='Im Dienst';}
     if(U.level>=8)document.getElementById('sb-mgmt').style.display='flex';
+    loadDash();
+  } else {
+    // Bürger: eigene Seite mit Strafakten, Fahndung, Fahrzeuge
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    const dashPg=document.getElementById('page-dashboard');
+    if(dashPg)dashPg.classList.add('active');
+    loadDashCitizen();
   }
-  loadDash();
+
+
+
 }
 async function doLogout(){
   if(U?.type==='officer'&&U.status==='on')await db.from('officers').update({status:'off'}).eq('id',U.id);
@@ -1009,10 +1253,11 @@ async function toggleDuty(){
 
 // DASHBOARD
 async function loadDash(){
+  if(U?.type==='citizen'){loadDashCitizen();return;}
   const [r1,r2,r3,r4]=await Promise.all([
     db.from('officers').select('id').eq('status','on'),
     db.from('einsatz').select('id').eq('status','Aktiv'),
-    db.from('alerts').select('id').eq('status','Aktiv'),
+    db.from('alerts').select('id').eq('active',true),
     db.from('cases').select('id'),
   ]);
   document.getElementById('s-duty').textContent=r1.data?.length??0;
@@ -1023,8 +1268,8 @@ async function loadDash(){
   document.getElementById('d-einsatz').innerHTML=!ea?.length?'<div class="es"><div class="es-ico">✅</div><p>Keine aktiven Einsätze</p></div>':ea.map(e=>`<div class="cc"><div class="cc-l aktiv"></div><div class="cc-b"><div class="cc-top"><span class="cc-id">E-${e.id.toString().substring(0,6)}</span><span class="badge bg-r">Aktiv</span></div><div class="cc-name">${e.type||'Einsatz'}</div><div class="cc-sub">📍 ${e.location||'–'}</div></div></div>`).join('');
   const {data:od}=await db.from('officers').select('*').eq('status','on').order('name').limit(6);
   document.getElementById('d-team').innerHTML=!od?.length?'<div class="es"><p>Niemand im Dienst</p></div>':`<div class="tgrid" style="grid-template-columns:1fr">${od.map(o=>`<div class="tc on"><div class="tc-ava">${o.name.charAt(0)}</div><div style="flex:1;min-width:0"><div class="tc-n">${o.name}</div><div class="tc-r">${o.rank||'–'}</div><div class="tc-d">${o.dienst}</div></div><span class="badge bg-g">Im Dienst</span></div>`).join('')}</div>`;
-  const {data:fa}=await db.from('alerts').select('*').eq('status','Aktiv').order('created_at',{ascending:false}).limit(4);
-  document.getElementById('d-fahndung').innerHTML=!fa?.length?'<div class="es"><p>Keine aktiven Fahndungen</p></div>':`<div style="display:flex;flex-wrap:wrap;gap:8px">${fa.map(f=>`<div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:var(--r10);padding:10px 14px;flex:1;min-width:180px"><div style="font-weight:700;font-size:13px;font-family:var(--fg)">${f.target_name||'–'}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${f.reason||'–'}</div><div style="margin-top:5px"><span class="badge bg-r">${f.type||'Person'}</span></div></div>`).join('')}</div>`;
+  const {data:fa}=await db.from('alerts').select('*').eq('active',true).order('created_at',{ascending:false}).limit(4);
+  document.getElementById('d-fahndung').innerHTML=!fa?.length?'<div class="es"><p>Keine aktiven Fahndungen</p></div>':`<div style="display:flex;flex-wrap:wrap;gap:8px">${fa.map(f=>`<div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:var(--r10);padding:10px 14px;flex:1;min-width:180px"><div style="font-weight:700;font-size:13px;font-family:var(--fg)">${f.person_name||f.plate||'–'}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${f.reason||'–'}</div><div style="margin-top:5px"><span class="badge bg-r">${f.alert_type==='kfz'?'Fahrzeug':'Person'}</span></div></div>`).join('')}</div>`;
 }
 
 // STRAFANZEIGEN
@@ -1046,11 +1291,15 @@ async function openAnzeige(id){
   document.getElementById('m-sa-t').textContent='Strafanzeige '+a.id.toString().substring(0,8).toUpperCase();
   document.getElementById('m-sa-b').innerHTML=`<div class="ig"><div class="ii"><div class="ii-l">Beschuldigter</div><div class="ii-v" style="font-weight:700">${a.citizen_name||'–'}</div></div><div class="ii"><div class="ii-l">Status</div><div class="ii-v"><span class="badge bg-gray">${a.status||'–'}</span></div></div><div class="ii" style="grid-column:1/-1"><div class="ii-l">Tatvorwurf</div><div class="ii-v" style="font-weight:600">${a.description||'–'}</div></div><div class="ii"><div class="ii-l">Schweregrad</div><div class="ii-v"><span class="badge ${sg[a.severity]||'bg-gray'}">${a.severity||'–'}</span></div></div><div class="ii"><div class="ii-l">Beamter</div><div class="ii-v">${a.officer_name||'–'}</div></div><div class="ii"><div class="ii-l">Discord ID</div><div class="ii-v mono" style="font-size:11px">${a.citizen_discord_id||'–'}</div></div><div class="ii"><div class="ii-l">Datum</div><div class="ii-v mono" style="font-size:11px">${fmt(a.created_at)}</div></div></div>`;
   const f=document.getElementById('m-sa-f');f.innerHTML='';
+  // Share button
+  const sh=document.createElement('button');sh.className='btn b-ghost b-sm';sh.textContent='🔗 Teilen';
+  sh.onclick=()=>{const url=window.location.origin+window.location.pathname+'?akte='+id;navigator.clipboard.writeText(url).then(()=>nt('🔗 Link kopiert!','ok')).catch(()=>nt('Link: '+url,''));};
+  f.appendChild(sh);
   if(U?.type==='officer'&&a.status!=='Abgeschlossen'){
     const b=document.createElement('button');b.className='btn b-grn b-sm';b.textContent='✅ Abschließen';
     b.onclick=async()=>{
       await db.from('cases').update({status:'Abgeschlossen'}).eq('id',id);
-      if(a.citizen_discord_id)await sendBotDM(a.citizen_discord_id,'anzeige_status',{name:a.citizen_name,status:'Abgeschlossen',tatvorwurf:a.description,beamter:U.name});
+      if(a.citizen_discord_id){await sendBotDM(a.citizen_discord_id,'anzeige_status',{name:a.citizen_name,status:'Abgeschlossen',tatvorwurf:a.description,beamter:U.name});}
       cm('m-anzeige');loadAnzeigen();nt('Anzeige abgeschlossen','ok');
     };
     f.appendChild(b);
@@ -1066,15 +1315,18 @@ async function saveAnzeige(){
   if(!n){err.textContent='Name erforderlich.';return;}
   if(!tv){err.textContent='Tatvorwurf erforderlich.';return;}
   err.textContent='';
-  const {data,error}=await db.from('cases').insert([{
+  const casePayload={
+    case_number:'SA-'+Date.now()+'-'+Math.floor(Math.random()*1000),
     citizen_name:n,
     description:tv+(document.getElementById('nsa-desc').value.trim()?'\n\n'+document.getElementById('nsa-desc').value.trim():''),
     status:document.getElementById('nsa-s').value,
     severity:document.getElementById('nsa-sg').value,
     officer_name:U?.name,
     citizen_id:_anzCid?.id||null,
-    citizen_discord_id:_anzCid?.discord_id||null
-  }]).select().single();
+  };
+  // Only add citizen_discord_id if citizen has discord linked
+  if(_anzCid?.discord_id)casePayload.citizen_discord_id=_anzCid.discord_id;
+  const {data,error}=await db.from('cases').insert([casePayload]).select().single();
   if(error){err.textContent='Fehler: '+error.message;return;}
   // Send DM to citizen
   if(_anzCid?.discord_id){
@@ -1101,6 +1353,10 @@ async function openAkte(id){
   document.getElementById('m-a-t').textContent='Akte '+a.id.toString().substring(0,8).toUpperCase();
   document.getElementById('m-a-b').innerHTML=`<div class="ig"><div class="ii"><div class="ii-l">Beschuldigter</div><div class="ii-v" style="font-weight:700">${a.citizen_name||'–'}</div></div><div class="ii"><div class="ii-l">Status</div><div class="ii-v"><span class="badge bg-gray">${a.status||'–'}</span></div></div><div class="ii" style="grid-column:1/-1"><div class="ii-l">Tatvorwurf</div><div class="ii-v" style="font-weight:600">${a.description||'–'}</div></div><div class="ii"><div class="ii-l">Schweregrad</div><div class="ii-v"><span class="badge ${sg[a.severity]||'bg-gray'}">${a.severity||'–'}</span></div></div><div class="ii"><div class="ii-l">Beamter</div><div class="ii-v">${a.officer_name||'–'}</div></div><div class="ii"><div class="ii-l">Datum</div><div class="ii-v mono" style="font-size:11px">${fmt(a.created_at)}</div></div></div>`;
   const f=document.getElementById('m-a-f');f.innerHTML='';
+  // Share button
+  const sh=document.createElement('button');sh.className='btn b-ghost b-sm';sh.textContent='🔗 Teilen';
+  sh.onclick=()=>{const url=window.location.origin+window.location.pathname+'?akte='+id;navigator.clipboard.writeText(url).then(()=>nt('🔗 Link kopiert!','ok')).catch(()=>nt('Link: '+url,''));};
+  f.appendChild(sh);
   if(U?.type==='officer'&&a.status!=='Abgeschlossen'){const b=document.createElement('button');b.className='btn b-grn b-sm';b.textContent='✅ Abschließen';b.onclick=async()=>{await db.from('cases').update({status:'Abgeschlossen'}).eq('id',id);cm('m-akte');loadAkten();nt('Akte abgeschlossen','ok');};f.appendChild(b);}
   const cl=document.createElement('button');cl.className='btn b-ghost b-sm';cl.textContent='Schließen';cl.onclick=()=>cm('m-akte');f.appendChild(cl);
   om('m-akte');
@@ -1121,7 +1377,7 @@ async function saveAkte(){
   if(!n){err.textContent='Name erforderlich.';return;}
   if(!tv){err.textContent='Tatvorwurf erforderlich.';return;}
   err.textContent='';
-  const {error}=await db.from('cases').insert([{citizen_name:n,description:tv+'\n\n'+document.getElementById('na-desc').value.trim(),status:document.getElementById('na-s').value,severity:document.getElementById('na-sg').value,officer_name:U?.name,citizen_id:_cid||null}]);
+  const {error}=await db.from('cases').insert([{case_number:'AK-'+Date.now()+'-'+Math.floor(Math.random()*1000),citizen_name:n,description:tv+'\n\n'+document.getElementById('na-desc').value.trim(),status:document.getElementById('na-s').value,severity:document.getElementById('na-sg').value,officer_name:U?.name,citizen_id:_cid||null}]);
   if(error){err.textContent='Fehler: '+error.message;return;}
   nt('✅ Akte angelegt','ok');cm('m-new-akte');loadAkten();_cid=null;
 }
@@ -1214,20 +1470,20 @@ async function editFahrzeug(id){const {data:v}=await db.from('vehicles').select(
 
 // FAHNDUNG
 async function loadFahndung(){
-  const {data}=await db.from('alerts').select('*').order('created_at',{ascending:false}).limit(80);
+  const {data}=await db.from('alerts').select('*').eq('active',true).order('created_at',{ascending:false}).limit(80);
   const el=document.getElementById('fahn-list');
   if(!data?.length){el.innerHTML='<div class="es"><div class="es-ico">🔍</div><p>Keine Fahndungen</p></div>';return;}
-  el.innerHTML=data.map(f=>`<div class="cc"><div class="cc-l ${f.status==='Aktiv'?'gesucht':'geschlossen'}"></div><div class="cc-b"><div class="cc-top"><span class="badge ${f.status==='Aktiv'?'bg-r':'bg-gray'}">${f.status||'Aktiv'}</span><span class="badge ${f.type==='Fahrzeug'?'bg-a':'bg-p'}">${f.type||'Person'}</span></div><div class="cc-name">${f.target_name||'–'}</div><div class="cc-sub">${f.reason||'–'}</div><div class="cc-meta"><span>👮 ${f.officer_name||'–'}</span><span>📅 ${fmtd(f.created_at)}</span></div></div><div class="cc-r">${f.status==='Aktiv'&&U?.type==='officer'?`<button class="btn b-grn b-sm" onclick="closeFahndung('${f.id}')">✅</button>`:''}</div></div>`).join('');
+  el.innerHTML=data.map(f=>`<div class="cc"><div class="cc-l ${f.active?'gesucht':'geschlossen'}"></div><div class="cc-b"><div class="cc-top"><span class="badge ${f.active?'bg-r':'bg-gray'}">${f.active?'Aktiv':'Erledigt'}</span><span class="badge ${f.alert_type==='kfz'?'bg-a':'bg-p'}">${f.alert_type==='kfz'?'Fahrzeug':'Person'}</span></div><div class="cc-name">${f.person_name||f.plate||'–'}</div><div class="cc-sub">${f.reason||'–'}</div><div class="cc-meta"><span>👮 ${f.officer_name||'–'}</span><span>📅 ${fmtd(f.created_at)}</span></div></div><div class="cc-r">${f.active&&U?.type==='officer'?`<button class="btn b-grn b-sm" onclick="closeFahndung('${f.id}')">✅</button>`:''}</div></div>`).join('');
 }
 function openNewFahndung(){['fh-typ','fh-n','fh-g','fh-d'].forEach(i=>document.getElementById(i).value='');document.getElementById('fh-err').textContent='';om('m-fahndung');}
 async function saveFahndung(){
   const n=document.getElementById('fh-n').value.trim(),g=document.getElementById('fh-g').value.trim();
   const err=document.getElementById('fh-err');
   if(!n||!g){err.textContent='Name und Grund erforderlich.';return;}err.textContent='';
-  await db.from('alerts').insert([{target_name:n,reason:g,description:document.getElementById('fh-d').value.trim(),type:document.getElementById('fh-typ').value,status:'Aktiv',officer_name:U?.name}]);
+  await db.from('alerts').insert([{person_name:n,reason:g,notes:document.getElementById('fh-d').value.trim(),alert_type:document.getElementById('fh-typ').value==='Fahrzeug'?'kfz':'person',active:true,officer_name:U?.name}]);
   nt('🔍 Fahndung ausgeschrieben','ok');cm('m-fahndung');loadFahndung();
 }
-async function closeFahndung(id){await db.from('alerts').update({status:'Erledigt'}).eq('id',id);nt('Fahndung abgeschlossen','ok');loadFahndung();}
+async function closeFahndung(id){await db.from('alerts').update({active:false}).eq('id',id);nt('Fahndung abgeschlossen','ok');loadFahndung();}
 
 // TEAM
 async function loadTeam(){
@@ -1241,10 +1497,15 @@ async function loadTeam(){
 let _allDN=[];
 async function loadDienstnummern(){
   try{
-    const res=await fetch(BOT_API+'/dienstnummern');
-    const dn=await res.json();
-    Object.assign(_dnLoaded,dn);
-  }catch(e){}
+    const {data:offList}=await db.from('officers').select('dienst,name,discord_id,discord_tag,created_at').eq('abteilung','polizei').order('dienst');
+    if(offList){
+      offList.forEach(o=>{
+        if(o.dienst&&o.dienst!=='–'){
+          _dnLoaded[o.dienst]={username:o.name,user_id:o.discord_id||'',vergeben_am:o.created_at,vergeben_von:'System'};
+        }
+      });
+    }
+  }catch(e){console.warn('DN Supabase load failed',e);}
   // Generate full list 001-120
   const all=[];
   for(let i=1;i<=120;i++){
