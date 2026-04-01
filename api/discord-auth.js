@@ -11,26 +11,45 @@ export default async function handler(req, res) {
 
   const CLIENT_ID     = '1458870244365041849';
   const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET || 'HMfl6irSfmiX_rMS001VN0cHwhJfksqo';
-  const GUILD_ID      = process.env.GUILD_ID || '1421878116271251558';
+  const GUILD_ID      = '1421878116271251558';
   const REDIRECT_URI  = 'https://copnet-rho.vercel.app/';
 
+  // DEBUG: Zeige was wir an Discord schicken
+  console.log('=== discord-auth debug ===');
+  console.log('code length:', code?.length);
+  console.log('redirect_uri:', REDIRECT_URI);
+  console.log('client_id:', CLIENT_ID);
+  console.log('client_secret set:', !!CLIENT_SECRET, '| length:', CLIENT_SECRET?.length);
+
   try {
-    const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id:     CLIENT_ID,
-        client_secret: CLIENT_SECRET,
-        grant_type:    'authorization_code',
-        code,
-        redirect_uri:  REDIRECT_URI,
-      }),
+    const params = new URLSearchParams({
+      client_id:     CLIENT_ID,
+      client_secret: CLIENT_SECRET,
+      grant_type:    'authorization_code',
+      code,
+      redirect_uri:  REDIRECT_URI,
     });
 
-    const tokenData = await tokenRes.json();
+    console.log('token body:', params.toString().replace(CLIENT_SECRET, '***'));
+
+    const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body:    params,
+    });
+
+    const raw = await tokenRes.text();
+    console.log('discord token response status:', tokenRes.status);
+    console.log('discord token response body:', raw);
+
+    let tokenData;
+    try { tokenData = JSON.parse(raw); } catch { tokenData = { raw }; }
+
     if (!tokenData.access_token) {
-      console.error('Token exchange failed:', JSON.stringify(tokenData));
-      return res.status(400).json({ error: 'Token exchange failed', detail: tokenData });
+      return res.status(400).json({
+        error:  'Token exchange failed',
+        detail: tokenData,   // <-- das zeigt dir im Browser den echten Discord Fehlercode
+      });
     }
 
     const accessToken = tokenData.access_token;
@@ -50,18 +69,20 @@ export default async function handler(req, res) {
       );
       if (memberRes.ok) {
         const m = await memberRes.json();
-        roles = m.roles || [];
+        roles       = m.roles || [];
         if (m.nick) displayName = m.nick;
       }
     } catch (e) {
-      console.warn('Guild member fetch failed:', e.message);
+      console.warn('guild member fetch failed:', e.message);
     }
 
     return res.status(200).json({
-      discord_id:    user.id,
-      username:      displayName || user.username,
-      avatar:        user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : null,
-      email:         user.email || null,
+      discord_id:   user.id,
+      username:     displayName || user.username,
+      avatar:       user.avatar
+        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+        : null,
+      email:        user.email || null,
       roles,
     });
 
