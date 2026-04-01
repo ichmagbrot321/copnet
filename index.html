@@ -349,6 +349,7 @@ tr:hover td{background:rgba(14,165,233,.03)}
       <div class="sb-sec off-only">Personal</div>
       <button class="sbi off-only" onclick="sp('team')" data-p="team"><span class="ico">👮</span><span class="lbl">Team</span></button>
       <button class="sbi off-only" onclick="sp('dienstnummern')" data-p="dienstnummern"><span class="ico">🪪</span><span class="lbl">Dienstnummern</span></button>
+      <button class="sbi off-only" id="sb-personalakten" onclick="sp('personalakten')" data-p="personalakten" style="display:none"><span class="ico">📂</span><span class="lbl">Personalakten</span></button>
       <button class="sbi off-only" id="sb-mgmt" onclick="sp('usermgmt')" data-p="usermgmt" style="display:none"><span class="ico">⚙️</span><span class="lbl">Nutzerverwaltung</span></button>
       <div class="sb-bot">
         <button class="sbi" onclick="sp('profil')" data-p="profil"><span class="ico">👤</span><span class="lbl">Mein Profil</span></button>
@@ -498,6 +499,20 @@ tr:hover td{background:rgba(14,165,233,.03)}
           </div>
         </div>
 
+        <!-- PERSONALAKTEN -->
+        <div class="page" id="page-personalakten">
+          <div class="pg-hd">
+            <div><div class="pg-title">Personalakten</div><div class="pg-sub">Beamten-Akten · Einträge · Beförderungen · Verwarnungen</div></div>
+          </div>
+          <div class="card" style="padding:12px;margin-bottom:12px">
+            <input id="pa-search" placeholder="🔍 Beamten suchen (Name, Dienstnummer…)" onkeyup="loadPersonalakten()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;width:100%;font-family:var(--f);outline:none">
+          </div>
+          <div class="tbl-wrap">
+            <table><thead><tr><th>Name</th><th>Dienst-Nr</th><th>Rang</th><th>Einträge</th><th>Status</th><th></th></tr></thead>
+            <tbody id="pa-tb"></tbody></table>
+          </div>
+        </div>
+
         <!-- PROFIL -->
         <div class="page" id="page-profil">
           <div class="pg-hd"><div><div class="pg-title">Mein Profil</div></div></div>
@@ -558,6 +573,63 @@ tr:hover td{background:rgba(14,165,233,.03)}
 <div class="mbg" id="m-share"><div class="modal lg">
   <div class="mhd"><h3 id="m-share-t">Akte</h3><button class="mcl" onclick="cm('m-share');window.history.replaceState({},'','/')">✕</button></div>
   <div class="mbody" id="m-share-b"></div>
+</div></div>
+
+<!-- PERSONALAKTE MODAL -->
+<div class="mbg" id="m-personalakte"><div class="modal lg">
+  <div class="mhd"><h3 id="m-pa-t">Personalakte</h3><button class="mcl" onclick="cm('m-personalakte')">✕</button></div>
+  <div class="mbody" id="m-pa-b"></div>
+</div></div>
+
+<!-- NEUER PERSONALAKTEN-EINTRAG MODAL -->
+<div class="mbg" id="m-pa-neintrag"><div class="modal">
+  <div class="mhd"><h3>Personalakten-Eintrag</h3><button class="mcl" onclick="cm('m-pa-neintrag')">✕</button></div>
+  <div class="mbody">
+    <div style="background:rgba(14,165,233,.05);border:1px solid rgba(14,165,233,.15);border-radius:var(--r10);padding:11px;margin-bottom:14px;font-size:12px;color:var(--t2)">
+      📨 <b style="color:var(--a3)">Automatisch:</b> Beamter erhält Discord-DM über den Eintrag.
+    </div>
+    <div class="fg"><label>Typ</label>
+      <select id="pa-typ">
+        <option value="Beförderung">⬆️ Beförderung</option>
+        <option value="Verwarnung">⚠️ Verwarnung</option>
+        <option value="Lob">🌟 Lob / Auszeichnung</option>
+        <option value="Suspendierung">🔒 Suspendierung</option>
+        <option value="Versetzung">🔄 Versetzung</option>
+        <option value="Abmahnung">📋 Abmahnung</option>
+        <option value="Kündigung">❌ Kündigung</option>
+        <option value="Notiz">📝 Interne Notiz</option>
+      </select>
+    </div>
+    <div class="fg"><label>Betreff *</label><input id="pa-betreff" placeholder="z.B. Beförderung zum Polizeikommissar, Verwarnung wegen…"></div>
+    <div class="fg"><label>Details / Begründung</label><textarea id="pa-details" placeholder="Ausführliche Begründung oder Beschreibung…"></textarea></div>
+    <div class="frow">
+      <div class="fg"><label>Neuer Rang (optional)</label>
+        <select id="pa-rang">
+          <option value="">– kein Rangwechsel –</option>
+          <option>Streifenpolizist</option>
+          <option>Polizeimeister</option>
+          <option>Polizeihauptmeister</option>
+          <option>Polizeikommissar</option>
+          <option>Polizeihauptkommissar</option>
+          <option>Polizeioberkommissar</option>
+          <option>Kriminalkommissar</option>
+          <option>Vize Chef</option>
+          <option>Polizei Chef</option>
+        </select>
+      </div>
+      <div class="fg"><label>Sichtbarkeit</label>
+        <select id="pa-sicht">
+          <option value="intern">🔒 Nur Führung (intern)</option>
+          <option value="beamter">👮 Beamter sieht es</option>
+        </select>
+      </div>
+    </div>
+    <input type="hidden" id="pa-oid">
+    <input type="hidden" id="pa-oname">
+    <input type="hidden" id="pa-odisc">
+    <div id="pa-err" style="color:var(--red);font-size:12px;min-height:14px;margin-bottom:4px"></div>
+  </div>
+  <div class="mfoot"><button class="btn b-pri" onclick="savePersonalEintrag()">💾 Eintrag speichern</button><button class="btn b-ghost" onclick="cm('m-pa-neintrag')">Abbrechen</button></div>
 </div></div>
 
 <!-- STRAFANZEIGE MODAL (detail) -->
@@ -951,7 +1023,10 @@ function startApp(){
 
   if(U.type==='officer'){
     if(U.status==='on'){const p=document.getElementById('dpill');p.classList.remove('off');p.classList.add('on');document.getElementById('dlbl').textContent='Im Dienst';}
-    if((U.level||1)>=8)document.getElementById('sb-mgmt').style.display='flex';
+    if((U.level||1)>=8){
+      document.getElementById('sb-mgmt').style.display='flex';
+      document.getElementById('sb-personalakten').style.display='flex';
+    }
     // Sidebar aktiver Eintrag
     document.querySelectorAll('.sbi').forEach(i=>i.classList.toggle('act',i.dataset.p==='dashboard'));
     loadDash();
@@ -995,7 +1070,7 @@ function sp(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const pg=document.getElementById('page-'+id);if(pg)pg.classList.add('active');
   document.querySelectorAll('.sbi').forEach(i=>i.classList.toggle('act',i.dataset.p===id));
-  const t={dashboard:'Lagebild',einsatz:'Einsatz',strafanzeigen:'Strafanzeigen',buerger:'Bürgerdatenbank',fahrzeuge:'Fahrzeugregister',fahndung:'Fahndung',team:'Team',dienstnummern:'Dienstnummern',usermgmt:'Nutzerverwaltung',profil:'Mein Profil'};
+  const t={dashboard:'Lagebild',einsatz:'Einsatz',strafanzeigen:'Strafanzeigen',buerger:'Bürgerdatenbank',fahrzeuge:'Fahrzeugregister',fahndung:'Fahndung',team:'Team',dienstnummern:'Dienstnummern',personalakten:'Personalakten',usermgmt:'Nutzerverwaltung',profil:'Mein Profil'};
   document.getElementById('tb-pg').textContent=t[id]||id;
   if(id==='dashboard')loadDash();
   else if(id==='einsatz')loadEinsatz();
@@ -1005,6 +1080,7 @@ function sp(id){
   else if(id==='fahndung')loadFahndung();
   else if(id==='team')loadTeam();
   else if(id==='dienstnummern')loadDienstnummern();
+  else if(id==='personalakten')loadPersonalakten();
   else if(id==='usermgmt')loadUsers();
   else if(id==='profil')loadProfil();
 }
@@ -1575,6 +1651,184 @@ function renderDN(){
     <td style="font-size:12px;color:var(--t2)">${info?info.vergeben_von:'–'}</td>
     <td><span class="badge ${info?'bg-g':'bg-gray'}">${info?'Belegt':'Frei'}</span></td>
   </tr>`).join('');
+}
+
+// ═══ PERSONALAKTEN ════════════════════════════════════════════
+async function loadPersonalakten(){
+  const s=(document.getElementById('pa-search')?.value||'').toLowerCase();
+  let {data}=await db.from('officers').select('*').order('level',{ascending:false});
+  if(s&&data)data=data.filter(o=>(o.name||'').toLowerCase().includes(s)||(o.dienst||'').toLowerCase().includes(s));
+  const tb=document.getElementById('pa-tb');
+  if(!data?.length){tb.innerHTML='<tr><td colspan="6"><div class="es"><p>Keine Beamten</p></div></td></tr>';return;}
+
+  // Eintragsanzahl laden
+  const {data:counts}=await db.from('officer_akten_eintraege').select('officer_id');
+  const cmap={};(counts||[]).forEach(r=>{cmap[r.officer_id]=(cmap[r.officer_id]||0)+1;});
+
+  tb.innerHTML=data.map(o=>`<tr>
+    <td style="font-weight:600;display:flex;align-items:center;gap:8px">
+      <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">${o.name.charAt(0)}</div>
+      ${o.name}
+    </td>
+    <td class="mono">${o.dienst||'–'}</td>
+    <td>${o.rank||'–'}</td>
+    <td class="mono">${cmap[o.id]||0}</td>
+    <td><span class="badge ${o.suspended?'bg-r':o.status==='on'?'bg-g':'bg-gray'}">${o.suspended?'Gesperrt':o.status==='on'?'Im Dienst':'Aktiv'}</span></td>
+    <td><button class="btn b-ghost b-sm" onclick="openPersonalakte('${o.id}')">Akte →</button></td>
+  </tr>`).join('');
+}
+
+async function openPersonalakte(id){
+  const {data:o}=await db.from('officers').select('*').eq('id',id).single();
+  if(!o)return;
+
+  const isChef=(U?.level||1)>=8;
+  const {data:eintraege}=await db.from('officer_akten_eintraege').select('*')
+    .eq('officer_id',id)
+    .order('created_at',{ascending:false})
+    .limit(50);
+
+  // Nur sichtbare Einträge (intern nur für Chef)
+  const sichtbare=isChef?eintraege:(eintraege||[]).filter(e=>e.sichtbarkeit==='beamter');
+
+  const typIcon={Beförderung:'⬆️',Verwarnung:'⚠️',Lob:'🌟',Suspendierung:'🔒',Versetzung:'🔄',Abmahnung:'📋',Kündigung:'❌',Notiz:'📝'};
+  const typColor={Beförderung:'bg-g',Verwarnung:'bg-y',Lob:'bg-g',Suspendierung:'bg-r',Versetzung:'bg-a',Abmahnung:'bg-o',Kündigung:'bg-r',Notiz:'bg-gray'};
+
+  // Statistiken
+  const befs=(eintraege||[]).filter(e=>e.typ==='Beförderung').length;
+  const warns=(eintraege||[]).filter(e=>e.typ==='Verwarnung'||e.typ==='Abmahnung').length;
+  const lobs=(eintraege||[]).filter(e=>e.typ==='Lob').length;
+
+  document.getElementById('m-pa-t').textContent='Personalakte · '+o.name;
+  document.getElementById('m-pa-b').innerHTML=`
+    <!-- HERO -->
+    <div style="background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(14,165,233,.04));border:1px solid var(--border2);border-radius:var(--r14);padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.1),transparent 70%)"></div>
+      <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 0 20px rgba(14,165,233,.3)">${o.name.charAt(0)}</div>
+      <div style="flex:1">
+        <div style="font-family:var(--fg);font-size:18px;font-weight:800">${o.name}</div>
+        <div style="font-size:13px;color:var(--a3);margin-top:2px">${o.rank||'–'} · ${o.dienst||'–'}</div>
+        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+          <span class="badge bg-gray">Lv${o.level||1}</span>
+          <span class="badge ${o.suspended?'bg-r':o.status==='on'?'bg-g':'bg-gray'}">${o.suspended?'Gesperrt':o.status==='on'?'Im Dienst':'Aktiv'}</span>
+          ${o.discord_id?'<span class="badge bg-p">🔗 Discord</span>':''}
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+      <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:var(--r10);padding:12px;text-align:center">
+        <div style="font-size:24px;font-weight:800;font-family:var(--fg);color:#34d399">${befs}</div>
+        <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Beförderungen</div>
+      </div>
+      <div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:var(--r10);padding:12px;text-align:center">
+        <div style="font-size:24px;font-weight:800;font-family:var(--fg);color:#fbbf24">${warns}</div>
+        <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Verwarnungen</div>
+      </div>
+      <div style="background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.2);border-radius:var(--r10);padding:12px;text-align:center">
+        <div style="font-size:24px;font-weight:800;font-family:var(--fg);color:var(--a3)">${lobs}</div>
+        <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Auszeichnungen</div>
+      </div>
+    </div>
+
+    <!-- INFO -->
+    <div class="ig" style="margin-bottom:14px">
+      <div class="ii"><div class="ii-l">Discord ID</div><div class="ii-v mono" style="font-size:11px">${o.discord_id||'–'}</div></div>
+      <div class="ii"><div class="ii-l">Discord Tag</div><div class="ii-v">${o.discord_tag||'–'}</div></div>
+      <div class="ii"><div class="ii-l">Abteilung</div><div class="ii-v">${o.abteilung||'Polizei'}</div></div>
+      <div class="ii"><div class="ii-l">Einträge gesamt</div><div class="ii-v">${(eintraege||[]).length}</div></div>
+    </div>
+
+    ${isChef?`
+    <!-- AKTIONEN (nur Chef) -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:rgba(14,165,233,.04);border:1px solid var(--border);border-radius:var(--r10)">
+      <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;width:100%;margin-bottom:4px">Führungs-Aktionen</div>
+      <button class="btn b-pri b-sm" onclick="openPersonalEintrag('${o.id}','${o.name.replace(/'/g,"\'")}','${o.discord_id||''}')">+ Eintrag hinzufügen</button>
+      <button class="btn b-ghost b-sm" onclick="cm('m-personalakte');openMod('${o.id}','${o.name.replace(/'/g,"\'")}','${o.discord_id||''}')">📨 DM senden</button>
+      <button class="btn b-ghost b-sm" onclick="cm('m-personalakte');openEditUser(${JSON.stringify(o).replace(/"/g,'&quot;')})">✏️ Bearbeiten</button>
+      ${o.id!==U?.id?`<button class="btn b-danger b-sm" onclick="cm('m-personalakte');delUser('${o.id}','${o.name.replace(/'/g,"\'")}','${o.discord_id||''}')">🗑 Löschen</button>`:''}
+    </div>`:''}
+
+    <!-- EINTRÄGE -->
+    <div class="slabel">Akteneinträge (${sichtbare?.length||0}${isChef&&(eintraege?.length||0)>(sichtbare?.length||0)?' · inkl. intern':''})</div>
+    <div class="case-list" style="max-height:380px;overflow-y:auto">
+    ${!sichtbare?.length?'<div class="es"><div class="es-ico">📂</div><p>Keine Einträge vorhanden</p></div>':sichtbare.map(e=>`
+      <div class="cc" style="cursor:default">
+        <div class="cc-l ${e.typ==='Beförderung'||e.typ==='Lob'?'geschlossen':e.typ==='Verwarnung'||e.typ==='Abmahnung'||e.typ==='Suspendierung'||e.typ==='Kündigung'?'gesucht':'offen'}"></div>
+        <div class="cc-b">
+          <div class="cc-top">
+            <span class="badge ${typColor[e.typ]||'bg-gray'}">${typIcon[e.typ]||'📝'} ${e.typ||'–'}</span>
+            ${e.sichtbarkeit==='intern'?'<span class="badge bg-gray" style="font-size:9px">🔒 intern</span>':''}
+          </div>
+          <div class="cc-name">${e.betreff||'–'}</div>
+          <div class="cc-sub">${(e.details||'').substring(0,80)}${(e.details?.length||0)>80?'…':''}</div>
+          <div class="cc-meta">
+            <span>👮 ${e.erstellt_von||'–'}</span>
+            <span>📅 ${fmtd(e.created_at)}</span>
+            ${e.neuer_rang?`<span>⬆️ → ${e.neuer_rang}</span>`:''}
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>`;
+
+  om('m-personalakte');
+}
+
+function openPersonalEintrag(oid,oname,odisc){
+  document.getElementById('pa-oid').value=oid;
+  document.getElementById('pa-oname').value=oname;
+  document.getElementById('pa-odisc').value=odisc||'';
+  ['pa-betreff','pa-details'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('pa-rang').value='';
+  document.getElementById('pa-sicht').value='intern';
+  document.getElementById('pa-err').textContent='';
+  om('m-pa-neintrag');
+}
+
+async function savePersonalEintrag(){
+  const oid=document.getElementById('pa-oid').value;
+  const oname=document.getElementById('pa-oname').value;
+  const odisc=document.getElementById('pa-odisc').value;
+  const betreff=document.getElementById('pa-betreff').value.trim();
+  const err=document.getElementById('pa-err');
+  if(!betreff){err.textContent='Betreff erforderlich.';return;}
+  err.textContent='';
+
+  const typ=document.getElementById('pa-typ').value;
+  const neuerRang=document.getElementById('pa-rang').value;
+  const sichtbarkeit=document.getElementById('pa-sicht').value;
+
+  const payload={
+    officer_id:oid,
+    officer_name:oname,
+    erstellt_von:U?.name,
+    typ,
+    betreff,
+    details:document.getElementById('pa-details').value.trim(),
+    neuer_rang:neuerRang||null,
+    sichtbarkeit,
+  };
+
+  const {error}=await db.from('officer_akten_eintraege').insert([payload]);
+  if(error){err.textContent='Fehler: '+error.message;return;}
+
+  // Rang updaten wenn angegeben
+  if(neuerRang){
+    const rangLevel={Streifenpolizist:1,Polizeimeister:2,Polizeihauptmeister:3,Polizeikommissar:4,Polizeihauptkommissar:5,Polizeioberkommissar:6,Kriminalkommissar:7,'Vize Chef':9,'Polizei Chef':10};
+    await db.from('officers').update({rank:neuerRang,level:rangLevel[neuerRang]||1}).eq('id',oid);
+  }
+
+  // DM senden wenn Sichtbarkeit = beamter
+  if(odisc&&sichtbarkeit==='beamter'){
+    await sendBotDM(odisc,'personalakte_eintrag',{name:oname,typ,betreff,details:payload.details,von:U?.name,neuerRang:neuerRang||null});
+  }
+
+  nt('✅ Eintrag gespeichert'+(odisc&&sichtbarkeit==='beamter'?' · DM gesendet 📨':''),'ok');
+  await log('PERSONALAKTE',oname+': '+typ+' – '+betreff);
+  cm('m-pa-neintrag');
+  // Personalakte neu laden
+  openPersonalakte(oid);
 }
 
 // ═══ NUTZERVERWALTUNG ══════════════════════════════════════════
