@@ -768,7 +768,8 @@ async function handleStartup(){
   try{
     const res=await fetch(BOT_API+'/discord-auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,redirect_uri:REDIRECT_URI})});
     const data=await res.json();
-    if(!data.discord_id)throw new Error(data.error||'Auth fehlgeschlagen');
+    console.error('discord-auth response:', JSON.stringify(data));
+    if(!data.discord_id)throw new Error((data.detail?.error||data.error||'Auth fehlgeschlagen')+' | '+JSON.stringify(data.detail||''));
     showBoot('IDENTITÄT BESTÄTIGT…',95);
 
     if(state==='officer'){
