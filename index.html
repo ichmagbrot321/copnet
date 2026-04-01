@@ -608,12 +608,22 @@ tr:hover td{background:rgba(14,165,233,.03)}
 <div class="mbg" id="m-fahndung"><div class="modal">
   <div class="mhd"><h3>Fahndung ausschreiben</h3><button class="mcl" onclick="cm('m-fahndung')">✕</button></div>
   <div class="mbody">
-    <div class="frow">
-      <div class="fg"><label>Typ</label><select id="fh-typ"><option>Person</option><option>Fahrzeug</option></select></div>
-      <div class="fg"><label>Name / Kennzeichen *</label><input id="fh-n" placeholder="Name oder KFZ-Kennzeichen"></div>
+    <div class="fg"><label>Typ</label><select id="fh-typ" onchange="toggleFahndungTyp()"><option value="person">👤 Person</option><option value="kfz">🚗 Fahrzeug</option></select></div>
+    <!-- Person Suche -->
+    <div id="fh-person-wrap">
+      <div class="ac-wrap fg"><label>Bürger suchen (Discord / Roblox / Name)</label>
+        <input id="fh-bs" placeholder="Name, Discord-Tag oder Roblox suchen…" oninput="acSearchFahndung()" autocomplete="off">
+        <div class="ac-drop" id="fh-drop"></div>
+      </div>
+      <div class="fg"><label>Name *</label><input id="fh-n" placeholder="Vollständiger Name des Gesuchten"></div>
+    </div>
+    <!-- KFZ -->
+    <div id="fh-kfz-wrap" style="display:none">
+      <div class="fg"><label>Kennzeichen *</label><input id="fh-plate" placeholder="z.B. KA-XY 1234" style="text-transform:uppercase"></div>
     </div>
     <div class="fg"><label>Grund *</label><input id="fh-g" placeholder="z.B. Verdacht auf Raub, gestohlenes KFZ…"></div>
-    <div class="fg"><label>Beschreibung</label><textarea id="fh-d" style="min-height:70px" placeholder="Personenbeschreibung, Fahrzeugdetails…"></textarea></div>
+    <div class="fg"><label>Beschreibung / Hinweise</label><textarea id="fh-d" style="min-height:70px" placeholder="Personenbeschreibung, Fahrzeugdetails, letzter bekannter Aufenthaltsort…"></textarea></div>
+    <div id="fh-cit-badge" style="display:none;margin-bottom:10px;padding:8px 12px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:var(--r6);font-size:12px;color:#34d399"></div>
     <div id="fh-err" style="color:var(--red);font-size:12px;min-height:14px;margin-bottom:4px"></div>
   </div>
   <div class="mfoot"><button class="btn b-danger" onclick="saveFahndung()">🔍 Fahndung starten</button><button class="btn b-ghost" onclick="cm('m-fahndung')">Abbrechen</button></div>
@@ -702,7 +712,8 @@ const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6I
 const db=supabase.createClient(SB,SK);
 const BOT_API='https://copnet-rho.vercel.app/api';
 const DISCORD_CLIENT='1458870244365041849';
-const REDIRECT_URI=window.location.origin+window.location.pathname;
+// Muss EXAKT mit der Redirect URI in den Discord Developer Portal OAuth2-Einstellungen übereinstimmen
+const REDIRECT_URI='https://copnet-rho.vercel.app/';
 
 // Discord Rollen → Rang-Mapping (Fallback wenn kein Supabase-Eintrag)
 const ROLLEN_MAP={
@@ -840,7 +851,11 @@ async function handleCitizenDiscordLogin(discordData){
   const {data:cit}=await db.from('citizens').select('*').eq('discord_id',discord_id.toString()).maybeSingle();
 
   if(cit){
-    // Schon registriert → einloggen
+    // Share-IDs generieren falls noch nicht vorhanden (alte Accounts)
+    const _upd={};
+    if(!cit.akte_share_id)_upd.akte_share_id=Math.random().toString(36).substr(2,14).toUpperCase();
+    if(!cit.fuehrungszeugnis_share_id)_upd.fuehrungszeugnis_share_id=Math.random().toString(36).substr(2,14).toUpperCase();
+    if(Object.keys(_upd).length){await db.from('citizens').update(_upd).eq('id',cit.id);Object.assign(cit,_upd);}
     U={type:'citizen',...cit};
     hideBoot();startApp();
     nt('Willkommen zurück, '+U.name+'! 👤','ok');
@@ -1448,20 +1463,83 @@ async function saveFahrzeug(){
 async function editFahrzeug(id){const {data:v}=await db.from('vehicles').select('*').eq('id',id).single();if(!v)return;const s=prompt('Status ändern (OK/Gestohlen/Beschlagnahmt):',v.status||'OK');if(!s)return;await db.from('vehicles').update({status:s}).eq('id',id);nt('Status: '+s,'ok');loadFahrzeuge();}
 
 // ═══ FAHNDUNG ══════════════════════════════════════════════════
+let _fahndungCit=null;
+
 async function loadFahndung(){
   const {data}=await db.from('alerts').select('*').eq('active',true).order('created_at',{ascending:false}).limit(80);
   const el=document.getElementById('fahn-list');
   if(!data?.length){el.innerHTML='<div class="es"><div class="es-ico">🔍</div><p>Keine Fahndungen</p></div>';return;}
   el.innerHTML=data.map(f=>`<div class="cc"><div class="cc-l gesucht"></div><div class="cc-b"><div class="cc-top"><span class="badge bg-r">Aktiv</span><span class="badge ${f.alert_type==='kfz'?'bg-a':'bg-p'}">${f.alert_type==='kfz'?'Fahrzeug':'Person'}</span></div><div class="cc-name">${f.person_name||f.plate||'–'}</div><div class="cc-sub">${f.reason||'–'}</div><div class="cc-meta"><span>👮 ${f.officer_name||'–'}</span><span>📅 ${fmtd(f.created_at)}</span></div></div><div class="cc-r"><button class="btn b-grn b-sm" onclick="closeFahndung('${f.id}')">✅</button></div></div>`).join('');
 }
-function openNewFahndung(){['fh-typ','fh-n','fh-g','fh-d'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});document.getElementById('fh-err').textContent='';om('m-fahndung');}
-async function saveFahndung(){
-  const n=document.getElementById('fh-n').value.trim(),g=document.getElementById('fh-g').value.trim();
-  const err=document.getElementById('fh-err');
-  if(!n||!g){err.textContent='Name und Grund erforderlich.';return;}err.textContent='';
-  await db.from('alerts').insert([{person_name:n,reason:g,notes:document.getElementById('fh-d').value.trim(),alert_type:document.getElementById('fh-typ').value==='Fahrzeug'?'kfz':'person',active:true,officer_name:U?.name}]);
-  nt('🔍 Fahndung ausgeschrieben','ok');cm('m-fahndung');loadFahndung();
+
+function openNewFahndung(){
+  _fahndungCit=null;
+  ['fh-bs','fh-n','fh-g','fh-d','fh-plate'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  document.getElementById('fh-err').textContent='';
+  document.getElementById('fh-cit-badge').style.display='none';
+  document.getElementById('fh-drop').style.display='none';
+  document.getElementById('fh-typ').value='person';
+  toggleFahndungTyp();
+  om('m-fahndung');
 }
+
+function toggleFahndungTyp(){
+  const typ=document.getElementById('fh-typ').value;
+  document.getElementById('fh-person-wrap').style.display=typ==='person'?'block':'none';
+  document.getElementById('fh-kfz-wrap').style.display=typ==='kfz'?'block':'none';
+}
+
+async function acSearchFahndung(){
+  const q=(document.getElementById('fh-bs')?.value||'').trim();
+  const dr=document.getElementById('fh-drop');
+  if(q.length<2){dr.style.display='none';return;}
+  const {data}=await db.from('citizens').select('*').or(`name.ilike.%${q}%,discord_tag.ilike.%${q}%,roblox_name.ilike.%${q}%,discord_id.ilike.%${q}%`).limit(7);
+  if(!data?.length){dr.style.display='none';return;}
+  dr.style.display='block';
+  dr.innerHTML=data.map(c=>`<div class="ac-item" onmousedown="event.preventDefault();selectFahndungCit(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+    <strong>${c.name||'–'}</strong>
+    <span>${c.roblox_name?'Roblox: '+c.roblox_name:''} ${c.discord_tag?'· Discord: '+c.discord_tag:''}</span>
+  </div>`).join('');
+}
+
+function selectFahndungCit(c){
+  _fahndungCit=c;
+  document.getElementById('fh-bs').value=c.name;
+  document.getElementById('fh-n').value=c.name;
+  document.getElementById('fh-drop').style.display='none';
+  const badge=document.getElementById('fh-cit-badge');
+  badge.style.display='block';
+  badge.innerHTML=`✅ Bürger verknüpft: <b>${c.name}</b>${c.roblox_name?' · Roblox: '+c.roblox_name:''}${c.discord_id?' · 🔗 Discord':''}`;
+}
+
+async function saveFahndung(){
+  const typ=document.getElementById('fh-typ').value;
+  const g=document.getElementById('fh-g').value.trim();
+  const err=document.getElementById('fh-err');
+  let name='',plate='';
+  if(typ==='person'){
+    name=document.getElementById('fh-n').value.trim();
+    if(!name){err.textContent='Name erforderlich.';return;}
+  }else{
+    plate=(document.getElementById('fh-plate')?.value||'').trim().toUpperCase();
+    if(!plate){err.textContent='Kennzeichen erforderlich.';return;}
+    name=plate;
+  }
+  if(!g){err.textContent='Grund erforderlich.';return;}
+  err.textContent='';
+  await db.from('alerts').insert([{
+    person_name:typ==='person'?name:null,
+    plate:typ==='kfz'?plate:null,
+    reason:g,
+    notes:document.getElementById('fh-d').value.trim(),
+    alert_type:typ,
+    active:true,
+    officer_name:U?.name,
+    citizen_id:_fahndungCit?.id||null
+  }]);
+  nt('🔍 Fahndung ausgeschrieben','ok');cm('m-fahndung');_fahndungCit=null;loadFahndung();
+}
+
 async function closeFahndung(id){await db.from('alerts').update({active:false}).eq('id',id);nt('Fahndung abgeschlossen','ok');loadFahndung();}
 
 // ═══ TEAM ══════════════════════════════════════════════════════
