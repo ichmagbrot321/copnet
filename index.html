@@ -914,7 +914,7 @@ async function completeRegistration(){
 }
 
 function loginDiscord(type){
-  window.location.href=`https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify+email+guilds.members.read&state=${type}`;
+  window.location.href=`https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify+email+guilds+guilds.members.read&state=${type}`;
 }
 
 // ═══ MANUELLER BEAMTEN-LOGIN ═══════════════════════════════════
