@@ -476,7 +476,11 @@ tr:hover td{background:rgba(14,165,233,.03)}
         <!-- DIENSTNUMMERN -->
         <div class="page" id="page-dienstnummern">
           <div class="pg-hd">
-            <div><div class="pg-title">Dienstnummern</div><div class="pg-sub">15/001–15/120 · Belegung aus Supabase</div></div>
+            <div><div class="pg-title">Dienstnummern</div><div class="pg-sub">15/001–15/120 · Belegung aus Supabase · Cog synct automatisch</div></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn b-ghost b-sm" onclick="loadDienstnummern()">🔄 Aktualisieren</button>
+              <button class="btn b-ghost b-sm" onclick="importDNFromOfficers()">📥 Von Officers importieren</button>
+            </div>
           </div>
           <div class="card" style="padding:12px;margin-bottom:12px">
             <input id="dn-search" placeholder="🔍 Dienstnummer oder Username suchen…" onkeyup="renderDN()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;width:100%;font-family:var(--f);outline:none">
@@ -903,22 +907,36 @@ async function handleOfficerDiscordLogin(discordData){
   },{onConflict:'discord_id'}]).select().single();
 
   U={type:'officer',...(officer||{discord_id:discord_id.toString(),discord_tag:username,dienst:dn.nummer,rank,level,name:dn.username||username,status:'off'})};
+
+  // Dienstnummer in Supabase aktuell halten (username, rank, level sync)
+  try{
+    await db.from('dienstnummern').update({
+      username:U.name,
+      rank:U.rank,
+      level:U.level
+    }).eq('nummer',dn.nummer);
+  }catch(e){console.warn('DN sync failed:',e);}
+
   hideBoot();startApp();
   nt('Willkommen, '+rank+' '+U.name+'! 🎖','ok');
   await log('LOGIN_DISCORD_OFF',U.name+' ('+U.dienst+') · '+rank);
+  // Auto-create Personalakte Einstellungseintrag falls noch keiner existiert
+  if(U.id){
+    const {data:existingPA}=await db.from('officer_akten_eintraege').select('id').eq('officer_id',U.id).limit(1).maybeSingle();
+    if(!existingPA){
+      await db.from('officer_akten_eintraege').insert([{
+        officer_id:U.id,officer_name:U.name,erstellt_von:'System',
+        typ:'Notiz',betreff:'Einstellung · Erster Login',
+        details:'Beamter hat sich erstmals im System angemeldet. Dienstnummer: '+U.dienst+' · Rang: '+rank,
+        sichtbarkeit:'intern'
+      }]);
+    }
+  }
 }
 
 // ═══ DISCORD LOGIN: BÜRGER ════════════════════════════════════
 async function handleCitizenDiscordLogin(discordData){
   const {discord_id,username}=discordData;
-
-  // Ist die Person ein Beamter? Dann Hinweis
-  const {data:dn}=await db.from('dienstnummern').select('nummer').eq('user_id',discord_id.toString()).maybeSingle();
-  if(dn){
-    hideBoot();showLoginScreen();
-    showErr('Du bist Beamter ('+dn.nummer+'). Bitte nutze den "Beamter"-Tab.');
-    return;
-  }
 
   // Bürger suchen
   const {data:cit}=await db.from('citizens').select('*').eq('discord_id',discord_id.toString()).maybeSingle();
@@ -930,9 +948,19 @@ async function handleCitizenDiscordLogin(discordData){
     if(!cit.fuehrungszeugnis_share_id)_upd.fuehrungszeugnis_share_id=Math.random().toString(36).substr(2,14).toUpperCase();
     if(Object.keys(_upd).length){await db.from('citizens').update(_upd).eq('id',cit.id);Object.assign(cit,_upd);}
     U={type:'citizen',...cit};
-    hideBoot();startApp();
-    nt('Willkommen zurück, '+U.name+'! 👤','ok');
-    await log('LOGIN_DISCORD_CIT',U.name);
+    hideBoot();
+    // Roblox-Name nicht hinterlegt → Profil vervollständigen
+    if(!cit.roblox_name){
+      _pendingDiscordData={discord_id:discord_id.toString(),username,existingId:cit.id};
+      showLoginScreen();
+      switchTab('reg');
+      document.querySelector('#tab-reg .l-info').innerHTML='<b style="color:var(--a3)">Profil vervollständigen</b><br>Discord verifiziert ✅ – bitte hinterlege deinen Roblox-Namen.';
+      nt('Bitte ergänze deinen Roblox-Namen!','warn');
+    }else{
+      startApp();
+      nt('Willkommen zurück, '+U.name+'! 👤','ok');
+      await log('LOGIN_DISCORD_CIT',U.name);
+    }
   }else{
     // Noch nicht registriert → Registrierungsformular zeigen
     _pendingDiscordData={discord_id:discord_id.toString(),username};
@@ -947,43 +975,59 @@ async function handleCitizenDiscordLogin(discordData){
 async function completeRegistration(){
   if(!_pendingDiscordData){showErr('Bitte zuerst mit Discord anmelden.');return;}
   const rn=document.getElementById('r-name').value.trim();
+  const rat=document.getElementById('r-roblox-at').value.trim();
+  const dob=document.getElementById('r-dob').value||null;
   if(!rn){showErr('Roblox-Name erforderlich.');return;}
 
-  const {discord_id,username}=_pendingDiscordData;
+  const {discord_id,username,existingId}=_pendingDiscordData;
   const btn=document.getElementById('reg-btn');
   btn.disabled=true;btn.textContent='…';
 
-  // Nochmal prüfen ob bereits registriert
+  // Update existing user (kein Roblox-Name vorhanden)
+  if(existingId){
+    const {data:upd,error}=await db.from('citizens').update({
+      roblox_name:rn,roblox_at:rat,dob
+    }).eq('id',existingId).select().single();
+    btn.disabled=false;btn.textContent='✅ Registrierung abschließen';
+    if(error){showErr('Fehler: '+error.message);return;}
+    U={type:'citizen',...(upd||{...U,roblox_name:rn,roblox_at:rat,dob})};
+    _pendingDiscordData=null;
+    document.getElementById('login').style.display='none';
+    startApp();
+    nt('✅ Profil vervollständigt!','ok');
+    await log('PROFIL_UPDATE',rn+' hat Roblox-Namen ergänzt');
+    return;
+  }
+
+  // Neuer User — nochmal prüfen ob bereits registriert
   const {data:ex}=await db.from('citizens').select('*').eq('discord_id',discord_id).maybeSingle();
   if(ex){U={type:'citizen',...ex};_pendingDiscordData=null;document.getElementById('login').style.display='none';startApp();nt('Bereits registriert!','ok');return;}
 
   const shareId=Math.random().toString(36).substr(2,14).toUpperCase();
   const fzId=Math.random().toString(36).substr(2,14).toUpperCase();
-  const name=rn;
 
   const {data:nc,error}=await db.from('citizens').insert([{
-    name,
+    name:rn,
     discord_id,
     discord_tag:username,
     roblox_name:rn,
-    roblox_at:document.getElementById('r-roblox-at').value.trim(),
-    dob:document.getElementById('r-dob').value||null,
+    roblox_at:rat,
+    dob,
     status:'Aktiv',
     akte_share_id:shareId,
     fuehrungszeugnis_share_id:fzId
   }]).select().single();
 
   btn.disabled=false;btn.textContent='✅ Registrierung abschließen';
-
   if(error){showErr('Fehler: '+error.message);return;}
 
-  await sendBotDM(discord_id,'willkommen',{name,shareId});
+  await sendBotDM(discord_id,'willkommen',{name:rn,shareId});
   U={type:'citizen',...nc};
   _pendingDiscordData=null;
   document.getElementById('login').style.display='none';
   startApp();
   nt('✅ Konto erstellt! Discord-DM wurde gesendet 📨','ok');
-  await log('REG',name+' registriert · Discord: '+discord_id);
+  await log('REG',rn+' registriert · Discord: '+discord_id);
 }
 
 function loginDiscord(type){
@@ -1136,9 +1180,10 @@ async function loadCitizenDash(){
   page.innerHTML=`
     <div class="pg-hd">
       <div><div class="pg-title">👋 ${U.name}</div><div class="pg-sub">Mein Bürger-Bereich · CopNet Karlsruhe</div></div>
-      <div style="display:flex;gap:8px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn b-ghost b-sm" onclick="showFuehrungszeugnis()">📜 Führungszeugnis</button>
         <button class="btn b-ghost b-sm" onclick="copyShareLink('akte',U.akte_share_id)">🔗 Akte teilen</button>
+        ${U._officerBackup?'<button class="btn b-ghost b-sm" onclick="switchBackToOfficer()">🎖 Beamten-Ansicht</button>':''}
         <button class="btn b-ghost b-sm" onclick="doLogout()">🚪 Abmelden</button>
       </div>
     </div>
@@ -1213,8 +1258,11 @@ function copyShareLink(type,shareId){
 // ═══ FÜHRUNGSZEUGNIS ═══════════════════════════════════════════
 async function showFuehrungszeugnis(){
   if(!U?.id)return;
-  const {data:eintraege}=await db.from('citizen_akten_eintraege').select('*').eq('citizen_id',U.id).eq('status','Abgeschlossen').order('created_at',{ascending:false});
-  const saubere=!eintraege||eintraege.length===0;
+  // Alle relevanten Einträge (Strafanzeigen, Festnahmen, Verwarnungen) – nicht nur abgeschlossene
+  const {data:eintraege}=await db.from('citizen_akten_eintraege').select('*').eq('citizen_id',U.id).order('created_at',{ascending:false});
+  // Unbescholten = keine Strafeinträge (Notizen zählen nicht)
+  const strafTypen=['Strafanzeige','Festnahme','Verwarnung','Ermittlung'];
+  const saubere=!eintraege||eintraege.filter(e=>strafTypen.includes(e.typ)).length===0;
   const heute=new Date().toLocaleDateString('de-DE');
   document.getElementById('m-fz-b').innerHTML=`
     <div class="fz-doc">
@@ -1304,8 +1352,9 @@ async function renderSharedFZ(shareId){
   const {data:cit}=await db.from('citizens').select('*').eq('fuehrungszeugnis_share_id',shareId).maybeSingle();
   const pg=document.getElementById('page-dashboard');
   if(!cit){pg.innerHTML='<div class="es" style="padding:60px"><div class="es-ico">❌</div><p>Führungszeugnis nicht gefunden</p><button class="btn b-ghost b-sm" style="margin-top:14px" onclick="location.href=location.pathname">← Login</button></div>';return;}
-  const {data:eintraege}=await db.from('citizen_akten_eintraege').select('*').eq('citizen_id',cit.id).eq('status','Abgeschlossen');
-  const saubere=!eintraege||eintraege.length===0;
+  const {data:eintraege}=await db.from('citizen_akten_eintraege').select('*').eq('citizen_id',cit.id).order('created_at',{ascending:false});
+  const strafTypen=['Strafanzeige','Festnahme','Verwarnung','Ermittlung'];
+  const saubere=!eintraege||eintraege.filter(e=>strafTypen.includes(e.typ)).length===0;
   const heute=new Date().toLocaleDateString('de-DE');
   pg.innerHTML=`<div style="max-width:500px;margin:40px auto">
     <div class="fz-doc">
@@ -1653,6 +1702,30 @@ function renderDN(){
   </tr>`).join('');
 }
 
+// Importiert Dienstnummern aus der officers-Tabelle falls dienstnummern-Tabelle leer ist
+async function importDNFromOfficers(){
+  const {data:officers}=await db.from('officers').select('id,name,dienst,discord_id,created_at').not('dienst','is',null);
+  if(!officers?.length){nt('Keine Beamten gefunden','err');return;}
+  let imported=0;
+  for(const o of officers){
+    if(!o.dienst||o.dienst==='–')continue;
+    // Prüfen ob schon vorhanden
+    const {data:ex}=await db.from('dienstnummern').select('id').eq('nummer',o.dienst).maybeSingle();
+    if(!ex&&o.discord_id){
+      await db.from('dienstnummern').upsert([{
+        nummer:o.dienst,
+        user_id:o.discord_id.toString(),
+        username:o.name,
+        vergeben_am:o.created_at||new Date().toISOString(),
+        vergeben_von:'Import'
+      }],{onConflict:'nummer'});
+      imported++;
+    }
+  }
+  nt('✅ '+imported+' Dienstnummern importiert','ok');
+  loadDienstnummern();
+}
+
 // ═══ PERSONALAKTEN ════════════════════════════════════════════
 async function loadPersonalakten(){
   const s=(document.getElementById('pa-search')?.value||'').toLowerCase();
@@ -1915,8 +1988,52 @@ function loadProfil(){
       <button class="btn b-ghost b-sm" onclick="copyShareLink('akte','${U.akte_share_id||''}')">🔗 Akte teilen</button>
       <button class="btn b-ghost b-sm" onclick="showFuehrungszeugnis()">📜 Führungszeugnis</button>
     </div>`:''}
-    ${U.type==='officer'?'<button class="btn b-ghost b-sm" style="margin-top:8px" onclick="chgPw()">🔑 Passwort ändern</button>':''}`;
+    ${U.type==='officer'?`<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button class="btn b-ghost b-sm" onclick="chgPw()">🔑 Passwort ändern</button>
+      <button class="btn b-ghost b-sm" onclick="switchToCitizenView()">👤 Bürger-Ansicht</button>
+    </div>`:''}`;
 }
+function switchBackToOfficer(){
+  if(!U?._officerBackup)return;
+  U=U._officerBackup;
+  document.querySelectorAll('.off-only').forEach(el=>el.style.display='flex');
+  // Manche off-only sind keine flex
+  document.querySelectorAll('.off-only').forEach(el=>{
+    if(el.tagName==='DIV'&&!el.classList.contains('sbi'))el.style.display='';
+  });
+  document.getElementById('dpill').style.display='flex';
+  document.getElementById('tb-bdg').textContent=U.rank||'CopNet';
+  document.getElementById('u-r').textContent=U.rank||'Beamter';
+  if((U.level||1)>=8){
+    document.getElementById('sb-mgmt').style.display='flex';
+    document.getElementById('sb-personalakten').style.display='flex';
+  }
+  sp('dashboard');
+  nt('🎖 Beamten-Ansicht aktiv','ok');
+}
+
+function switchToCitizenView(){
+  // Beamter wechselt in Bürger-Ansicht (zeigt eigene Bürger-Daten wenn vorhanden)
+  if(!U||U.type!=='officer')return;
+  const discordId=U.discord_id;
+  if(!discordId){nt('Kein Discord-Account verknüpft','err');return;}
+  // Bürger-Eintrag laden oder Login-Screen für Bürger zeigen
+  db.from('citizens').select('*').eq('discord_id',discordId).maybeSingle().then(({data:cit})=>{
+    if(cit){
+      const offBackup=U;
+      U={type:'citizen',...cit,_officerBackup:offBackup};
+      document.querySelectorAll('.off-only').forEach(el=>el.style.display='none');
+      document.getElementById('dpill').style.display='none';
+      document.getElementById('tb-bdg').textContent='Bürger';
+      document.getElementById('u-r').textContent='Bürger';
+      loadCitizenDash();
+      nt('👤 Bürger-Ansicht aktiv – Profil → Beamten-Ansicht zum Zurückwechseln','ok');
+    }else{
+      nt('Kein Bürger-Konto verknüpft. Melde dich als Bürger an um eines zu erstellen.','warn');
+    }
+  });
+}
+
 function chgPw(){const p=prompt('Neues Passwort:');if(!p||p.length<6){nt('Min. 6 Zeichen','err');return;}db.from('officers').update({password:p}).eq('id',U.id).then(()=>nt('✅ Passwort geändert','ok'));}
 
 // ═══ UTILS ════════════════════════════════════════════════════
