@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Ban Manager · Karlsruhe RP</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --a:#f43f5e;--a2:#e11d48;--a3:#fb7185;--ag:rgba(244,63,94,.12);
+  --bg:#050508;--s1:#0a0b10;--s2:#0f1018;--s3:#141520;--s4:#1a1d2e;
+  --glass:rgba(10,11,16,.8);--border:rgba(255,255,255,.06);--border2:rgba(244,63,94,.2);
+  --t1:#e8eaf6;--t2:#7c85a8;--t3:#3d4466;
+  --green:#10b981;--yellow:#f59e0b;--blue:#3b82f6;
+  --f:'Inter',sans-serif;--fg:'Space Grotesk',sans-serif;--fm:'JetBrains Mono',monospace;
+  --r6:6px;--r10:10px;--r14:14px;--r20:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--f);background:var(--bg);color:var(--t1);min-height:100vh;font-size:14px}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 800px 600px at 0% 0%,rgba(244,63,94,.06) 0%,transparent 60%);pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--s4)}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:100;background:var(--bg)}
+.lbox{width:100%;max-width:380px}
+.lcard{background:var(--glass);backdrop-filter:blur(24px);border:1px solid var(--border2);border-radius:var(--r20);padding:28px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.lico{text-align:center;font-size:48px;margin-bottom:16px}
+.lh{text-align:center;font-family:var(--fg);font-size:24px;font-weight:800;margin-bottom:4px}
+.lsub{text-align:center;font-size:11px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:24px}
+.lerr{background:rgba(244,63,94,.08);border:1px solid var(--border2);color:var(--a3);font-size:12px;padding:10px 14px;border-radius:var(--r6);margin-bottom:14px;display:none}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:10px;font-weight:600;color:var(--t3);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 14px;background:rgba(20,21,32,.8);border:1px solid var(--border);border-radius:var(--r6);font-size:13px;font-family:var(--f);color:var(--t1);outline:none;transition:border-color .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(244,63,94,.1)}
+.fg select{cursor:pointer;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%233d4466' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.fg textarea{resize:vertical;min-height:70px;line-height:1.55}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 18px;border-radius:var(--r6);cursor:pointer;font-size:13px;font-family:var(--fg);font-weight:600;border:1px solid transparent;transition:all .15s;white-space:nowrap;user-select:none}
+.b-pri{background:linear-gradient(135deg,var(--a2),var(--a));color:#fff;border-color:var(--a2);box-shadow:0 2px 16px rgba(244,63,94,.3)}
+.b-pri:hover{box-shadow:0 4px 24px rgba(244,63,94,.5);transform:translateY(-1px)}
+.b-ghost{background:rgba(255,255,255,.04);color:var(--t2);border-color:var(--border)}
+.b-ghost:hover{background:rgba(255,255,255,.08);color:var(--t1);border-color:var(--border2)}
+.b-grn{background:rgba(16,185,129,.1);color:#34d399;border-color:rgba(16,185,129,.3)}
+.b-grn:hover{background:rgba(16,185,129,.18)}
+.b-danger{background:rgba(244,63,94,.08);color:#fb7185;border-color:rgba(244,63,94,.25)}
+.b-danger:hover{background:rgba(244,63,94,.15)}
+.b-sm{padding:6px 12px;font-size:12px}
+.b-full{width:100%}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+
+/* LAYOUT */
+#app{display:none;min-height:100vh}
+.topbar{height:56px;background:rgba(5,5,8,.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:50}
+.tb-logo{font-family:var(--fg);font-size:16px;font-weight:800;display:flex;align-items:center;gap:10px}
+.tb-badge{font-size:10px;background:var(--ag);color:var(--a3);padding:2px 9px;border-radius:20px;border:1px solid var(--border2);letter-spacing:.5px;font-weight:600;text-transform:uppercase}
+.tabs{display:flex;gap:4px;margin-left:auto}
+.tab{padding:7px 16px;border-radius:var(--r6);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--fg);transition:all .15s;color:var(--t3);border:1px solid transparent}
+.tab.act{background:var(--ag);color:var(--a3);border-color:var(--border2)}
+.tab:hover:not(.act){color:var(--t1);background:rgba(255,255,255,.04)}
+.content{padding:24px 28px 60px;max-width:1200px;margin:0 auto}
+
+/* CARDS */
+.card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--r14);padding:20px;margin-bottom:14px}
+.card:hover{border-color:var(--border2)}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.card-t{font-family:var(--fg);font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+
+/* TABLE */
+.tbl-wrap{border-radius:var(--r14);border:1px solid var(--border);overflow:hidden;background:var(--glass);backdrop-filter:blur(16px)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:rgba(244,63,94,.04)}
+th{padding:10px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border)}
+td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(244,63,94,.02)}
+.mono{font-family:var(--fm);font-size:11px}
+.es{text-align:center;padding:40px 20px;color:var(--t3);font-size:13px}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap}
+.bg-r{background:var(--ag);color:var(--a3);border:1px solid var(--border2)}
+.bg-g{background:rgba(16,185,129,.1);color:#34d399;border:1px solid rgba(16,185,129,.2)}
+.bg-y{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.2)}
+.bg-b{background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2)}
+.bg-gray{background:var(--s3);color:var(--t3);border:1px solid var(--border)}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.sc{background:var(--glass);border:1px solid var(--border);border-radius:var(--r14);padding:18px 20px;position:relative;overflow:hidden;transition:all .2s}
+.sc:hover{border-color:var(--border2);transform:translateY(-2px)}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--a),transparent)}
+.sc-val{font-size:36px;font-weight:800;font-family:var(--fg);background:linear-gradient(135deg,var(--a),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sc-lbl{font-size:10px;color:var(--t3);margin-top:5px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+
+/* MODAL */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.mbg.open{display:flex}
+.modal{background:rgba(10,11,16,.97);backdrop-filter:blur(24px);border:1px solid var(--border2);border-radius:var(--r20);width:100%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.8);animation:mIn .2s cubic-bezier(.34,1.56,.64,1)}
+@keyframes mIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.mhd{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,11,16,.97);z-index:1}
+.mhd h3{font-family:var(--fg);font-size:15px;font-weight:700}
+.mcl{width:26px;height:26px;background:var(--s3);border:1px solid var(--border);border-radius:var(--r6);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--t2);transition:all .12s}
+.mcl:hover{background:var(--s4);color:var(--t1)}
+.mbody{padding:22px}
+.mfoot{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
+/* NOTIFICATIONS */
+#nwrap{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.notif{background:rgba(10,11,16,.97);backdrop-filter:blur(20px);border:1px solid var(--border2);border-radius:var(--r10);padding:11px 15px;font-size:13px;max-width:310px;box-shadow:0 8px 32px rgba(0,0,0,.6);animation:nIn .35s cubic-bezier(.34,1.56,.64,1);pointer-events:all;display:flex;gap:9px;align-items:center}
+@keyframes nIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+.nb{width:3px;min-height:22px;border-radius:2px;flex-shrink:0}
+.notif.ok .nb{background:var(--green)}.notif.err .nb{background:var(--a)}.notif.warn .nb{background:var(--yellow)}.notif .nb{background:var(--blue)}
+
+.page{display:none}.page.active{display:block;animation:pgIn .2s ease}
+@keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.sep{height:1px;background:var(--border);margin:16px 0}
+@media(max-width:768px){.stats{grid-template-columns:1fr 1fr!important}.frow{grid-template-columns:1fr!important}.content{padding:14px 14px 40px}}
+</style>
+</head>
+<body>
+
+<div id="nwrap"></div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="lbox">
+    <div class="lcard">
+      <div class="lico">🚫</div>
+      <div class="lh">Ban Manager</div>
+      <div class="lsub">Karlsruhe RP · Admin Only</div>
+      <div class="lerr" id="lerr"></div>
+      <div class="fg"><label>Admin Passwort</label><input type="password" id="l-pw" placeholder="Passwort eingeben" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn b-pri b-full" onclick="doLogin()" style="padding:11px">Einloggen →</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="tb-logo">🚫 Ban Manager <span class="tb-badge">Admin</span></div>
+    <div class="tabs">
+      <div class="tab act" onclick="showTab('bans')">🚫 Bans</div>
+      <div class="tab" onclick="showTab('visitors')">👁 Besucher</div>
+      <div class="tab" onclick="showTab('logs')">📋 Logs</div>
+      <div class="tab" onclick="showTab('new-ban')" style="margin-left:8px;background:var(--ag);color:var(--a3);border-color:var(--border2)">+ Neuer Ban</div>
+      <button class="btn b-ghost b-sm" onclick="doLogout()" style="margin-left:8px">🚪</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- BANS -->
+    <div class="page active" id="page-bans">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-family:var(--fg);font-size:22px;font-weight:800">Aktive Sperren</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:2px">Alle aktiven Bans · Discord ID & IP</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input id="ban-srch" placeholder="🔍 Suchen…" onkeyup="filterBans()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:8px 14px;border-radius:var(--r6);font-size:13px;font-family:var(--f);outline:none;transition:border-color .2s;min-width:200px">
+          <button class="btn b-ghost b-sm" onclick="loadBans()">🔄 Aktualisieren</button>
+        </div>
+      </div>
+      <div class="stats" id="ban-stats">
+        <div class="sc"><div class="sc-val" id="stat-active">–</div><div class="sc-lbl">Aktive Bans</div></div>
+        <div class="sc"><div class="sc-val" id="stat-all">–</div><div class="sc-lbl">Gesamt Bans</div></div>
+        <div class="sc"><div class="sc-val" id="stat-visits">–</div><div class="sc-lbl">Besucher (IPs)</div></div>
+        <div class="sc"><div class="sc-val" id="stat-blocked">–</div><div class="sc-lbl">Blockierte Versuche</div></div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Discord ID</th><th>IP</th><th>Grund</th><th>Gesperrt von</th><th>Gesperrt am</th><th>Läuft ab</th><th>Typ</th><th></th></tr></thead>
+          <tbody id="ban-tb"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VISITORS -->
+    <div class="page" id="page-visitors">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-family:var(--fg);font-size:22px;font-weight:800">Besucher-Logs</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:2px">Alle Seitenbesucher mit IP – hier kannst du IPs direkt bannen</div>
+        </div>
+        <button class="btn b-ghost b-sm" onclick="loadVisitors()">🔄 Aktualisieren</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Discord</th><th>IP</th><th>Aktion</th><th>Zeit</th><th></th></tr></thead>
+          <tbody id="vis-tb"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LOGS -->
+    <div class="page" id="page-logs">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-family:var(--fg);font-size:22px;font-weight:800">Ban-Protokoll</div>
+          <div style="font-size:12px;color:var(--t3);margin-top:2px">Alle Ban/Unban-Aktionen</div>
+        </div>
+        <button class="btn b-ghost b-sm" onclick="loadLogs()">🔄 Aktualisieren</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Discord ID</th><th>IP</th><th>Aktion</th><th>Notiz</th><th>Zeit</th></tr></thead>
+          <tbody id="log-tb"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- NEW BAN -->
+    <div class="page" id="page-new-ban">
+      <div style="margin-bottom:20px">
+        <div style="font-family:var(--fg);font-size:22px;font-weight:800">Neuer Ban</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:2px">Person per Discord ID, IP oder beides sperren</div>
+      </div>
+      <div class="card" style="max-width:600px">
+        <div style="background:rgba(244,63,94,.06);border:1px solid var(--border2);border-radius:var(--r10);padding:12px 14px;margin-bottom:18px;font-size:12px;color:var(--t2);line-height:1.6">
+          💡 <b style="color:var(--a3)">Tipp:</b> Für Leute ohne Login → nur die IP eintragen (aus dem Besucher-Log).<br>
+          Für eingeloggte User → Discord ID eintragen (dann wird der Account gesperrt + optional Discord-Kick).<br>
+          Beides zusammen = maximale Sperre.
+        </div>
+        <div class="frow">
+          <div class="fg"><label>Discord ID (optional)</label><input id="nb-did" placeholder="z.B. 123456789012345678"></div>
+          <div class="fg"><label>IP-Adresse (optional)</label><input id="nb-ip" placeholder="z.B. 192.168.1.1"></div>
+        </div>
+        <div class="fg"><label>Grund *</label><input id="nb-reason" placeholder="Grund für die Sperre…"></div>
+        <div class="frow">
+          <div class="fg"><label>Läuft ab (leer = permanent)</label><input type="datetime-local" id="nb-exp"></div>
+          <div class="fg"><label>Notiz (intern)</label><input id="nb-note" placeholder="Interne Notiz…"></div>
+        </div>
+        <div class="fg" style="display:flex;align-items:center;gap:10px">
+          <input type="checkbox" id="nb-kick" style="width:16px;height:16px;cursor:pointer;accent-color:var(--a)">
+          <label for="nb-kick" style="font-size:13px;cursor:pointer;color:var(--t2)">Person auch vom Discord Server kicken (benötigt Bot-Token)</label>
+        </div>
+        <div id="nb-err" style="color:var(--a3);font-size:12px;min-height:14px;margin-bottom:8px"></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn b-pri" onclick="createBan()">🚫 Ban erstellen</button>
+          <button class="btn b-ghost" onclick="showTab('bans')">Abbrechen</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- UNBAN MODAL -->
+<div class="mbg" id="m-unban">
+  <div class="modal">
+    <div class="mhd"><h3>Ban aufheben</h3><button class="mcl" onclick="cm('m-unban')">✕</button></div>
+    <div class="mbody">
+      <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:var(--r10);padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--t2)">
+        ✅ Bist du sicher dass du diesen Ban aufheben möchtest?
+      </div>
+      <div id="unban-info" style="margin-bottom:16px"></div>
+    </div>
+    <div class="mfoot">
+      <button class="btn b-grn" onclick="confirmUnban()">✅ Ban aufheben</button>
+      <button class="btn b-ghost" onclick="cm('m-unban')">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<!-- BAN FROM VISITOR MODAL -->
+<div class="mbg" id="m-ban-ip">
+  <div class="modal">
+    <div class="mhd"><h3>IP bannen</h3><button class="mcl" onclick="cm('m-ban-ip')">✕</button></div>
+    <div class="mbody">
+      <div class="fg"><label>IP-Adresse</label><input id="bip-ip" placeholder="IP" readonly style="color:var(--a3);font-family:var(--fm)"></div>
+      <div class="fg"><label>Discord ID (falls bekannt)</label><input id="bip-did" placeholder="Discord ID (optional)"></div>
+      <div class="fg"><label>Grund *</label><input id="bip-reason" placeholder="Grund für die Sperre…"></div>
+      <div class="fg"><label>Läuft ab (leer = permanent)</label><input type="datetime-local" id="bip-exp"></div>
+      <div id="bip-err" style="color:var(--a3);font-size:12px;min-height:14px;margin-bottom:4px"></div>
+    </div>
+    <div class="mfoot">
+      <button class="btn b-pri" onclick="confirmBanIP()">🚫 Jetzt bannen</button>
+      <button class="btn b-ghost" onclick="cm('m-ban-ip')">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://copnet-rho.vercel.app/api';
+// Admin-Passwort – ändere das in etwas sicheres!
+const ADMIN_PW = 'karlsruhe2024admin';
+
+let _allBans = [];
+let _unbanId = null;
+
+// ── AUTH ──
+function doLogin() {
+  const pw = document.getElementById('l-pw').value;
+  const err = document.getElementById('lerr');
+  if (pw !== ADMIN_PW) { err.textContent = 'Falsches Passwort.'; err.style.display = 'block'; return; }
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadAll();
+}
+function doLogout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('l-pw').value = '';
+}
+document.getElementById('l-pw').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// ── TABS ──
+function showTab(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('act'));
+  if (id === 'bans') { document.querySelectorAll('.tab')[0].classList.add('act'); loadBans(); }
+  else if (id === 'visitors') { document.querySelectorAll('.tab')[1].classList.add('act'); loadVisitors(); }
+  else if (id === 'logs') { document.querySelectorAll('.tab')[2].classList.add('act'); loadLogs(); }
+  else if (id === 'new-ban') { document.querySelectorAll('.tab')[3].classList.add('act'); }
+}
+
+// ── UTILS ──
+function nt(msg, type = '') {
+  const w = document.getElementById('nwrap'), el = document.createElement('div');
+  el.className = 'notif' + (type ? ' ' + type : '');
+  el.innerHTML = '<div class="nb"></div><span>' + msg + '</span>';
+  w.appendChild(el); setTimeout(() => el.remove(), 4000);
+}
+function om(id) { document.getElementById(id).classList.add('open'); }
+function cm(id) { document.getElementById(id).classList.remove('open'); }
+function fmt(d) { return d ? new Date(d).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '–'; }
+
+async function apiFetch(path) {
+  const r = await fetch(API + path);
+  return r.json();
+}
+
+// ── LOAD ALL ──
+async function loadAll() {
+  await Promise.all([loadBans(), loadStats()]);
+}
+
+// ── BANS ──
+async function loadBans() {
+  const data = await apiFetch('/get-bans');
+  _allBans = Array.isArray(data) ? data : [];
+  renderBans(_allBans);
+  // Stats
+  const active = _allBans.filter(b => b.active).length;
+  document.getElementById('stat-active').textContent = active;
+  document.getElementById('stat-all').textContent = _allBans.length;
+}
+
+function renderBans(bans) {
+  const tb = document.getElementById('ban-tb');
+  const active = bans.filter(b => b.active);
+  if (!active.length) { tb.innerHTML = '<tr><td colspan="8"><div class="es">Keine aktiven Bans 🎉</div></td></tr>'; return; }
+  tb.innerHTML = active.map(b => `<tr>
+    <td class="mono" style="color:var(--a3)">${b.discord_id || '<span style="color:var(--t3)">–</span>'}</td>
+    <td class="mono">${b.ip || '<span style="color:var(--t3)">–</span>'}</td>
+    <td style="max-width:200px">${b.reason || '–'}</td>
+    <td style="color:var(--t2)">${b.banned_by || '–'}</td>
+    <td class="mono" style="font-size:10px">${fmt(b.banned_at)}</td>
+    <td>${b.expires_at ? `<span class="badge bg-y">${fmt(b.expires_at)}</span>` : '<span class="badge bg-r">Permanent</span>'}</td>
+    <td>${b.discord_id && b.ip ? '<span class="badge bg-r">Beides</span>' : b.discord_id ? '<span class="badge bg-b">Account</span>' : '<span class="badge bg-y">IP</span>'}</td>
+    <td>
+      <button class="btn b-grn b-sm" onclick="openUnban(${b.id},'${(b.discord_id||'').replace(/'/g,"\\'")}','${(b.ip||'').replace(/'/g,"\\'")}','${(b.reason||'').replace(/'/g,"\\'")}')">✅ Aufheben</button>
+    </td>
+  </tr>`).join('');
+}
+
+function filterBans() {
+  const s = document.getElementById('ban-srch').value.toLowerCase();
+  if (!s) { renderBans(_allBans); return; }
+  renderBans(_allBans.filter(b =>
+    (b.discord_id || '').toLowerCase().includes(s) ||
+    (b.ip || '').toLowerCase().includes(s) ||
+    (b.reason || '').toLowerCase().includes(s) ||
+    (b.banned_by || '').toLowerCase().includes(s)
+  ));
+}
+
+async function loadStats() {
+  const [visits, logs] = await Promise.all([
+    apiFetch('/get-bans?type=visits'),
+    apiFetch('/get-bans?type=logs')
+  ]);
+  const uniqueIPs = new Set((Array.isArray(visits) ? visits : []).map(v => v.ip).filter(Boolean));
+  document.getElementById('stat-visits').textContent = uniqueIPs.size;
+  const blocked = (Array.isArray(logs) ? logs : []).filter(l => l.action === 'blocked_login' || l.action === 'page_visit_blocked').length;
+  document.getElementById('stat-blocked').textContent = blocked;
+}
+
+// ── UNBAN ──
+function openUnban(id, discordId, ip, reason) {
+  _unbanId = { id, discordId, ip };
+  document.getElementById('unban-info').innerHTML = `
+    <div style="background:var(--s2);border:1px solid var(--border);border-radius:var(--r10);padding:14px">
+      <div style="margin-bottom:8px"><span style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px">Grund</span><div style="font-weight:600;margin-top:3px">${reason}</div></div>
+      ${discordId ? `<div style="margin-bottom:8px"><span style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px">Discord ID</span><div class="mono" style="color:var(--a3);margin-top:3px">${discordId}</div></div>` : ''}
+      ${ip ? `<div><span style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px">IP-Adresse</span><div class="mono" style="margin-top:3px">${ip}</div></div>` : ''}
+    </div>`;
+  om('m-unban');
+}
+
+async function confirmUnban() {
+  if (!_unbanId) return;
+  const r = await fetch(API + '/unban-user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ban_id: _unbanId.id, discord_id: _unbanId.discordId || null, ip: _unbanId.ip || null, unbanned_by: 'Admin' })
+  });
+  const data = await r.json();
+  if (data.ok) { nt('✅ Ban aufgehoben', 'ok'); cm('m-unban'); loadBans(); }
+  else nt('Fehler: ' + (data.error || 'Unbekannt'), 'err');
+  _unbanId = null;
+}
+
+// ── VISITORS ──
+async function loadVisitors() {
+  const data = await apiFetch('/get-bans?type=visits');
+  const tb = document.getElementById('vis-tb');
+  if (!Array.isArray(data) || !data.length) { tb.innerHTML = '<tr><td colspan="5"><div class="es">Keine Besucher-Logs</div></td></tr>'; return; }
+  tb.innerHTML = data.map(v => `<tr>
+    <td>${v.discord_id ? `<span class="mono" style="color:var(--a3)">${v.discord_id}</span>${v.username ? '<br><span style="font-size:11px;color:var(--t3)">' + v.username + '</span>' : ''}` : '<span style="color:var(--t3)">–</span>'}</td>
+    <td class="mono">${v.ip || '–'}</td>
+    <td><span class="badge ${v.action === 'login_success' ? 'bg-g' : v.action === 'page_visit' ? 'bg-b' : 'bg-gray'}">${v.action || '–'}</span></td>
+    <td class="mono" style="font-size:10px">${fmt(v.created_at)}</td>
+    <td>
+      <button class="btn b-danger b-sm" onclick="openBanIP('${(v.ip||'').replace(/'/g,"\\'")}','${(v.discord_id||'').replace(/'/g,"\\'")}')">🚫 Ban</button>
+    </td>
+  </tr>`).join('');
+}
+
+function openBanIP(ip, discordId) {
+  document.getElementById('bip-ip').value = ip || '';
+  document.getElementById('bip-did').value = discordId || '';
+  document.getElementById('bip-reason').value = '';
+  document.getElementById('bip-exp').value = '';
+  document.getElementById('bip-err').textContent = '';
+  om('m-ban-ip');
+}
+
+async function confirmBanIP() {
+  const ip = document.getElementById('bip-ip').value.trim();
+  const did = document.getElementById('bip-did').value.trim();
+  const reason = document.getElementById('bip-reason').value.trim();
+  const exp = document.getElementById('bip-exp').value;
+  const err = document.getElementById('bip-err');
+  if (!reason) { err.textContent = 'Grund erforderlich.'; return; }
+  if (!ip && !did) { err.textContent = 'IP oder Discord ID erforderlich.'; return; }
+  err.textContent = '';
+  const r = await fetch(API + '/ban-user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ discord_id: did || null, ip: ip || null, reason, banned_by: 'Admin', expires_at: exp || null })
+  });
+  const data = await r.json();
+  if (data.ok) { nt('🚫 Ban erstellt!', 'ok'); cm('m-ban-ip'); loadBans(); loadVisitors(); }
+  else nt('Fehler: ' + (data.error || 'Unbekannt'), 'err');
+}
+
+// ── LOGS ──
+async function loadLogs() {
+  const data = await apiFetch('/get-bans?type=logs');
+  const tb = document.getElementById('log-tb');
+  if (!Array.isArray(data) || !data.length) { tb.innerHTML = '<tr><td colspan="5"><div class="es">Keine Logs</div></td></tr>'; return; }
+  tb.innerHTML = data.map(l => `<tr>
+    <td class="mono" style="font-size:11px;color:var(--a3)">${l.discord_id || '–'}</td>
+    <td class="mono" style="font-size:11px">${l.ip || '–'}</td>
+    <td><span class="badge ${l.action === 'banned' ? 'bg-r' : l.action === 'unbanned' ? 'bg-g' : 'bg-gray'}">${l.action || '–'}</span></td>
+    <td style="font-size:12px;color:var(--t2)">${l.note || '–'}</td>
+    <td class="mono" style="font-size:10px">${fmt(l.created_at)}</td>
+  </tr>`).join('');
+}
+
+// ── NEW BAN ──
+async function createBan() {
+  const did = document.getElementById('nb-did').value.trim();
+  const ip = document.getElementById('nb-ip').value.trim();
+  const reason = document.getElementById('nb-reason').value.trim();
+  const exp = document.getElementById('nb-exp').value;
+  const kick = document.getElementById('nb-kick').checked;
+  const err = document.getElementById('nb-err');
+  if (!reason) { err.textContent = 'Grund erforderlich.'; return; }
+  if (!did && !ip) { err.textContent = 'Discord ID oder IP-Adresse erforderlich.'; return; }
+  err.textContent = '';
+  const r = await fetch(API + '/ban-user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ discord_id: did || null, ip: ip || null, reason, banned_by: 'Admin', expires_at: exp || null, kick_from_discord: kick })
+  });
+  const data = await r.json();
+  if (data.ok) {
+    nt('🚫 Ban erfolgreich erstellt!', 'ok');
+    ['nb-did','nb-ip','nb-reason','nb-exp'].forEach(i => document.getElementById(i).value = '');
+    document.getElementById('nb-kick').checked = false;
+    showTab('bans');
+  } else {
+    err.textContent = 'Fehler: ' + (data.error || 'Unbekannt');
+    nt('Fehler beim Ban', 'err');
+  }
+}
+</script>
+</body>
+</html>
