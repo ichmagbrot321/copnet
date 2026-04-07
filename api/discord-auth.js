@@ -3,7 +3,7 @@ const SUPABASE_URL = 'https://vekozqxmawzatvyofsxq.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const CLIENT_ID     = '1458870244365041849';
 const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
-const GUILD_ID      = '1458533163507908756';
+const GUILD_ID      = '1421878116271251558';
 const REDIRECT_URI  = 'https://copnet-rho.vercel.app/';
 
 function getIP(req) {
@@ -72,6 +72,7 @@ export default async function handler(req, res) {
 
   const ip = getIP(req);
 
+  // IP-Ban BEFORE Discord exchange – blocks anyone hitting the page
   const earlyBan = await checkBan(null, ip);
   if (earlyBan) {
     return res.status(403).json({
@@ -104,6 +105,7 @@ export default async function handler(req, res) {
     const user = await userRes.json();
     if (!user.id) return res.status(400).json({ error: 'Could not fetch user', detail: user });
 
+    // Account + IP ban check
     const ban = await checkBan(user.id, ip);
     if (ban) {
       await sbPost('ban_logs', { discord_id: user.id, username: user.username, ip, action: 'blocked_login' }).catch(() => {});
@@ -117,34 +119,20 @@ export default async function handler(req, res) {
       });
     }
 
-    // Guild member check mit vollem Debug
-    const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
-    if (!BOT_TOKEN) {
-      return res.status(500).json({ error: 'DISCORD_BOT_TOKEN not set' });
-    }
-
+    // Must be in guild
     let roles = [], displayName = user.username;
     const memberRes = await fetch(
-      `https://discord.com/api/guilds/${GUILD_ID}/members/${user.id}`,
-      { headers: { Authorization: `Bot ${BOT_TOKEN}` } }
+      `https://discord.com/api/users/@me/guilds/${GUILD_ID}/member`,
+      { headers: { Authorization: `Bearer ${tokenData.access_token}` } }
     );
-
     if (!memberRes.ok) {
-      const errBody = await memberRes.text();
-      return res.status(403).json({
-        error: 'not_in_guild',
-        message: 'Du bist kein Mitglied des Karlsruhe RP Servers!',
-        debug_status: memberRes.status,
-        debug_body: errBody,
-        debug_guild: GUILD_ID,
-        debug_user: user.id,
-      });
+      return res.status(403).json({ error: 'not_in_guild', message: 'Du bist kein Mitglied des Karlsruhe RP Servers!' });
     }
-
     const m = await memberRes.json();
     roles = m.roles || [];
     if (m.nick) displayName = m.nick;
 
+    // Save visit log (ip stored here → can ban later by IP even without account)
     await sbPost('visit_logs', { discord_id: user.id, username: displayName, ip, action: 'login_success' }).catch(() => {});
 
     return res.status(200).json({
