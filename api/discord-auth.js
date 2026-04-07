@@ -72,7 +72,6 @@ export default async function handler(req, res) {
 
   const ip = getIP(req);
 
-  // IP-Ban BEFORE Discord exchange – blocks anyone hitting the page
   const earlyBan = await checkBan(null, ip);
   if (earlyBan) {
     return res.status(403).json({
@@ -105,7 +104,6 @@ export default async function handler(req, res) {
     const user = await userRes.json();
     if (!user.id) return res.status(400).json({ error: 'Could not fetch user', detail: user });
 
-    // Account + IP ban check
     const ban = await checkBan(user.id, ip);
     if (ban) {
       await sbPost('ban_logs', { discord_id: user.id, username: user.username, ip, action: 'blocked_login' }).catch(() => {});
@@ -119,21 +117,34 @@ export default async function handler(req, res) {
       });
     }
 
-    // Must be in guild – use Bot Token so no extra OAuth scope needed
+    // Guild member check mit vollem Debug
     const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
+    if (!BOT_TOKEN) {
+      return res.status(500).json({ error: 'DISCORD_BOT_TOKEN not set' });
+    }
+
     let roles = [], displayName = user.username;
     const memberRes = await fetch(
       `https://discord.com/api/guilds/${GUILD_ID}/members/${user.id}`,
       { headers: { Authorization: `Bot ${BOT_TOKEN}` } }
     );
+
     if (!memberRes.ok) {
-      return res.status(403).json({ error: 'not_in_guild', message: 'Du bist kein Mitglied des Karlsruhe RP Servers!' });
+      const errBody = await memberRes.text();
+      return res.status(403).json({
+        error: 'not_in_guild',
+        message: 'Du bist kein Mitglied des Karlsruhe RP Servers!',
+        debug_status: memberRes.status,
+        debug_body: errBody,
+        debug_guild: GUILD_ID,
+        debug_user: user.id,
+      });
     }
+
     const m = await memberRes.json();
     roles = m.roles || [];
     if (m.nick) displayName = m.nick;
 
-    // Save visit log (ip stored here → can ban later by IP even without account)
     await sbPost('visit_logs', { discord_id: user.id, username: displayName, ip, action: 'login_success' }).catch(() => {});
 
     return res.status(200).json({
