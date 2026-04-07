@@ -119,11 +119,12 @@ export default async function handler(req, res) {
       });
     }
 
-    // Must be in guild
+    // Must be in guild – use Bot Token so no extra OAuth scope needed
+    const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
     let roles = [], displayName = user.username;
     const memberRes = await fetch(
-      `https://discord.com/api/users/@me/guilds/${GUILD_ID}/member`,
-      { headers: { Authorization: `Bearer ${tokenData.access_token}` } }
+      `https://discord.com/api/guilds/${GUILD_ID}/members/${user.id}`,
+      { headers: { Authorization: `Bot ${BOT_TOKEN}` } }
     );
     if (!memberRes.ok) {
       return res.status(403).json({ error: 'not_in_guild', message: 'Du bist kein Mitglied des Karlsruhe RP Servers!' });
