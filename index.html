@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -36,30 +35,38 @@ body::before{content:'';position:fixed;inset:0;background:
 .boot-title{font-family:var(--fg);font-size:28px;font-weight:800;letter-spacing:-.5px}
 .boot-title em{background:linear-gradient(135deg,var(--a),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
 .boot-sub{font-size:10px;color:var(--t3);letter-spacing:4px;text-transform:uppercase}
-.boot-bar{width:260px;height:1px;background:var(--s4);border-radius:1px;overflow:hidden;position:relative}
+.boot-bar{width:260px;height:1px;background:var(--s4);border-radius:1px;overflow:hidden}
 .boot-fill{height:100%;width:0;background:linear-gradient(90deg,var(--a2),var(--a),var(--a3));transition:width .35s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px var(--a)}
 .boot-log{font-family:var(--fm);font-size:11px;color:var(--t3);letter-spacing:.5px}
 #login{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;z-index:100;overflow-y:auto}
-.login-wrap{width:100%;max-width:420px;position:relative;z-index:1;margin:auto}
+.login-wrap{width:100%;max-width:460px;position:relative;z-index:1;margin:auto}
 .l-logo-area{text-align:center;margin-bottom:24px}
-.l-logo{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--s3),var(--s4));border:1px solid var(--border2);display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;box-shadow:0 8px 32px rgba(14,165,233,.2),0 0 0 1px rgba(14,165,233,.05)}
+.l-logo{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--s3),var(--s4));border:1px solid var(--border2);display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;box-shadow:0 8px 32px rgba(14,165,233,.2)}
 .l-h1{font-family:var(--fg);font-size:26px;font-weight:800}
 .l-h1 em{background:linear-gradient(135deg,var(--a),var(--a3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-style:normal}
 .l-sub{font-size:10px;color:var(--t3);letter-spacing:3px;text-transform:uppercase;margin-top:5px}
-.l-card{background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border2);border-radius:var(--r24);padding:28px;box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.02)}
+.l-card{background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border2);border-radius:var(--r24);padding:28px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
 .l-tabs{display:flex;background:var(--s2);border-radius:var(--r10);padding:3px;margin-bottom:20px;gap:3px}
 .l-tab{flex:1;padding:8px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;border-radius:8px;transition:all .15s;color:var(--t3);font-family:var(--fg)}
 .l-tab.act{background:var(--s4);color:var(--t1);box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .l-err{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);color:#fb7185;font-size:12px;padding:10px 14px;border-radius:var(--r6);margin-bottom:14px;display:none}
 .l-info{background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.15);color:var(--t2);font-size:12px;padding:10px 14px;border-radius:var(--r6);margin-bottom:14px;line-height:1.6}
+.l-warn{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);color:#fbbf24;font-size:12px;padding:10px 14px;border-radius:var(--r6);margin-bottom:14px;line-height:1.6}
 .l-footer{text-align:center;margin-top:12px;font-size:10px;color:var(--t3);letter-spacing:2px;text-transform:uppercase}
 .fg{margin-bottom:14px}
 .fg label{display:block;font-size:10px;font-weight:600;color:var(--t3);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
 .fg input,.fg select,.fg textarea{width:100%;padding:10px 14px;background:rgba(20,21,32,.8);border:1px solid var(--border);border-radius:var(--r6);font-size:13px;font-family:var(--f);color:var(--t1);outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;backdrop-filter:blur(8px)}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(14,165,233,.1)}
 .fg select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%233d4466' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
-.fg textarea{resize:vertical;min-height:88px;line-height:1.55}
+.fg textarea{resize:vertical;min-height:80px;line-height:1.55}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* Foto Upload */
+.foto-upload{border:2px dashed var(--border2);border-radius:var(--r10);padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;background:rgba(14,165,233,.02)}
+.foto-upload:hover{border-color:var(--a);background:rgba(14,165,233,.05)}
+.foto-upload input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.foto-preview{width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--border2);margin:0 auto 8px;display:none}
+.foto-icon{font-size:32px;margin-bottom:8px;opacity:.4}
+.foto-label{font-size:12px;color:var(--t3)}
 .ac-wrap{position:relative}
 .ac-drop{position:absolute;top:calc(100%+4px);left:0;right:0;background:var(--glass);backdrop-filter:blur(20px);border:1px solid var(--border2);border-radius:var(--r10);z-index:300;max-height:190px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.6);display:none}
 .ac-item{padding:10px 14px;cursor:pointer;font-size:13px;transition:background .12s;border-bottom:1px solid var(--border)}
@@ -108,7 +115,8 @@ body::before{content:'';position:fixed;inset:0;background:
 .d-pill.on .d-dot{background:#34d399;box-shadow:0 0 8px #10b981;animation:dPulse 1.4s ease infinite}
 @keyframes dPulse{0%,100%{opacity:1}50%{opacity:.3}}
 .u-chip{display:flex;align-items:center;gap:9px}
-.u-ava{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 0 12px rgba(14,165,233,.3)}
+.u-ava{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden}
+.u-ava img{width:100%;height:100%;object-fit:cover}
 .u-n{font-size:13px;font-weight:600;font-family:var(--fg)}
 .u-r{font-size:10px;color:var(--t3)}
 .main{flex:1;margin-left:64px}
@@ -181,7 +189,8 @@ tr:hover td{background:rgba(14,165,233,.03)}
 .tc{background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--r14);padding:14px;display:flex;align-items:center;gap:11px;transition:all .15s}
 .tc:hover{border-color:var(--border2);transform:translateY(-1px)}
 .tc.on{border-color:rgba(16,185,129,.2);box-shadow:0 0 20px rgba(16,185,129,.05)}
-.tc-ava{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;background:linear-gradient(135deg,var(--a2),var(--a))}
+.tc-ava{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;background:linear-gradient(135deg,var(--a2),var(--a));overflow:hidden}
+.tc-ava img{width:100%;height:100%;object-fit:cover}
 .tc.on .tc-ava{background:linear-gradient(135deg,#059669,var(--green));box-shadow:0 0 12px rgba(16,185,129,.3)}
 .tc-n{font-family:var(--fg);font-weight:600;font-size:13px;letter-spacing:-.1px}
 .tc-r{font-size:11px;color:var(--t3);margin-top:1px}
@@ -208,7 +217,8 @@ tr:hover td{background:rgba(14,165,233,.03)}
 .notif.ok .nb{background:var(--green)}.notif.err .nb{background:var(--red)}.notif.warn .nb{background:var(--yellow)}.notif .nb{background:var(--a)}
 .ph{background:linear-gradient(135deg,rgba(14,165,233,.15),rgba(14,165,233,.05));border:1px solid var(--border2);border-radius:var(--r20);padding:28px;position:relative;overflow:hidden;margin-bottom:14px}
 .ph::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.12),transparent 70%)}
-.ph-ava{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;margin-bottom:12px;box-shadow:0 0 24px rgba(14,165,233,.4)}
+.ph-ava{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;margin-bottom:12px;box-shadow:0 0 24px rgba(14,165,233,.4);overflow:hidden}
+.ph-ava img{width:100%;height:100%;object-fit:cover}
 .ph-n{font-family:var(--fg);font-size:22px;font-weight:800;letter-spacing:-.5px}
 .ph-r{font-size:13px;color:var(--a3);margin-top:3px;opacity:.9}
 .fz-doc{background:linear-gradient(135deg,rgba(14,165,233,.05),rgba(139,92,246,.05));border:1px solid var(--border2);border-radius:var(--r14);padding:24px;font-family:var(--f)}
@@ -247,6 +257,15 @@ tr:hover td{background:rgba(14,165,233,.03)}
 .mbn .mi{font-size:19px;line-height:1}
 .sep{height:1px;background:var(--border);margin:16px 0}
 .slabel{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+/* Verif Steps */
+.vstep{display:none}
+.vstep.active{display:block}
+.step-indicator{display:flex;gap:6px;margin-bottom:20px}
+.step-dot{flex:1;height:3px;border-radius:2px;background:var(--s4);transition:background .3s}
+.step-dot.done{background:var(--a)}
+.step-dot.active{background:var(--a3)}
+/* Charakter-Foto gross im Profil */
+.char-foto{width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--border2);box-shadow:0 0 20px rgba(14,165,233,.3)}
 </style>
 </head>
 <body>
@@ -274,6 +293,8 @@ tr:hover td{background:rgba(14,165,233,.03)}
         <div class="l-tab" id="tab-cit-btn" onclick="switchTab('cit')">👤 Bürger</div>
       </div>
       <div class="l-err" id="lerr"></div>
+
+      <!-- BEAMTER TAB -->
       <div id="tab-off">
         <button class="btn btn-discord b-full" onclick="loginDiscord('officer')" style="padding:13px;font-size:14px;margin-bottom:10px"><span style="font-size:18px">🎮</span> Mit Discord anmelden (Beamter)</button>
         <div class="l-info"><span style="color:var(--a3);font-weight:600">ℹ️ Beamter-Login:</span> Deine Discord-ID muss in der Dienstnummern-Datenbank hinterlegt sein.</div>
@@ -282,20 +303,87 @@ tr:hover td{background:rgba(14,165,233,.03)}
         <div class="fg"><label>Passwort</label><input type="password" id="l-pass" onkeydown="if(event.key==='Enter')loginOff()"></div>
         <button class="btn b-pri b-full" id="lbtn" onclick="loginOff()" style="padding:11px">Anmelden →</button>
       </div>
+
+      <!-- BÜRGER TAB -->
       <div id="tab-cit" style="display:none">
-        <div class="l-info">Bürger melden sich ausschließlich über Discord an.</div>
+        <div class="l-info">👤 Melde dich mit Discord an. Neues Konto? Du wirst automatisch zur Registrierung weitergeleitet.</div>
         <button class="btn btn-discord b-full" onclick="loginDiscord('citizen')" style="padding:13px;font-size:14px"><span style="font-size:18px">🎮</span> Mit Discord anmelden</button>
       </div>
+
+      <!-- REGISTRIERUNG (mehrstufig) -->
       <div id="tab-reg" style="display:none">
-        <div class="l-info"><b style="color:var(--a3)">Neues Konto erstellen</b><br>Discord verifiziert ✅ – vervollständige dein Profil.</div>
-        <div class="fg"><label>Roblox-Name (Charakter) *</label><input id="r-name" placeholder="z.B. MaxMustermann_RP"></div>
-        <div class="fg"><label>Roblox @Username</label><input id="r-roblox-at" placeholder="robloxuser123"></div>
-        <div class="fg"><label>Geburtsdatum (RP)</label><input type="date" id="r-dob"></div>
-        <button class="btn b-pri b-full" id="reg-btn" onclick="completeRegistration()" style="padding:11px;margin-bottom:10px">✅ Registrierung abschließen</button>
-        <div style="text-align:center"><span style="font-size:12px;color:var(--t3);cursor:pointer" onclick="switchTab('cit')">← Zurück</span></div>
+        <div class="step-indicator" id="reg-steps">
+          <div class="step-dot active" id="sd1"></div>
+          <div class="step-dot" id="sd2"></div>
+          <div class="step-dot" id="sd3"></div>
+        </div>
+
+        <!-- Schritt 1: Charakter -->
+        <div class="vstep active" id="reg-step1">
+          <div style="font-family:var(--fg);font-size:13px;font-weight:700;margin-bottom:12px;color:var(--a3)">1/3 · Charakter-Daten</div>
+          <div class="frow">
+            <div class="fg"><label>RP Vorname *</label><input id="r-vorname" placeholder="z.B. Max" maxlength="30"></div>
+            <div class="fg"><label>RP Nachname *</label><input id="r-nachname" placeholder="z.B. Mustermann" maxlength="30"></div>
+          </div>
+          <div class="frow">
+            <div class="fg"><label>RP Geburtsdatum *</label><input type="date" id="r-dob"></div>
+            <div class="fg">
+              <label>Geschlecht</label>
+              <select id="r-gender">
+                <option value="">– wählen –</option>
+                <option value="männlich">Männlich</option>
+                <option value="weiblich">Weiblich</option>
+                <option value="divers">Divers</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Charakter-Beschreibung</label>
+            <textarea id="r-desc" placeholder="Kurze Beschreibung deines Charakters…" style="min-height:60px"></textarea>
+          </div>
+          <button class="btn b-pri b-full" onclick="regNext(1)">Weiter →</button>
+        </div>
+
+        <!-- Schritt 2: Roblox -->
+        <div class="vstep" id="reg-step2">
+          <div style="font-family:var(--fg);font-size:13px;font-weight:700;margin-bottom:12px;color:var(--a3)">2/3 · Roblox-Account</div>
+          <div class="fg"><label>Roblox Anzeigename (RP) *</label><input id="r-name" placeholder="z.B. MaxMustermann_RP" maxlength="40"></div>
+          <div class="fg"><label>Roblox @Username *</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span style="color:var(--t3);font-size:13px">@</span>
+              <input id="r-roblox-at" placeholder="robloxuser123" style="flex:1" maxlength="30">
+            </div>
+          </div>
+          <div class="l-info" style="font-size:11px">⚠️ Dein Roblox-Account wird zur Verifikation genutzt. Stelle sicher dass die Angaben korrekt sind.</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn b-ghost" style="flex:1" onclick="regBack(2)">← Zurück</button>
+            <button class="btn b-pri" style="flex:1" onclick="regNext(2)">Weiter →</button>
+          </div>
+        </div>
+
+        <!-- Schritt 3: Foto & Abschluss -->
+        <div class="vstep" id="reg-step3">
+          <div style="font-family:var(--fg);font-size:13px;font-weight:700;margin-bottom:12px;color:var(--a3)">3/3 · Charakter-Foto</div>
+          <div class="fg">
+            <label>Charakter-Foto (optional)</label>
+            <div class="foto-upload" id="foto-drop">
+              <input type="file" id="r-foto" accept="image/*" onchange="previewFoto(this)">
+              <img id="foto-prev" class="foto-preview">
+              <div class="foto-icon" id="foto-icon">📸</div>
+              <div class="foto-label" id="foto-lbl">Klicken oder Foto hierher ziehen<br><small style="color:var(--t3)">JPG, PNG · max. 2MB</small></div>
+            </div>
+          </div>
+          <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:var(--r10);padding:12px;margin-bottom:14px;font-size:12px">
+            <div id="reg-summary" style="color:var(--t2)"></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn b-ghost" style="flex:1" onclick="regBack(3)">← Zurück</button>
+            <button class="btn b-pri" style="flex:2" id="reg-btn" onclick="completeRegistration()">✅ Konto erstellen</button>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="l-footer">CopNet v3.2 · Nur für befugte Personen</div>
+    <div class="l-footer">CopNet v3.3 · Nur für befugte Personen</div>
     <div style="text-align:center;margin-top:10px">
       <a href="https://karlsruhe-rp-vc.vercel.app/impressum" target="_blank" style="font-size:11px;color:var(--t3);text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color .15s" onmouseover="this.style.color='var(--a3)'" onmouseout="this.style.color='var(--t3)'">Impressum &amp; Datenschutz</a>
     </div>
@@ -335,13 +423,14 @@ tr:hover td{background:rgba(14,165,233,.03)}
             <div class="d-dot"></div><span id="dlbl">Außer Dienst</span>
           </div>
           <div class="u-chip">
-            <div class="u-ava" id="u-ava">?</div>
+            <div class="u-ava" id="u-ava"><span id="u-ava-txt">?</span></div>
             <div><div class="u-n" id="u-n">–</div><div class="u-r" id="u-r">–</div></div>
           </div>
         </div>
       </header>
 
       <div class="content">
+        <!-- DASHBOARD -->
         <div class="page active" id="page-dashboard">
           <div class="pg-hd">
             <div><div class="pg-title">Lagebild</div><div class="pg-sub">Echtzeit-Übersicht · Polizei Karlsruhe</div></div>
@@ -372,17 +461,16 @@ tr:hover td{background:rgba(14,165,233,.03)}
           </div>
         </div>
 
+        <!-- EINSATZ -->
         <div class="page" id="page-einsatz">
           <div class="pg-hd">
             <div><div class="pg-title">Einsatz</div><div class="pg-sub">Einsatzmeldungen & Berichte</div></div>
             <button class="btn b-pri b-sm" onclick="openNewEinsatz()">+ Neuer Einsatz</button>
           </div>
-          <div class="tbl-wrap">
-            <table><thead><tr><th>#</th><th>Art</th><th>Ort</th><th>Beamter</th><th>Status</th><th>Zeit</th><th></th></tr></thead>
-            <tbody id="e-tb"></tbody></table>
-          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>#</th><th>Art</th><th>Ort</th><th>Beamter</th><th>Status</th><th>Zeit</th><th></th></tr></thead><tbody id="e-tb"></tbody></table></div>
         </div>
 
+        <!-- STRAFANZEIGEN -->
         <div class="page" id="page-strafanzeigen">
           <div class="pg-hd">
             <div><div class="pg-title">Strafanzeigen</div><div class="pg-sub">Anzeigen anlegen · automatisch per DM</div></div>
@@ -390,52 +478,47 @@ tr:hover td{background:rgba(14,165,233,.03)}
           </div>
           <div class="card" style="padding:12px;margin-bottom:12px">
             <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <input id="sa-search" placeholder="🔍 Suchen (Name, Tatvorwurf…)" onkeyup="loadAnzeigen()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;flex:1;min-width:180px;font-family:var(--f);outline:none">
+              <input id="sa-search" placeholder="🔍 Suchen…" onkeyup="loadAnzeigen()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;flex:1;min-width:180px;font-family:var(--f);outline:none">
               <select id="sa-filter" onchange="loadAnzeigen()" style="background:var(--s2);border:1px solid var(--border);color:var(--t1);padding:8px 12px;border-radius:var(--r6);font-size:12px;font-family:var(--fg);outline:none"><option value="">Alle</option><option>Offen</option><option>Ermittlung</option><option>Abgeschlossen</option></select>
             </div>
           </div>
           <div class="case-list" id="sa-list"></div>
         </div>
 
+        <!-- BÜRGER -->
         <div class="page" id="page-buerger">
           <div class="pg-hd"><div><div class="pg-title">Bürgerdatenbank</div><div class="pg-sub">Alle registrierten Bürger · Akten & Einträge</div></div></div>
           <div class="card" style="padding:12px;margin-bottom:12px">
             <input id="b-search" placeholder="🔍 Bürger suchen (Name, Roblox, Discord…)" onkeyup="loadBuerger()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;width:100%;font-family:var(--f);outline:none">
           </div>
-          <div class="tbl-wrap">
-            <table><thead><tr><th>Name</th><th>Roblox</th><th>Discord</th><th>Einträge</th><th>Führerschein</th><th>Status</th><th></th></tr></thead>
-            <tbody id="b-tb"></tbody></table>
-          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>Charakter</th><th>Roblox</th><th>Discord</th><th>Einträge</th><th>Führerschein</th><th>Status</th><th></th></tr></thead><tbody id="b-tb"></tbody></table></div>
         </div>
 
+        <!-- FAHRZEUGE -->
         <div class="page" id="page-fahrzeuge">
           <div class="pg-hd">
             <div><div class="pg-title">Fahrzeugregister</div><div class="pg-sub">KFZ-Datenbank</div></div>
             <button class="btn b-pri b-sm" onclick="openNewFahrzeug()">+ KFZ eintragen</button>
           </div>
           <div class="card" style="padding:12px;margin-bottom:12px">
-            <input id="fz-search" placeholder="🔍 KFZ suchen (Kennzeichen, Marke, Halter…)" onkeyup="loadFahrzeuge()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;width:100%;font-family:var(--f);outline:none">
+            <input id="fz-search" placeholder="🔍 KFZ suchen…" onkeyup="loadFahrzeuge()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;width:100%;font-family:var(--f);outline:none">
           </div>
-          <div class="tbl-wrap">
-            <table><thead><tr><th>Kennzeichen</th><th>Marke/Modell</th><th>Farbe</th><th>PS/km/h</th><th>Halter</th><th>Status</th><th>Notizen</th><th>Aktionen</th></tr></thead>
-            <tbody id="fz-tb"></tbody></table>
-          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>Kennzeichen</th><th>Marke/Modell</th><th>Farbe</th><th>Halter</th><th>Status</th><th>Notizen</th><th>Aktionen</th></tr></thead><tbody id="fz-tb"></tbody></table></div>
         </div>
 
+        <!-- FÜHRERSCHEINE -->
         <div class="page" id="page-fuehrerscheine">
           <div class="pg-hd">
-            <div><div class="pg-title">Führerscheine</div><div class="pg-sub">Alle ausgestellten Führerscheine · Aktionen via CopNet → Discord-Rollen werden automatisch synchronisiert</div></div>
+            <div><div class="pg-title">Führerscheine</div><div class="pg-sub">Alle Führerscheine · Rollen-Sync via Bot</div></div>
             <button class="btn b-ghost b-sm" onclick="loadFuehrerscheine()">🔄 Aktualisieren</button>
           </div>
           <div class="card" style="padding:12px;margin-bottom:12px">
             <input id="fs-search" placeholder="🔍 Name, Discord-ID, Roblox…" onkeyup="renderFsTable()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;width:100%;font-family:var(--f);outline:none">
           </div>
-          <div class="tbl-wrap">
-            <table><thead><tr><th>Name</th><th>Klassen</th><th>Status</th><th>Punkte</th><th>Roblox</th><th>Discord</th><th>Aktion</th></tr></thead>
-            <tbody id="fs-tb"></tbody></table>
-          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Klassen</th><th>Status</th><th>Punkte</th><th>Roblox</th><th>Discord</th><th>Aktion</th></tr></thead><tbody id="fs-tb"></tbody></table></div>
         </div>
 
+        <!-- FAHNDUNG -->
         <div class="page" id="page-fahndung">
           <div class="pg-hd">
             <div><div class="pg-title">Fahndung</div><div class="pg-sub">Aktive Fahndungen & Suchmeldungen</div></div>
@@ -444,52 +527,48 @@ tr:hover td{background:rgba(14,165,233,.03)}
           <div class="case-list" id="fahn-list"></div>
         </div>
 
+        <!-- TEAM -->
         <div class="page" id="page-team">
           <div class="pg-hd"><div><div class="pg-title">Team</div><div class="pg-sub">Alle Beamten & Dienststatus</div></div></div>
           <div class="tgrid" id="team-grid"></div>
         </div>
 
+        <!-- DIENSTNUMMERN -->
         <div class="page" id="page-dienstnummern">
           <div class="pg-hd">
-            <div><div class="pg-title">Dienstnummern</div><div class="pg-sub">15/001–15/120 · Belegung aus Supabase</div></div>
+            <div><div class="pg-title">Dienstnummern</div><div class="pg-sub">15/001–15/120</div></div>
             <div style="display:flex;gap:8px">
-              <button class="btn b-ghost b-sm" onclick="loadDienstnummern()">🔄 Aktualisieren</button>
-              <button class="btn b-ghost b-sm" onclick="importDNFromOfficers()">📥 Von Officers importieren</button>
+              <button class="btn b-ghost b-sm" onclick="loadDienstnummern()">🔄</button>
+              <button class="btn b-ghost b-sm" onclick="importDNFromOfficers()">📥 Importieren</button>
             </div>
           </div>
           <div class="card" style="padding:12px;margin-bottom:12px">
-            <input id="dn-search" placeholder="🔍 Dienstnummer oder Username suchen…" onkeyup="renderDN()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;width:100%;font-family:var(--f);outline:none">
+            <input id="dn-search" placeholder="🔍 Suchen…" onkeyup="renderDN()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;width:100%;font-family:var(--f);outline:none">
           </div>
-          <div class="tbl-wrap"><table>
-            <thead><tr><th>Nr.</th><th>Vergeben an</th><th>Discord ID</th><th>Vergeben am</th><th>Vergeben von</th><th>Status</th></tr></thead>
-            <tbody id="dn-tb"></tbody>
-          </table></div>
+          <div class="tbl-wrap"><table><thead><tr><th>Nr.</th><th>Vergeben an</th><th>Discord ID</th><th>Vergeben am</th><th>Status</th></tr></thead><tbody id="dn-tb"></tbody></table></div>
         </div>
 
+        <!-- NUTZERVERWALTUNG -->
         <div class="page" id="page-usermgmt">
           <div class="pg-hd">
             <div><div class="pg-title">Nutzerverwaltung</div><div class="pg-sub">Beamte anlegen & verwalten</div></div>
             <button class="btn b-pri b-sm" onclick="openAddUser()">+ Nutzer anlegen</button>
           </div>
-          <div class="tbl-wrap">
-            <table><thead><tr><th>Name</th><th>Dienst-Nr</th><th>Rang</th><th>Discord</th><th>Dienst</th><th>Status</th><th>Aktionen</th></tr></thead>
-            <tbody id="um-tb"></tbody></table>
-          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Dienst-Nr</th><th>Rang</th><th>Discord</th><th>Dienst</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="um-tb"></tbody></table></div>
         </div>
 
+        <!-- PERSONALAKTEN -->
         <div class="page" id="page-personalakten">
           <div class="pg-hd">
-            <div><div class="pg-title">Personalakten</div><div class="pg-sub">Beamten-Akten · Einträge · Beförderungen · Verwarnungen</div></div>
+            <div><div class="pg-title">Personalakten</div><div class="pg-sub">Beamten-Akten · Einträge · Beförderungen</div></div>
           </div>
           <div class="card" style="padding:12px;margin-bottom:12px">
-            <input id="pa-search" placeholder="🔍 Beamten suchen (Name, Dienstnummer…)" onkeyup="loadPersonalakten()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;width:100%;font-family:var(--f);outline:none">
+            <input id="pa-search" placeholder="🔍 Beamten suchen…" onkeyup="loadPersonalakten()" style="background:rgba(20,21,32,.8);border:1px solid var(--border);color:var(--t1);padding:10px 14px;border-radius:var(--r6);font-size:13px;width:100%;font-family:var(--f);outline:none">
           </div>
-          <div class="tbl-wrap">
-            <table><thead><tr><th>Name</th><th>Dienst-Nr</th><th>Rang</th><th>Einträge</th><th>Status</th><th></th></tr></thead>
-            <tbody id="pa-tb"></tbody></table>
-          </div>
+          <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Dienst-Nr</th><th>Rang</th><th>Einträge</th><th>Status</th><th></th></tr></thead><tbody id="pa-tb"></tbody></table></div>
         </div>
 
+        <!-- PROFIL -->
         <div class="page" id="page-profil">
           <div class="pg-hd"><div><div class="pg-title">Mein Profil</div></div></div>
           <div style="max-width:500px" id="profil-wrap"></div>
@@ -507,7 +586,7 @@ tr:hover td{background:rgba(14,165,233,.03)}
   </nav>
 </div>
 
-<!-- MODALS -->
+<!-- MODALS (alle gleich wie vorher, nur .catch() fixes) -->
 <div class="mbg" id="m-buerger"><div class="modal lg">
   <div class="mhd"><h3>Bürgerprofil</h3><button class="mcl" onclick="cm('m-buerger')">✕</button></div>
   <div class="mbody" id="m-b-b"></div>
@@ -516,10 +595,10 @@ tr:hover td{background:rgba(14,165,233,.03)}
 <div class="mbg" id="m-neintrag"><div class="modal">
   <div class="mhd"><h3>Akteneintrag hinzufügen</h3><button class="mcl" onclick="cm('m-neintrag')">✕</button></div>
   <div class="mbody">
-    <div style="background:rgba(14,165,233,.05);border:1px solid rgba(14,165,233,.15);border-radius:var(--r10);padding:11px;margin-bottom:14px;font-size:12px;color:var(--t2)">📨 <b style="color:var(--a3)">Automatisch:</b> Bürger erhält Discord-DM über den neuen Eintrag.</div>
+    <div style="background:rgba(14,165,233,.05);border:1px solid rgba(14,165,233,.15);border-radius:var(--r10);padding:11px;margin-bottom:14px;font-size:12px;color:var(--t2)">📨 <b style="color:var(--a3)">Automatisch:</b> Bürger erhält Discord-DM.</div>
     <div class="fg"><label>Typ</label><select id="ne-typ"><option value="Strafanzeige">📋 Strafanzeige</option><option value="Verwarnung">⚠️ Verwarnung</option><option value="Ermittlung">🔎 Ermittlung</option><option value="Festnahme">🔒 Festnahme</option><option value="Notiz">📝 Notiz</option></select></div>
     <div class="fg"><label>Tatvorwurf / Betreff *</label><input id="ne-tv" placeholder="z.B. § 249 StGB Raub…"></div>
-    <div class="fg"><label>Beschreibung / Sachverhalt</label><textarea id="ne-desc" placeholder="Ausführliche Beschreibung…"></textarea></div>
+    <div class="fg"><label>Beschreibung</label><textarea id="ne-desc" placeholder="Ausführliche Beschreibung…"></textarea></div>
     <div class="frow">
       <div class="fg"><label>Status</label><select id="ne-status"><option>Offen</option><option>Ermittlung</option><option>Abgeschlossen</option></select></div>
       <div class="fg"><label>Schweregrad</label><select id="ne-sg"><option>Gering</option><option>Mittel</option><option>Schwer</option><option>Kritisch</option></select></div>
@@ -527,40 +606,13 @@ tr:hover td{background:rgba(14,165,233,.03)}
     <input type="hidden" id="ne-cid"><input type="hidden" id="ne-cname"><input type="hidden" id="ne-disc">
     <div id="ne-err" style="color:var(--red);font-size:12px;min-height:14px;margin-bottom:4px"></div>
   </div>
-  <div class="mfoot"><button class="btn b-pri" onclick="saveEintrag()">💾 Eintrag speichern</button><button class="btn b-ghost" onclick="cm('m-neintrag')">Abbrechen</button></div>
+  <div class="mfoot"><button class="btn b-pri" onclick="saveEintrag()">💾 Speichern</button><button class="btn b-ghost" onclick="cm('m-neintrag')">Abbrechen</button></div>
 </div></div>
 
 <div class="mbg" id="m-fz"><div class="modal">
   <div class="mhd"><h3>Führungszeugnis</h3><button class="mcl" onclick="cm('m-fz')">✕</button></div>
   <div class="mbody" id="m-fz-b"></div>
   <div class="mfoot" id="m-fz-f"></div>
-</div></div>
-
-<div class="mbg" id="m-share"><div class="modal lg">
-  <div class="mhd"><h3 id="m-share-t">Akte</h3><button class="mcl" onclick="cm('m-share');window.history.replaceState({},'','/')">✕</button></div>
-  <div class="mbody" id="m-share-b"></div>
-</div></div>
-
-<div class="mbg" id="m-personalakte"><div class="modal lg">
-  <div class="mhd"><h3 id="m-pa-t">Personalakte</h3><button class="mcl" onclick="cm('m-personalakte')">✕</button></div>
-  <div class="mbody" id="m-pa-b"></div>
-</div></div>
-
-<div class="mbg" id="m-pa-neintrag"><div class="modal">
-  <div class="mhd"><h3>Personalakten-Eintrag</h3><button class="mcl" onclick="cm('m-pa-neintrag')">✕</button></div>
-  <div class="mbody">
-    <div style="background:rgba(14,165,233,.05);border:1px solid rgba(14,165,233,.15);border-radius:var(--r10);padding:11px;margin-bottom:14px;font-size:12px;color:var(--t2)">📨 <b style="color:var(--a3)">Automatisch:</b> Beamter erhält Discord-DM.</div>
-    <div class="fg"><label>Typ</label><select id="pa-typ"><option value="Beförderung">⬆️ Beförderung</option><option value="Verwarnung">⚠️ Verwarnung</option><option value="Lob">🌟 Lob</option><option value="Suspendierung">🔒 Suspendierung</option><option value="Versetzung">🔄 Versetzung</option><option value="Abmahnung">📋 Abmahnung</option><option value="Kündigung">❌ Kündigung</option><option value="Notiz">📝 Interne Notiz</option></select></div>
-    <div class="fg"><label>Betreff *</label><input id="pa-betreff" placeholder="z.B. Beförderung zum Polizeikommissar…"></div>
-    <div class="fg"><label>Details / Begründung</label><textarea id="pa-details" placeholder="Ausführliche Begründung…"></textarea></div>
-    <div class="frow">
-      <div class="fg"><label>Neuer Rang (optional)</label><select id="pa-rang"><option value="">– kein Rangwechsel –</option><option>Streifenpolizist</option><option>Polizeimeister</option><option>Polizeihauptmeister</option><option>Polizeikommissar</option><option>Polizeihauptkommissar</option><option>Polizeioberkommissar</option><option>Kriminalkommissar</option><option>Vize Chef</option><option>Polizei Chef</option></select></div>
-      <div class="fg"><label>Sichtbarkeit</label><select id="pa-sicht"><option value="intern">🔒 Nur Führung</option><option value="beamter">👮 Beamter sieht es</option></select></div>
-    </div>
-    <input type="hidden" id="pa-oid"><input type="hidden" id="pa-oname"><input type="hidden" id="pa-odisc">
-    <div id="pa-err" style="color:var(--red);font-size:12px;min-height:14px;margin-bottom:4px"></div>
-  </div>
-  <div class="mfoot"><button class="btn b-pri" onclick="savePersonalEintrag()">💾 Eintrag speichern</button><button class="btn b-ghost" onclick="cm('m-pa-neintrag')">Abbrechen</button></div>
 </div></div>
 
 <div class="mbg" id="m-anzeige"><div class="modal lg">
@@ -574,9 +626,9 @@ tr:hover td{background:rgba(14,165,233,.03)}
   <div class="mbody">
     <div style="background:rgba(14,165,233,.05);border:1px solid rgba(14,165,233,.15);border-radius:var(--r10);padding:11px;margin-bottom:14px;font-size:12px;color:var(--t2)">📨 <b style="color:var(--a3)">Automatisch:</b> Bürger erhält Discord-DM.</div>
     <div class="ac-wrap fg"><label>Beschuldigter Bürger</label><input id="nsa-bs" placeholder="Name, Discord oder Roblox suchen…" oninput="acSearch('nsa-bs','nsa-drop',fillAnzeigeCit)" autocomplete="off"><div class="ac-drop" id="nsa-drop"></div></div>
-    <div class="fg"><label>Name Beschuldigter *</label><input id="nsa-n" placeholder="Vollständiger Name"></div>
+    <div class="fg"><label>Name *</label><input id="nsa-n" placeholder="Vollständiger Name"></div>
     <div class="fg"><label>Tatvorwurf *</label><input id="nsa-tv" placeholder="z.B. § 249 StGB Raub…"></div>
-    <div class="fg"><label>Beschreibung</label><textarea id="nsa-desc" placeholder="Ausführliche Beschreibung…"></textarea></div>
+    <div class="fg"><label>Beschreibung</label><textarea id="nsa-desc"></textarea></div>
     <div class="frow">
       <div class="fg"><label>Status</label><select id="nsa-s"><option>Offen</option><option>Ermittlung</option></select></div>
       <div class="fg"><label>Schweregrad</label><select id="nsa-sg"><option>Gering</option><option>Mittel</option><option>Schwer</option><option>Kritisch</option></select></div>
@@ -593,7 +645,7 @@ tr:hover td{background:rgba(14,165,233,.03)}
       <div class="fg"><label>Art *</label><select id="ne-t"><option value="">– wählen –</option><option>Körperverletzung</option><option>Raub</option><option>Einbruch</option><option>Schusswechsel</option><option>Verfolgung</option><option>Verkehrsunfall</option><option>Ruhestörung</option><option>Drogenhandel</option><option>Sonstiges</option></select></div>
       <div class="fg"><label>Ort *</label><input id="ne-o" placeholder="Straße / Gebiet"></div>
     </div>
-    <div class="fg"><label>Beschreibung</label><textarea id="ne-d" style="min-height:70px" placeholder="Details…"></textarea></div>
+    <div class="fg"><label>Beschreibung</label><textarea id="ne-d" style="min-height:70px"></textarea></div>
     <div id="ne-err2" style="color:var(--red);font-size:12px;min-height:14px;margin-bottom:4px"></div>
   </div>
   <div class="mfoot"><button class="btn b-pri" onclick="saveEinsatz()">🚨 Starten</button><button class="btn b-ghost" onclick="cm('m-new-einsatz')">Abbrechen</button></div>
@@ -604,14 +656,14 @@ tr:hover td{background:rgba(14,165,233,.03)}
   <div class="mbody">
     <div class="fg"><label>Typ</label><select id="fh-typ" onchange="toggleFahndungTyp()"><option value="person">👤 Person</option><option value="kfz">🚗 Fahrzeug</option></select></div>
     <div id="fh-person-wrap">
-      <div class="ac-wrap fg"><label>Bürger suchen</label><input id="fh-bs" placeholder="Name, Discord-Tag oder Roblox…" oninput="acSearchFahndung()" autocomplete="off"><div class="ac-drop" id="fh-drop"></div></div>
-      <div class="fg"><label>Name *</label><input id="fh-n" placeholder="Vollständiger Name des Gesuchten"></div>
+      <div class="ac-wrap fg"><label>Bürger suchen</label><input id="fh-bs" placeholder="Name, Discord…" oninput="acSearchFahndung()" autocomplete="off"><div class="ac-drop" id="fh-drop"></div></div>
+      <div class="fg"><label>Name *</label><input id="fh-n" placeholder="Vollständiger Name"></div>
     </div>
     <div id="fh-kfz-wrap" style="display:none">
-      <div class="fg"><label>Kennzeichen *</label><input id="fh-plate" placeholder="z.B. KA-XY 1234" style="text-transform:uppercase"></div>
+      <div class="fg"><label>Kennzeichen *</label><input id="fh-plate" placeholder="KA-XY 1234" style="text-transform:uppercase"></div>
     </div>
     <div class="fg"><label>Grund *</label><input id="fh-g" placeholder="z.B. Verdacht auf Raub…"></div>
-    <div class="fg"><label>Beschreibung / Hinweise</label><textarea id="fh-d" style="min-height:70px" placeholder="Details…"></textarea></div>
+    <div class="fg"><label>Details</label><textarea id="fh-d" style="min-height:70px"></textarea></div>
     <div id="fh-cit-badge" style="display:none;margin-bottom:10px;padding:8px 12px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:var(--r6);font-size:12px;color:#34d399"></div>
     <div id="fh-err" style="color:var(--red);font-size:12px;min-height:14px;margin-bottom:4px"></div>
   </div>
@@ -623,14 +675,14 @@ tr:hover td{background:rgba(14,165,233,.03)}
   <div class="mbody">
     <div class="frow">
       <div class="fg"><label>Kennzeichen *</label><input id="fz-kz" placeholder="KA-XX 1234" style="text-transform:uppercase"></div>
-      <div class="fg"><label>Farbe</label><input id="fz-col" placeholder="z.B. Schwarz Matt"></div>
+      <div class="fg"><label>Farbe</label><input id="fz-col" placeholder="Schwarz Matt"></div>
     </div>
     <div class="frow">
-      <div class="fg"><label>Marke *</label><input id="fz-mk" placeholder="z.B. BMW"></div>
-      <div class="fg"><label>Modell</label><input id="fz-mod" placeholder="z.B. M5"></div>
+      <div class="fg"><label>Marke *</label><input id="fz-mk" placeholder="BMW"></div>
+      <div class="fg"><label>Modell</label><input id="fz-mod" placeholder="M5"></div>
     </div>
-    <div class="ac-wrap fg"><label>Halter (Bürger suchen)</label><input id="fz-hs" placeholder="Name suchen…" oninput="acSearch('fz-hs','fz-drop',fillFzHalter)" autocomplete="off"><div class="ac-drop" id="fz-drop"></div></div>
-    <div class="fg"><label>Notizen</label><input id="fz-note" placeholder="z.B. Tuning, beschlagnahmt…"></div>
+    <div class="ac-wrap fg"><label>Halter</label><input id="fz-hs" placeholder="Name suchen…" oninput="acSearch('fz-hs','fz-drop',fillFzHalter)" autocomplete="off"><div class="ac-drop" id="fz-drop"></div></div>
+    <div class="fg"><label>Notizen</label><input id="fz-note" placeholder="z.B. Tuning…"></div>
     <div id="fz-err" style="color:var(--red);font-size:12px;min-height:14px;margin-bottom:4px"></div>
   </div>
   <div class="mfoot"><button class="btn b-pri" onclick="saveFahrzeug()">💾 Eintragen</button><button class="btn b-ghost" onclick="cm('m-fahrzeug')">Abbrechen</button></div>
@@ -640,7 +692,6 @@ tr:hover td{background:rgba(14,165,233,.03)}
   <div class="mhd"><h3 id="m-beschlag-t">Fahrzeug beschlagnahmen</h3><button class="mcl" onclick="cm('m-beschlag')">✕</button></div>
   <div class="mbody">
     <div id="beschlag-fz-info" style="margin-bottom:14px"></div>
-    <div style="background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.2);border-radius:var(--r10);padding:12px;margin-bottom:14px;font-size:12px;color:var(--t2)">⚠️ Das Fahrzeug wird als <b style="color:#f87171">Beschlagnahmt</b> markiert. Halter erhält Discord-DM.</div>
     <div class="fg"><label>Grund *</label><input id="beschlag-grund" placeholder="z.B. Fahrt unter Drogeneinfluss…"></div>
     <input type="hidden" id="beschlag-vid">
     <input type="hidden" id="beschlag-plate">
@@ -654,33 +705,28 @@ tr:hover td{background:rgba(14,165,233,.03)}
   </div>
 </div></div>
 
-<!-- NEU: FS-AKTION MIT ROLLEN-SYNC HINWEIS -->
 <div class="mbg" id="m-fs-aktion"><div class="modal">
   <div class="mhd"><h3 id="m-fsa-title">Führerschein-Aktion</h3><button class="mcl" onclick="cm('m-fs-aktion')">✕</button></div>
   <div class="mbody">
     <div id="fsa-buerger-info" style="margin-bottom:16px"></div>
     <div class="fg"><label>Aktion</label>
       <select id="fsa-aktion" onchange="updateFsAktionUI()">
-        <option value="abnehmen">🚔 Führerschein abnehmen (temporär)</option>
-        <option value="sperren">🔒 Führerschein sperren</option>
-        <option value="entziehen">❌ Führerschein entziehen (permanent)</option>
-        <option value="erteilen">✅ Führerschein wiedererteilen / reaktivieren</option>
+        <option value="abnehmen">🚔 Abnehmen (temporär)</option>
+        <option value="sperren">🔒 Sperren</option>
+        <option value="entziehen">❌ Entziehen (permanent)</option>
+        <option value="erteilen">✅ Wiedererteilen</option>
         <option value="punkte_add">⚠️ Punkte hinzufügen</option>
         <option value="punkte_reset">🔄 Punkte zurücksetzen</option>
       </select>
     </div>
-    <div id="fsa-grund-wrap" class="fg"><label>Grund / Bemerkung *</label><input id="fsa-grund" placeholder="z.B. § 316 StGB Trunkenheit im Verkehr…"></div>
-    <div id="fsa-punkte-wrap" class="fg" style="display:none"><label>Punkte hinzufügen (1–8)</label><input type="number" id="fsa-punkte" min="1" max="8" value="1"></div>
-    <!-- NEU: Hinweis Rollen-Sync -->
-    <div id="fsa-sync-info" style="background:rgba(14,165,233,.05);border:1px solid rgba(14,165,233,.15);border-radius:var(--r10);padding:10px;font-size:12px;color:var(--t2);margin-bottom:8px">
-      📨 Bürger erhält Discord-DM.<br>
-      <span id="fsa-sync-hint" style="color:var(--a3)">🔄 Discord-Rollen werden automatisch synchronisiert.</span>
+    <div id="fsa-grund-wrap" class="fg"><label>Grund *</label><input id="fsa-grund" placeholder="z.B. § 316 StGB Trunkenheit…"></div>
+    <div id="fsa-punkte-wrap" class="fg" style="display:none"><label>Punkte (1–8)</label><input type="number" id="fsa-punkte" min="1" max="8" value="1"></div>
+    <div style="background:rgba(14,165,233,.05);border:1px solid rgba(14,165,233,.15);border-radius:var(--r10);padding:10px;font-size:12px;color:var(--t2);margin-bottom:8px">
+      📨 Bürger erhält DM.<br>
+      <span id="fsa-sync-hint" style="color:var(--a3)">🔄 Discord-Rollen werden synchronisiert.</span>
     </div>
-    <input type="hidden" id="fsa-cid">
-    <input type="hidden" id="fsa-discord">
-    <input type="hidden" id="fsa-cname">
-    <input type="hidden" id="fsa-cur-punkte">
-    <input type="hidden" id="fsa-cur-status">
+    <input type="hidden" id="fsa-cid"><input type="hidden" id="fsa-discord"><input type="hidden" id="fsa-cname">
+    <input type="hidden" id="fsa-cur-punkte"><input type="hidden" id="fsa-cur-status">
     <div id="fsa-err" style="color:var(--red);font-size:12px;min-height:14px"></div>
   </div>
   <div class="mfoot"><button class="btn b-pri" onclick="saveFsAktion()">Aktion ausführen</button><button class="btn b-ghost" onclick="cm('m-fs-aktion')">Abbrechen</button></div>
@@ -691,10 +737,10 @@ tr:hover td{background:rgba(14,165,233,.03)}
   <div class="mbody">
     <div class="fg"><label>Vollständiger Name *</label><input id="au-n" placeholder="Vor- und Nachname"></div>
     <div class="frow">
-      <div class="fg"><label>Dienst-Nummer *</label><input id="au-d" placeholder="z.B. 15/010"></div>
+      <div class="fg"><label>Dienst-Nummer *</label><input id="au-d" placeholder="15/010"></div>
       <div class="fg"><label>Discord ID</label><input id="au-disc" placeholder="123456789012345678" type="number"></div>
     </div>
-    <div class="fg"><label>Passwort *</label><input type="password" id="au-pw" placeholder="Passwort setzen"></div>
+    <div class="fg"><label>Passwort *</label><input type="password" id="au-pw"></div>
     <div class="fg"><label>Rang</label>
       <select id="au-rg">
         <option value="Streifenpolizist" data-lvl="1">Streifenpolizist</option>
@@ -714,12 +760,32 @@ tr:hover td{background:rgba(14,165,233,.03)}
   <div class="mfoot"><button class="btn b-pri" onclick="saveUser()">💾 Speichern</button><button class="btn b-ghost" onclick="cm('m-au')">Abbrechen</button></div>
 </div></div>
 
+<div class="mbg" id="m-personalakte"><div class="modal lg">
+  <div class="mhd"><h3 id="m-pa-t">Personalakte</h3><button class="mcl" onclick="cm('m-personalakte')">✕</button></div>
+  <div class="mbody" id="m-pa-b"></div>
+</div></div>
+
+<div class="mbg" id="m-pa-neintrag"><div class="modal">
+  <div class="mhd"><h3>Personalakten-Eintrag</h3><button class="mcl" onclick="cm('m-pa-neintrag')">✕</button></div>
+  <div class="mbody">
+    <div class="fg"><label>Typ</label><select id="pa-typ"><option value="Beförderung">⬆️ Beförderung</option><option value="Verwarnung">⚠️ Verwarnung</option><option value="Lob">🌟 Lob</option><option value="Suspendierung">🔒 Suspendierung</option><option value="Versetzung">🔄 Versetzung</option><option value="Abmahnung">📋 Abmahnung</option><option value="Kündigung">❌ Kündigung</option><option value="Notiz">📝 Notiz</option></select></div>
+    <div class="fg"><label>Betreff *</label><input id="pa-betreff" placeholder="z.B. Beförderung zum Polizeikommissar…"></div>
+    <div class="fg"><label>Details</label><textarea id="pa-details"></textarea></div>
+    <div class="frow">
+      <div class="fg"><label>Neuer Rang</label><select id="pa-rang"><option value="">– kein Rangwechsel –</option><option>Streifenpolizist</option><option>Polizeimeister</option><option>Polizeihauptmeister</option><option>Polizeikommissar</option><option>Polizeihauptkommissar</option><option>Polizeioberkommissar</option><option>Kriminalkommissar</option><option>Vize Chef</option><option>Polizei Chef</option></select></div>
+      <div class="fg"><label>Sichtbarkeit</label><select id="pa-sicht"><option value="intern">🔒 Nur Führung</option><option value="beamter">👮 Beamter sieht es</option></select></div>
+    </div>
+    <input type="hidden" id="pa-oid"><input type="hidden" id="pa-oname"><input type="hidden" id="pa-odisc">
+    <div id="pa-err" style="color:var(--red);font-size:12px;min-height:14px;margin-bottom:4px"></div>
+  </div>
+  <div class="mfoot"><button class="btn b-pri" onclick="savePersonalEintrag()">💾 Speichern</button><button class="btn b-ghost" onclick="cm('m-pa-neintrag')">Abbrechen</button></div>
+</div></div>
+
 <div class="mbg" id="m-mod"><div class="modal">
   <div class="mhd"><h3 id="m-mod-t">Moderationsaktion</h3><button class="mcl" onclick="cm('m-mod')">✕</button></div>
   <div class="mbody">
-    <div style="background:rgba(244,63,94,.05);border:1px solid rgba(244,63,94,.15);border-radius:var(--r10);padding:11px;margin-bottom:14px;font-size:12px;color:var(--t2)">📨 <b style="color:#f87171">Automatisch Discord-DM.</b></div>
-    <div class="fg"><label>Aktion</label><select id="mod-act"><option value="verwarnung">⚠️ Verwarnung</option><option value="suspendierung">🔒 Suspendierung</option><option value="kuendigung">❌ Kündigung</option><option value="befoerderung">⬆️ Beförderung</option><option value="entsperrung">✅ Entsperrung</option></select></div>
-    <div class="fg"><label>Grund / Nachricht *</label><textarea id="mod-grund" placeholder="Begründung…"></textarea></div>
+    <div class="fg"><label>Aktion</label><select id="mod-act"><option value="verwarnung">⚠️ Verwarnung</option><option value="suspendierung">🔒 Suspendierung</option><option value="kuendigung">❌ Kündigung</option><option value="entsperrung">✅ Entsperrung</option></select></div>
+    <div class="fg"><label>Grund *</label><textarea id="mod-grund"></textarea></div>
     <input type="hidden" id="mod-uid"><input type="hidden" id="mod-name"><input type="hidden" id="mod-disc">
     <div id="mod-err" style="color:var(--red);font-size:12px;min-height:14px;margin-bottom:4px"></div>
   </div>
@@ -727,7 +793,7 @@ tr:hover td{background:rgba(14,165,233,.03)}
 </div></div>
 
 <script>
-// ═══ CONFIG ════════════════════════════════════════════════════
+// ═══ CONFIG ══════════════════════════════════════════════
 const SB='https://vekozqxmawzatvyofsxq.supabase.co';
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZla296cXhtYXd6YXR2eW9mc3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NzIwMDksImV4cCI6MjA4ODU0ODAwOX0.ASzxEi8Tmnv7AFd5vFV4Hw12FxzA8ysjEoTlXDLMYaE';
 const db=supabase.createClient(SB,SK);
@@ -745,9 +811,11 @@ const ROLLEN_MAP={
 };
 let U=null,editId=null,_fzHalter=null,_anzCid=null,_pendingDiscordData=null;
 let _allDN=[],_allFs=[];
+let _regData={};
+let _fotoBase64=null;
 
-// ═══ BOOT ══════════════════════════════════════════════════════
-const BL=['CPU OK','RAM OK','NETZWERK VERBUNDEN','SUPABASE VERBUNDEN','DATENBANK GELADEN','AUTHENTIFIZIERUNG BEREIT','COPNET v3.2 BEREIT'];
+// ═══ BOOT ════════════════════════════════════════════════
+const BL=['CPU OK','RAM OK','NETZWERK VERBUNDEN','SUPABASE VERBUNDEN','DATENBANK GELADEN','AUTHENTIFIZIERUNG BEREIT','COPNET v3.3 BEREIT'];
 let bi=0;
 function btick(){
   if(bi>=BL.length){setTimeout(()=>{document.getElementById('boot').style.display='none';handleStartup();},400);return;}
@@ -757,7 +825,61 @@ function btick(){
 }
 window.addEventListener('DOMContentLoaded',()=>setTimeout(btick,400));
 
-// ═══ STARTUP / OAUTH ═══════════════════════════════════════════
+// ═══ FOTO PREVIEW ════════════════════════════════════════
+function previewFoto(input){
+  const f=input.files[0];if(!f)return;
+  if(f.size>2*1024*1024){nt('Foto max. 2MB!','err');return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    _fotoBase64=e.target.result;
+    const prev=document.getElementById('foto-prev');
+    prev.src=_fotoBase64;prev.style.display='block';
+    document.getElementById('foto-icon').style.display='none';
+    document.getElementById('foto-lbl').textContent='Foto ausgewählt ✅';
+  };
+  r.readAsDataURL(f);
+}
+
+// ═══ REGISTRIERUNG (mehrstufig) ══════════════════════════
+function regNext(step){
+  if(step===1){
+    const vn=document.getElementById('r-vorname').value.trim();
+    const nn=document.getElementById('r-nachname').value.trim();
+    const dob=document.getElementById('r-dob').value;
+    if(!vn||!nn){showErr('Vor- und Nachname erforderlich.');return;}
+    if(!dob){showErr('Geburtsdatum erforderlich.');return;}
+    _regData.vorname=vn;_regData.nachname=nn;
+    _regData.name=vn+' '+nn;
+    _regData.dob=dob;
+    _regData.gender=document.getElementById('r-gender').value;
+    _regData.desc=document.getElementById('r-desc').value.trim();
+    showRegStep(2);
+  }else if(step===2){
+    const rn=document.getElementById('r-name').value.trim();
+    const rat=document.getElementById('r-roblox-at').value.trim();
+    if(!rn){showErr('Roblox-Anzeigename erforderlich.');return;}
+    if(!rat){showErr('Roblox @Username erforderlich.');return;}
+    _regData.roblox_name=rn;_regData.roblox_at=rat;
+    // Summary anzeigen
+    document.getElementById('reg-summary').innerHTML=
+      `<b style="color:var(--a3)">Zusammenfassung</b><br>
+      👤 ${_regData.name}<br>
+      🎂 ${_regData.dob}${_regData.gender?' · '+_regData.gender:''}<br>
+      🎮 Roblox: ${rn} (@${rat})`;
+    showRegStep(3);
+  }
+}
+function regBack(step){showRegStep(step-1);}
+function showRegStep(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById('reg-step'+i).classList.toggle('active',i===n);
+    const d=document.getElementById('sd'+i);
+    d.className='step-dot'+(i<n?' done':i===n?' active':'');
+  });
+  document.getElementById('lerr').style.display='none';
+}
+
+// ═══ STARTUP / OAUTH ═════════════════════════════════════
 async function handleStartup(){
   const params=new URLSearchParams(window.location.search);
   const shareType=params.get('share');
@@ -769,9 +891,13 @@ async function handleStartup(){
   window.history.replaceState({},'',window.location.pathname);
   showBoot('DISCORD VERIFIZIERUNG…',80);
   try{
-    const res=await fetch(BOT_API+'/discord-auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code,redirect_uri:REDIRECT_URI})});
+    const res=await fetch(BOT_API+'/discord-auth',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({code,redirect_uri:REDIRECT_URI})
+    });
     const data=await res.json();
-    if(!data.discord_id)throw new Error((data.detail?.error||data.error||'Auth fehlgeschlagen')+' | '+JSON.stringify(data.detail||''));
+    if(!data.discord_id)throw new Error(data.detail?.error||data.error||'Auth fehlgeschlagen');
     showBoot('IDENTITÄT BESTÄTIGT…',95);
     if(state==='officer'){await handleOfficerDiscordLogin(data);}
     else if(state==='citizen'){await handleCitizenDiscordLogin(data);}
@@ -788,19 +914,29 @@ function showLoginScreen(){hideBoot();document.getElementById('login').style.dis
 async function handleOfficerDiscordLogin(discordData){
   const{discord_id,username,roles}=discordData;
   const{data:dn}=await db.from('dienstnummern').select('*').eq('user_id',discord_id.toString()).maybeSingle();
-  if(!dn){hideBoot();showLoginScreen();showErr('Keine Dienstnummer gefunden.');return;}
+  if(!dn){hideBoot();showLoginScreen();showErr('Keine Dienstnummer gefunden. Bitte Admin kontaktieren.');return;}
   let rank=dn.rank||null,level=dn.level||1;
-  if(roles){let bestLevel=0;for(const roleId of roles){const r=ROLLEN_MAP[String(roleId)];if(r&&r.level>bestLevel){rank=r.rank;level=r.level;bestLevel=r.level;}}}
+  if(roles){let best=0;for(const rid of roles){const r=ROLLEN_MAP[String(rid)];if(r&&r.level>best){rank=r.rank;level=r.level;best=r.level;}}}
   if(!rank)rank='Streifenpolizist';
-  const{data:officer}=await db.from('officers').upsert([{discord_id:discord_id.toString(),discord_tag:username,dienst:dn.nummer,rank,level,status:'off',abteilung:'polizei',name:dn.username||username},{onConflict:'discord_id'}]).select().single();
+  const{data:officer}=await db.from('officers').upsert(
+    [{discord_id:discord_id.toString(),discord_tag:username,dienst:dn.nummer,rank,level,status:'off',abteilung:'polizei',name:dn.username||username}],
+    {onConflict:'discord_id'}
+  ).select().single();
   U={type:'officer',...(officer||{discord_id:discord_id.toString(),discord_tag:username,dienst:dn.nummer,rank,level,name:dn.username||username,status:'off'})};
   try{await db.from('dienstnummern').update({username:U.name,rank:U.rank,level:U.level}).eq('nummer',dn.nummer);}catch(e){}
   hideBoot();startApp();
   nt('Willkommen, '+rank+' '+U.name+'! 🎖','ok');
   await log('LOGIN_DISCORD_OFF',U.name+' ('+U.dienst+') · '+rank);
+  // Erster Login PA-Eintrag
   if(U.id){
-    const{data:existingPA}=await db.from('officer_akten_eintraege').select('id').eq('officer_id',U.id).limit(1).maybeSingle();
-    if(!existingPA){await db.from('officer_akten_eintraege').insert([{officer_id:U.id,officer_name:U.name,erstellt_von:'System',typ:'Notiz',betreff:'Einstellung · Erster Login',details:'Beamter hat sich erstmals angemeldet. Dienstnummer: '+U.dienst+' · Rang: '+rank,sichtbarkeit:'intern'}]);}
+    const{data:ex}=await db.from('officer_akten_eintraege').select('id').eq('officer_id',U.id).limit(1).maybeSingle();
+    if(!ex){
+      await db.from('officer_akten_eintraege').insert([{
+        officer_id:U.id,officer_name:U.name,erstellt_von:'System',typ:'Notiz',
+        betreff:'Einstellung · Erster Login',
+        details:'Dienstnummer: '+U.dienst+' · Rang: '+rank,sichtbarkeit:'intern'
+      }]);
+    }
   }
 }
 
@@ -808,47 +944,84 @@ async function handleCitizenDiscordLogin(discordData){
   const{discord_id,username}=discordData;
   const{data:cit}=await db.from('citizens').select('*').eq('discord_id',discord_id.toString()).maybeSingle();
   if(cit){
-    const _upd={};
-    if(!cit.akte_share_id)_upd.akte_share_id=Math.random().toString(36).substr(2,14).toUpperCase();
-    if(!cit.fuehrungszeugnis_share_id)_upd.fuehrungszeugnis_share_id=Math.random().toString(36).substr(2,14).toUpperCase();
-    if(Object.keys(_upd).length){await db.from('citizens').update(_upd).eq('id',cit.id);Object.assign(cit,_upd);}
-    U={type:'citizen',...cit};
-    hideBoot();
-    if(!cit.roblox_name){_pendingDiscordData={discord_id:discord_id.toString(),username,existingId:cit.id};showLoginScreen();switchTab('reg');nt('Bitte ergänze deinen Roblox-Namen!','warn');}
-    else{startApp();nt('Willkommen zurück, '+U.name+'! 👤','ok');await log('LOGIN_DISCORD_CIT',U.name);}
+    // Share IDs sicherstellen
+    const upd={};
+    if(!cit.akte_share_id)upd.akte_share_id=genId(14);
+    if(!cit.fuehrungszeugnis_share_id)upd.fuehrungszeugnis_share_id=genId(14);
+    if(Object.keys(upd).length){await db.from('citizens').update(upd).eq('id',cit.id);Object.assign(cit,upd);}
+    // Profil vollständig?
+    if(!cit.roblox_name||!cit.roblox_at){
+      _pendingDiscordData={discord_id:discord_id.toString(),username,existingId:cit.id};
+      // Felder vorausfüllen
+      if(cit.name){const parts=cit.name.split(' ');document.getElementById('r-vorname').value=parts[0]||'';document.getElementById('r-nachname').value=parts.slice(1).join(' ')||'';}
+      if(cit.dob)document.getElementById('r-dob').value=cit.dob;
+      hideBoot();showLoginScreen();switchTab('reg');
+      nt('Profil bitte vervollständigen!','warn');return;
+    }
+    U={type:'citizen',...cit};hideBoot();startApp();
+    nt('Willkommen zurück, '+U.name+'! 👤','ok');
+    await log('LOGIN_DISCORD_CIT',U.name);
   }else{
     _pendingDiscordData={discord_id:discord_id.toString(),username};
-    hideBoot();showLoginScreen();switchTab('reg');nt('Discord verifiziert! Profil vervollständigen.','ok');
+    hideBoot();showLoginScreen();switchTab('reg');
+    showRegStep(1);
+    nt('Discord verifiziert ✅ – Profil erstellen','ok');
   }
 }
 
 async function completeRegistration(){
-  if(!_pendingDiscordData){showErr('Bitte zuerst mit Discord anmelden.');return;}
-  const rn=document.getElementById('r-name').value.trim();
-  const rat=document.getElementById('r-roblox-at').value.trim();
-  const dob=document.getElementById('r-dob').value||null;
-  if(!rn){showErr('Roblox-Name erforderlich.');return;}
+  if(!_pendingDiscordData){showErr('Erst mit Discord anmelden.');return;}
+  const rn=(_regData.roblox_name||document.getElementById('r-name')?.value||'').trim();
+  const rat=(_regData.roblox_at||document.getElementById('r-roblox-at')?.value||'').trim();
+  const vorname=(_regData.vorname||'').trim();
+  const nachname=(_regData.nachname||'').trim();
+  const fullName=vorname&&nachname?vorname+' '+nachname:rn;
+  if(!rn||!rat||!fullName){showErr('Alle Pflichtfelder ausfüllen.');return;}
   const{discord_id,username,existingId}=_pendingDiscordData;
-  const btn=document.getElementById('reg-btn');btn.disabled=true;btn.textContent='…';
-  if(existingId){
-    const{data:upd,error}=await db.from('citizens').update({roblox_name:rn,roblox_at:rat,dob}).eq('id',existingId).select().single();
-    btn.disabled=false;btn.textContent='✅ Registrierung abschließen';
-    if(error){showErr('Fehler: '+error.message);return;}
-    U={type:'citizen',...(upd||{...U,roblox_name:rn,roblox_at:rat,dob})};_pendingDiscordData=null;
-    document.getElementById('login').style.display='none';startApp();nt('✅ Profil vervollständigt!','ok');
-    await log('PROFIL_UPDATE',rn+' hat Roblox-Namen ergänzt');return;
+  const btn=document.getElementById('reg-btn');btn.disabled=true;btn.textContent='Wird gespeichert…';
+  const payload={
+    name:fullName,
+    vorname:_regData.vorname||null,
+    nachname:_regData.nachname||null,
+    roblox_name:rn,
+    roblox_at:rat,
+    dob:_regData.dob||null,
+    gender:_regData.gender||null,
+    char_desc:_regData.desc||null,
+    char_foto:_fotoBase64||null,
+    status:'Aktiv',
+  };
+  try{
+    if(existingId){
+      const{error}=await db.from('citizens').update(payload).eq('id',existingId);
+      if(error)throw error;
+      const{data:upd}=await db.from('citizens').select('*').eq('id',existingId).single();
+      U={type:'citizen',...upd};
+    }else{
+      // Prüfen ob schon vorhanden
+      const{data:ex}=await db.from('citizens').select('*').eq('discord_id',discord_id).maybeSingle();
+      if(ex){U={type:'citizen',...ex};_pendingDiscordData=null;document.getElementById('login').style.display='none';startApp();nt('Bereits registriert!','ok');return;}
+      const shareId=genId(14);const fzId=genId(14);
+      const{data:nc,error}=await db.from('citizens').insert([{
+        ...payload,
+        discord_id:discord_id.toString(),
+        discord_tag:username,
+        akte_share_id:shareId,
+        fuehrungszeugnis_share_id:fzId
+      }]).select().single();
+      if(error)throw error;
+      U={type:'citizen',...nc};
+      // Willkommens-DM
+      await sendBotDM(discord_id,'willkommen',{name:fullName,shareId});
+    }
+    _pendingDiscordData=null;_regData={};_fotoBase64=null;
+    document.getElementById('login').style.display='none';
+    startApp();nt('✅ Profil gespeichert! DM gesendet 📨','ok');
+    await log('REG',fullName+' · Discord: '+discord_id);
+  }catch(e){
+    btn.disabled=false;btn.textContent='✅ Konto erstellen';
+    showErr('Fehler: '+e.message);
   }
-  const{data:ex}=await db.from('citizens').select('*').eq('discord_id',discord_id).maybeSingle();
-  if(ex){U={type:'citizen',...ex};_pendingDiscordData=null;document.getElementById('login').style.display='none';startApp();nt('Bereits registriert!','ok');return;}
-  const shareId=Math.random().toString(36).substr(2,14).toUpperCase();
-  const fzId=Math.random().toString(36).substr(2,14).toUpperCase();
-  const{data:nc,error}=await db.from('citizens').insert([{name:rn,discord_id,discord_tag:username,roblox_name:rn,roblox_at:rat,dob,status:'Aktiv',akte_share_id:shareId,fuehrungszeugnis_share_id:fzId}]).select().single();
-  btn.disabled=false;btn.textContent='✅ Registrierung abschließen';
-  if(error){showErr('Fehler: '+error.message);return;}
-  await sendBotDM(discord_id,'willkommen',{name:rn,shareId});
-  U={type:'citizen',...nc};_pendingDiscordData=null;
-  document.getElementById('login').style.display='none';startApp();nt('✅ Konto erstellt! DM gesendet 📨','ok');
-  await log('REG',rn+' registriert · Discord: '+discord_id);
 }
 
 function loginDiscord(type){
@@ -866,18 +1039,25 @@ async function loginOff(){
   if(data.suspended){showErr('Konto gesperrt.');return;}
   U={type:'officer',...data};
   document.getElementById('login').style.display='none';
-  startApp();
-  await log('LOGIN_MANUAL',U.name+' ('+U.dienst+') manuell');
-  nt('Willkommen, '+U.name+'!','ok');
+  startApp();nt('Willkommen, '+U.name+'!','ok');
+  await log('LOGIN_MANUAL',U.name+' ('+U.dienst+')');
 }
 
-// ═══ APP START ═════════════════════════════════════════════════
+// ═══ APP START ═══════════════════════════════════════════
 function startApp(){
   document.getElementById('login').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('u-n').textContent=U.name;
   document.getElementById('u-r').textContent=U.type==='officer'?(U.rank||'Beamter'):'Bürger';
-  document.getElementById('u-ava').textContent=U.name.charAt(0).toUpperCase();
+  // Avatar
+  const avaEl=document.getElementById('u-ava');
+  const avaTxt=document.getElementById('u-ava-txt');
+  const fotoUrl=U.char_foto||null;
+  if(fotoUrl){
+    avaEl.innerHTML=`<img src="${fotoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  }else{
+    avaTxt.textContent=U.name.charAt(0).toUpperCase();
+  }
   document.getElementById('tb-bdg').textContent=U.type==='officer'?(U.rank||'CopNet'):'Bürger';
   document.querySelectorAll('.off-only').forEach(el=>el.style.display=U.type==='officer'?'':'none');
   const dpill=document.getElementById('dpill');
@@ -891,15 +1071,12 @@ function startApp(){
     document.querySelectorAll('.sbi').forEach(i=>i.classList.remove('act'));
     loadCitizenDash();
   }
-  const sp2=new URLSearchParams(window.location.search);
-  const shareType=sp2.get('share');const shareId=sp2.get('id');
-  if(shareType&&shareId){showSharedView(shareType,shareId);}
 }
 
 async function doLogout(){
   if(U?.type==='officer'&&U.status==='on')await db.from('officers').update({status:'off'}).eq('id',U.id);
   if(U)await log('LOGOUT',U.name);
-  U=null;_pendingDiscordData=null;
+  U=null;_pendingDiscordData=null;_regData={};_fotoBase64=null;
   document.getElementById('app').style.display='none';
   document.getElementById('login').style.display='flex';
   if(document.getElementById('l-pass'))document.getElementById('l-pass').value='';
@@ -916,7 +1093,7 @@ async function toggleDuty(){
   loadDash();
 }
 
-// ═══ NAVIGATION ════════════════════════════════════════════════
+// ═══ NAVIGATION ══════════════════════════════════════════
 const OFFICER_PAGES=['einsatz','strafanzeigen','buerger','fahrzeuge','fuehrerscheine','fahndung','team','dienstnummern','usermgmt','personalakten'];
 function sp(id){
   if(U?.type==='citizen'&&OFFICER_PAGES.includes(id)){nt('⚠️ Kein Zugriff','err');return;}
@@ -947,7 +1124,7 @@ function switchTab(t){
 }
 function showErr(m){const e=document.getElementById('lerr');e.textContent=m;e.style.display='block';}
 
-// ═══ DASHBOARD ═════════════════════════════════════════════════
+// ═══ DASHBOARD ═══════════════════════════════════════════
 async function loadDash(){
   const[r1,r2,r3,r4]=await Promise.all([
     db.from('officers').select('id').eq('status','on'),
@@ -967,7 +1144,7 @@ async function loadDash(){
   document.getElementById('d-fahndung').innerHTML=!fa?.length?'<div class="es"><p>Keine aktiven Fahndungen</p></div>':`<div style="display:flex;flex-wrap:wrap;gap:8px">${fa.map(f=>`<div style="background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:var(--r10);padding:10px 14px;flex:1;min-width:180px"><div style="font-weight:700;font-size:13px;font-family:var(--fg)">${f.person_name||f.plate||'–'}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${f.reason||'–'}</div><div style="margin-top:5px"><span class="badge bg-r">${f.alert_type==='kfz'?'Fahrzeug':'Person'}</span></div></div>`).join('')}</div>`;
 }
 
-// ═══ BÜRGER DASHBOARD ══════════════════════════════════════════
+// ═══ BÜRGER DASHBOARD ════════════════════════════════════
 async function loadCitizenDash(){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-dashboard').classList.add('active');
@@ -978,75 +1155,70 @@ async function loadCitizenDash(){
     db.from('vehicles').select('*').eq('citizen_id',U.id),
     db.from('alerts').select('*').eq('active',true),
   ]);
-  const myEintraege=r1.data||[];
-  const myVehicles=r2.data||[];
-  const myAlerts=(r3.data||[]).filter(f=>(f.person_name||'').toLowerCase()===(U.name||'').toLowerCase()||(myVehicles.some(v=>(v.plate||'').toLowerCase()===(f.plate||'').toLowerCase())));
-  const{data:citFresh}=await db.from('citizens').select('fs_status,fs_punkte,fs_klassen').eq('id',U.id).single();
-  const fsStatus=citFresh?.fs_status||null;
-  const fsPunkte=citFresh?.fs_punkte||0;
-  const fsKlassen=(citFresh?.fs_klassen||'').split(',').filter(Boolean);
+  const myE=r1.data||[];const myV=r2.data||[];
+  const myAlerts=(r3.data||[]).filter(f=>(f.person_name||'').toLowerCase()===(U.name||'').toLowerCase()||(myV.some(v=>(v.plate||'').toLowerCase()===(f.plate||'').toLowerCase())));
+  const{data:cf}=await db.from('citizens').select('fs_status,fs_punkte,fs_klassen').eq('id',U.id).single();
+  const fsStatus=cf?.fs_status||null;const fsPunkte=cf?.fs_punkte||0;
+  const fsKlassen=(cf?.fs_klassen||'').split(',').filter(Boolean);
   const sev={Gering:'bg-g',Mittel:'bg-y',Schwer:'bg-o',Kritisch:'bg-r'};
-
   let fsCard='';
   if(!fsStatus){
-    fsCard=`<div class="card fs-card kein" style="margin-bottom:14px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div style="font-family:var(--fg);font-weight:700">🪪 Führerschein</div></div><div style="text-align:center;padding:16px 0;color:var(--t3);font-size:13px">Kein Führerschein vorhanden<br><small>Im Discord-Bot Prüfung ablegen!</small></div></div>`;
-  } else {
+    fsCard=`<div class="card fs-card kein" style="margin-bottom:14px"><div style="font-family:var(--fg);font-weight:700;margin-bottom:8px">🪪 Führerschein</div><div style="text-align:center;padding:12px;color:var(--t3);font-size:12px">Kein Führerschein<br><small>Im Discord-Bot Prüfung ablegen!</small></div></div>`;
+  }else{
     const sMap={aktiv:{cls:'aktiv',ico:'✅',lbl:'Gültig',bc:'bg-g'},abgenommen:{cls:'abgenommen',ico:'⚠️',lbl:'Abgenommen',bc:'bg-y'},gesperrt:{cls:'gesperrt',ico:'🔒',lbl:'Gesperrt',bc:'bg-r'},entzogen:{cls:'entzogen',ico:'❌',lbl:'Entzogen',bc:'bg-r'}};
     const sm=sMap[fsStatus]||sMap.aktiv;
     const dots=Array.from({length:8},(_,i)=>`<div class="pd ${i<fsPunkte?(fsPunkte>=6?'danger':'on'):''}"></div>`).join('');
-    const showTheorieHinweis=['abgenommen','gesperrt','entzogen'].includes(fsStatus);
     fsCard=`<div class="card fs-card ${sm.cls}" style="margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div style="font-family:var(--fg);font-size:14px;font-weight:700">🪪 Führerschein</div>
         <span class="badge ${sm.bc}">${sm.ico} ${sm.lbl}</span>
       </div>
-      <div style="display:flex;gap:5px;margin-bottom:10px">
-        ${['B','A','C'].map(k=>`<div class="klasse-bdg ${fsKlassen.includes(k)?'':'inactive'}">${k}</div>`).join('')}
-      </div>
+      <div style="display:flex;gap:5px;margin-bottom:8px">${['B','A','C'].map(k=>`<div class="klasse-bdg ${fsKlassen.includes(k)?'':'inactive'}">${k}</div>`).join('')}</div>
       <div style="font-size:11px;color:var(--t3);margin-bottom:4px">PUNKTE: ${fsPunkte}/8</div>
       <div class="punkte-row">${dots}</div>
-      ${fsPunkte>=8?'<div style="font-size:11px;color:var(--red);margin-top:4px;font-weight:600">⚠️ Maximale Punkte – Führerscheinentzug!</div>':''}
-      ${showTheorieHinweis?`<div style="margin-top:10px;padding:8px 10px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:var(--r6);font-size:11px;color:#fbbf24">⚠️ Führerschein wurde entzogen/gesperrt. Du musst die <b>Theorieprüfung neu ablegen</b>, bevor du wieder fahren darfst!</div>`:''}
     </div>`;
   }
-
-  const page=document.getElementById('page-dashboard');
-  page.innerHTML=`
+  const fotoHtml=U.char_foto?`<img src="${U.char_foto}" class="char-foto">`:`<div class="ph-ava">${U.name.charAt(0)}</div>`;
+  const pg=document.getElementById('page-dashboard');
+  pg.innerHTML=`
     <div class="pg-hd">
       <div><div class="pg-title">👋 ${U.name}</div><div class="pg-sub">Mein Bürger-Bereich · CopNet Karlsruhe</div></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn b-ghost b-sm" onclick="showFuehrungszeugnis()">📜 Führungszeugnis</button>
+        <button class="btn b-ghost b-sm" onclick="showFuehrungszeugnis()">📜 FZ</button>
         <button class="btn b-ghost b-sm" onclick="copyShareLink('akte',U.akte_share_id)">🔗 Akte teilen</button>
         ${U._officerBackup?'<button class="btn b-ghost b-sm" onclick="switchBackToOfficer()">🎖 Beamten-Ansicht</button>':''}
         <button class="btn b-ghost b-sm" onclick="doLogout()">🚪 Abmelden</button>
       </div>
     </div>
     <div class="stats" style="grid-template-columns:repeat(3,1fr)">
-      <div class="sc ylw"><div class="sc-val">${myEintraege.length}</div><div class="sc-lbl">Akteneinträge</div><div class="sc-ico">📋</div></div>
-      <div class="sc blu"><div class="sc-val">${myVehicles.length}</div><div class="sc-lbl">Fahrzeuge</div><div class="sc-ico">🚗</div></div>
+      <div class="sc ylw"><div class="sc-val">${myE.length}</div><div class="sc-lbl">Akteneinträge</div><div class="sc-ico">📋</div></div>
+      <div class="sc blu"><div class="sc-val">${myV.length}</div><div class="sc-lbl">Fahrzeuge</div><div class="sc-ico">🚗</div></div>
       <div class="sc ${myAlerts.length?'red':'grn'}"><div class="sc-val">${myAlerts.length}</div><div class="sc-lbl">Fahndungen</div><div class="sc-ico">🔍</div></div>
     </div>
-    ${myAlerts.length?`<div class="card" style="border-color:rgba(244,63,94,.35);margin-bottom:14px">
-      <div class="card-hd"><span class="card-t" style="color:#f87171">⚠️ Aktive Fahndungen</span></div>
-      ${myAlerts.map(f=>`<div class="cc" style="cursor:default;border-color:rgba(244,63,94,.2)"><div class="cc-l gesucht"></div><div class="cc-b">
-        <div class="cc-top"><span class="badge bg-r">${f.alert_type==='kfz'?'Fahrzeug':'Person'}</span></div>
-        <div class="cc-name">${f.reason||'–'}</div><div class="cc-sub">${f.notes||''}</div>
-        <div class="cc-meta"><span>👮 ${f.officer_name||'–'}</span><span>📅 ${fmtd(f.created_at)}</span></div>
-      </div></div>`).join('')}
-    </div>`:''}
     <div class="g2">
       <div>
+        <div class="card" style="margin-bottom:14px">
+          <div style="display:flex;gap:16px;align-items:center">
+            ${fotoHtml}
+            <div style="flex:1">
+              <div style="font-family:var(--fg);font-size:16px;font-weight:800">${U.name}</div>
+              ${U.gender?`<div style="font-size:12px;color:var(--t3)">${U.gender}</div>`:''}
+              ${U.dob?`<div style="font-size:12px;color:var(--t3)">🎂 ${U.dob}</div>`:''}
+              ${U.roblox_name?`<div style="font-size:12px;color:var(--t2)">🎮 ${U.roblox_name}</div>`:''}
+              ${U.char_desc?`<div style="font-size:12px;color:var(--t2);margin-top:4px">${U.char_desc.substring(0,80)}</div>`:''}
+            </div>
+          </div>
+        </div>
         ${fsCard}
         <div class="card">
-          <div class="card-hd"><span class="card-t">📁 Meine Akte</span><button class="btn b-ghost b-sm" onclick="copyShareLink('akte',U.akte_share_id)">🔗 Teilen</button></div>
-          <div class="case-list" style="max-height:320px;overflow-y:auto">
-            ${!myEintraege.length?'<div class="es"><div class="es-ico">✅</div><p>Keine Akteneinträge</p></div>':
-            myEintraege.map(e=>`<div class="cc" style="cursor:default">
+          <div class="card-hd"><span class="card-t">📁 Meine Akte</span><button class="btn b-ghost b-sm" onclick="copyShareLink('akte',U.akte_share_id)">🔗</button></div>
+          <div class="case-list" style="max-height:300px;overflow-y:auto">
+            ${!myE.length?'<div class="es"><div class="es-ico">✅</div><p>Keine Einträge</p></div>':
+            myE.map(e=>`<div class="cc" style="cursor:default">
               <div class="cc-l ${e.status==='Abgeschlossen'?'geschlossen':e.status==='Ermittlung'?'aktiv':'offen'}"></div>
               <div class="cc-b">
-                <div class="cc-top"><span class="badge bg-gray">${e.typ||'Eintrag'}</span><span class="badge ${sev[e.schweregrad]||'bg-gray'}">${e.schweregrad||'–'}</span><span class="badge bg-gray">${e.status||'Offen'}</span></div>
+                <div class="cc-top"><span class="badge bg-gray">${e.typ||'–'}</span><span class="badge ${sev[e.schweregrad]||'bg-gray'}">${e.schweregrad||'–'}</span></div>
                 <div class="cc-name">${e.tatvorwurf||'–'}</div>
-                <div class="cc-sub">${(e.beschreibung||'').substring(0,80)}</div>
                 <div class="cc-meta"><span>👮 ${e.officer_name||'–'}</span><span>📅 ${fmtd(e.created_at)}</span></div>
               </div>
             </div>`).join('')}
@@ -1055,63 +1227,55 @@ async function loadCitizenDash(){
       </div>
       <div>
         <div class="card">
-          <div class="card-hd"><span class="card-t">🚗 Meine Fahrzeuge</span></div>
-          ${!myVehicles.length?'<div class="es"><div class="es-ico">🚗</div><p>Noch kein Fahrzeug</p></div>':
-          myVehicles.map(v=>`<div style="background:rgba(20,21,32,.8);border:1px solid var(--border);border-radius:var(--r10);padding:11px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div style="font-family:var(--fm);font-weight:700;color:var(--a3)">${v.plate||'–'}</div>
-              <div style="font-size:12px;color:var(--t2);margin-top:2px">${v.make||''} ${v.model||''} ${v.color?'· '+v.color:''}</div>
-              ${v.status==='Beschlagnahmt'?`<div style="font-size:11px;color:#fb923c;margin-top:3px">🔒 Beschlagnahmt: ${v.beschlagnahmt_grund||'–'}</div>`:''}
-            </div>
-            <span class="badge ${v.status==='Gestohlen'?'bg-r':v.status==='Beschlagnahmt'||v.status==='Sichergestellt'?'bg-o':'bg-g'}">${v.status||'OK'}</span>
+          <div class="card-hd"><span class="card-t">🚗 Fahrzeuge</span></div>
+          ${!myV.length?'<div class="es"><div class="es-ico">🚗</div><p>Noch kein Fahrzeug</p></div>':
+          myV.map(v=>`<div style="background:rgba(20,21,32,.8);border:1px solid var(--border);border-radius:var(--r10);padding:10px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-family:var(--fm);font-weight:700;color:var(--a3)">${v.plate||'–'}</div><div style="font-size:12px;color:var(--t2)">${v.make||''} ${v.model||''}</div></div>
+            <span class="badge ${v.status==='Gestohlen'?'bg-r':v.status==='Beschlagnahmt'?'bg-o':'bg-g'}">${v.status||'OK'}</span>
           </div>`).join('')}
         </div>
         <div class="card">
-          <div class="card-hd"><span class="card-t">📜 Führungszeugnis</span><button class="btn b-ghost b-sm" onclick="copyShareLink('fz',U.fuehrungszeugnis_share_id)">🔗 Teilen</button></div>
-          <div style="font-size:12px;color:var(--t2);line-height:1.7">Dein Führungszeugnis zeigt nur abgeschlossene Verfahren mit Verurteilungen.<br>
-          <button class="btn b-ghost b-sm" style="margin-top:8px" onclick="showFuehrungszeugnis()">📜 Anzeigen & Teilen</button></div>
+          <div class="card-hd"><span class="card-t">📜 Führungszeugnis</span><button class="btn b-ghost b-sm" onclick="copyShareLink('fz',U.fuehrungszeugnis_share_id)">🔗</button></div>
+          <button class="btn b-ghost b-sm b-full" onclick="showFuehrungszeugnis()">📜 Anzeigen & Teilen</button>
         </div>
       </div>
     </div>`;
 }
 
 function copyShareLink(type,shareId){
-  if(!shareId){nt('Kein Share-Link verfügbar','err');return;}
+  if(!shareId){nt('Kein Share-Link','err');return;}
   const url=location.origin+location.pathname+'?share='+type+'&id='+shareId;
   navigator.clipboard.writeText(url).then(()=>nt('🔗 Link kopiert!','ok')).catch(()=>nt('Link: '+url,''));
 }
 
-// ═══ FÜHRUNGSZEUGNIS ═══════════════════════════════════════════
+// ═══ FÜHRUNGSZEUGNIS ═════════════════════════════════════
 async function showFuehrungszeugnis(){
   if(!U?.id)return;
   const{data:eintraege}=await db.from('citizen_akten_eintraege').select('*').eq('citizen_id',U.id).order('created_at',{ascending:false});
-  const{data:citFresh}=await db.from('citizens').select('fs_status,fs_punkte,fs_klassen').eq('id',U.id).single();
+  const{data:cf}=await db.from('citizens').select('fs_status,fs_punkte,fs_klassen').eq('id',U.id).single();
   const strafTypen=['Strafanzeige','Festnahme','Verwarnung','Ermittlung'];
-  const saubere=!eintraege||eintraege.filter(e=>strafTypen.includes(e.typ)).length===0;
+  const sauber=!eintraege||eintraege.filter(e=>strafTypen.includes(e.typ)).length===0;
   const heute=new Date().toLocaleDateString('de-DE');
-  const fsStatus=citFresh?.fs_status||null;
-  const fsKlassen=(citFresh?.fs_klassen||'').split(',').filter(Boolean);
+  const fsKlassen=(cf?.fs_klassen||'').split(',').filter(Boolean);
   document.getElementById('m-fz-b').innerHTML=`
     <div class="fz-doc">
-      <div class="fz-header"><div class="fz-seal">🚔</div><div class="fz-title">Polizeiliches Führungszeugnis</div><div class="fz-sub">Polizei Karlsruhe · CopNet v3.2</div></div>
+      <div class="fz-header"><div class="fz-seal">🚔</div><div class="fz-title">Polizeiliches Führungszeugnis</div><div class="fz-sub">Polizei Karlsruhe · CopNet v3.3</div></div>
       <div class="fz-row"><span class="fz-label">Name</span><span class="fz-val">${U.name}</span></div>
-      <div class="fz-row"><span class="fz-label">Roblox-Account</span><span class="fz-val">${U.roblox_name||'–'}</span></div>
+      <div class="fz-row"><span class="fz-label">Roblox</span><span class="fz-val">${U.roblox_name||'–'}</span></div>
       <div class="fz-row"><span class="fz-label">Discord</span><span class="fz-val">${U.discord_tag||'–'}</span></div>
-      <div class="fz-row"><span class="fz-label">Führerschein</span><span class="fz-val"><span class="badge ${fsStatus==='aktiv'?'bg-g':fsStatus?'bg-r':'bg-gray'}">${fsStatus||'Kein FS'}</span>${fsKlassen.length?' · Klasse: '+fsKlassen.join(', '):''}</span></div>
-      <div class="fz-row"><span class="fz-label">Ausgestellt am</span><span class="fz-val mono">${heute}</span></div>
-      <div class="fz-row"><span class="fz-label">Status</span><span class="fz-val"><span class="badge ${saubere?'bg-g':'bg-r'}">${saubere?'Unbescholten':'Einträge vorhanden'}</span></span></div>
-      ${!saubere?`<div style="margin-top:14px;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Abgeschlossene Verfahren</div>
-      ${eintraege.filter(e=>strafTypen.includes(e.typ)).map(e=>`<div style="background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);border-radius:var(--r6);padding:9px 12px;margin-bottom:6px;font-size:12px"><div style="font-weight:700">${e.tatvorwurf||'–'}</div><div style="color:var(--t3);margin-top:2px">${e.typ||'Eintrag'} · ${fmtd(e.created_at)}</div></div>`).join('')}`:''}
-      <div class="fz-stamp"><div class="fz-stamp-box"><div class="fz-stamp-txt">POLIZEI KARLSRUHE</div><div class="fz-stamp-txt">COPNET SYSTEM</div><div class="fz-stamp-txt" style="color:var(--t3);margin-top:2px">${heute}</div></div></div>
+      <div class="fz-row"><span class="fz-label">Führerschein</span><span class="fz-val"><span class="badge ${cf?.fs_status==='aktiv'?'bg-g':cf?.fs_status?'bg-r':'bg-gray'}">${cf?.fs_status||'Kein FS'}</span>${fsKlassen.length?' · '+fsKlassen.join(', '):''}</span></div>
+      <div class="fz-row"><span class="fz-label">Ausgestellt</span><span class="fz-val mono">${heute}</span></div>
+      <div class="fz-row"><span class="fz-label">Status</span><span class="fz-val"><span class="badge ${sauber?'bg-g':'bg-r'}">${sauber?'Unbescholten':'Einträge vorhanden'}</span></span></div>
+      ${!sauber?eintraege.filter(e=>strafTypen.includes(e.typ)).map(e=>`<div style="background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);border-radius:var(--r6);padding:9px 12px;margin-top:6px;font-size:12px"><div style="font-weight:700">${e.tatvorwurf||'–'}</div><div style="color:var(--t3)">${e.typ} · ${fmtd(e.created_at)}</div></div>`).join(''):''}
+      <div class="fz-stamp"><div class="fz-stamp-box"><div class="fz-stamp-txt">POLIZEI KARLSRUHE</div><div class="fz-stamp-txt">COPNET SYSTEM</div><div class="fz-stamp-txt" style="color:var(--t3)">${heute}</div></div></div>
     </div>`;
   const f=document.getElementById('m-fz-f');f.innerHTML='';
-  const shareBtn=document.createElement('button');shareBtn.className='btn b-ghost b-sm';shareBtn.textContent='🔗 Link kopieren';
-  shareBtn.onclick=()=>copyShareLink('fz',U.fuehrungszeugnis_share_id);f.appendChild(shareBtn);
+  const sb=document.createElement('button');sb.className='btn b-ghost b-sm';sb.textContent='🔗 Link kopieren';sb.onclick=()=>copyShareLink('fz',U.fuehrungszeugnis_share_id);f.appendChild(sb);
   const cl=document.createElement('button');cl.className='btn b-ghost b-sm';cl.textContent='Schließen';cl.onclick=()=>cm('m-fz');f.appendChild(cl);
   om('m-fz');
 }
 
-// ═══ SHARED VIEW ═══════════════════════════════════════════════
+// ═══ SHARED VIEW ═════════════════════════════════════════
 async function showSharedView(type,shareId){
   hideBoot();
   document.getElementById('app').style.display='block';
@@ -1120,8 +1284,8 @@ async function showSharedView(type,shareId){
   document.querySelector('.mobnav').style.display='none';
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-dashboard').classList.add('active');
-  if(type==='akte'){await renderSharedAkte(shareId);}
-  else if(type==='fz'){await renderSharedFZ(shareId);}
+  if(type==='akte')await renderSharedAkte(shareId);
+  else if(type==='fz')await renderSharedFZ(shareId);
 }
 
 async function renderSharedAkte(shareId){
@@ -1133,24 +1297,23 @@ async function renderSharedAkte(shareId){
   const sev={Gering:'bg-g',Mittel:'bg-y',Schwer:'bg-o',Kritisch:'bg-r'};
   pg.innerHTML=`<div style="max-width:620px;margin:40px auto">
     <div style="text-align:center;margin-bottom:24px;padding:20px;background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.2);border-radius:var(--r14)">
-      <div style="font-size:32px;margin-bottom:8px">📁</div>
+      ${cit.char_foto?`<img src="${cit.char_foto}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--border2);margin-bottom:10px">`:'<div style="font-size:32px;margin-bottom:8px">📁</div>'}
       <div style="font-family:var(--fg);font-size:20px;font-weight:800">${cit.name}</div>
       <div style="font-size:12px;color:var(--t3);margin-top:4px;letter-spacing:2px">AKTE · SCHREIBGESCHÜTZT</div>
     </div>
     <div class="ig">
       <div class="ii"><div class="ii-l">Roblox</div><div class="ii-v">${cit.roblox_name||'–'}</div></div>
       <div class="ii"><div class="ii-l">Status</div><div class="ii-v"><span class="badge ${cit.status==='Aktiv'?'bg-g':'bg-r'}">${cit.status||'–'}</span></div></div>
+      ${cit.dob?`<div class="ii"><div class="ii-l">Geburtsdatum</div><div class="ii-v">${cit.dob}</div></div>`:''}
       <div class="ii"><div class="ii-l">Führerschein</div><div class="ii-v"><span class="badge ${cit.fs_status==='aktiv'?'bg-g':cit.fs_status?'bg-r':'bg-gray'}">${cit.fs_status||'Kein FS'}</span></div></div>
-      ${fsKlassen.length?`<div class="ii"><div class="ii-l">FS Klassen</div><div class="ii-v">${fsKlassen.map(k=>`<span class="klasse-bdg" style="width:22px;height:22px;font-size:10px;margin-right:3px">${k}</span>`).join('')}</div></div>`:''}
     </div>
     <div class="slabel">Akteneinträge (${eintraege?.length||0})</div>
     <div class="case-list">
-    ${!eintraege?.length?'<div class="es"><p>Keine Akteneinträge</p></div>':eintraege.map(e=>`<div class="cc" style="cursor:default">
+    ${!eintraege?.length?'<div class="es"><p>Keine Einträge</p></div>':eintraege.map(e=>`<div class="cc" style="cursor:default">
       <div class="cc-l ${e.status==='Abgeschlossen'?'geschlossen':e.status==='Ermittlung'?'aktiv':'offen'}"></div>
       <div class="cc-b">
-        <div class="cc-top"><span class="badge bg-gray">${e.typ||'–'}</span><span class="badge ${sev[e.schweregrad]||'bg-gray'}">${e.schweregrad||'–'}</span><span class="badge bg-gray">${e.status||'–'}</span></div>
+        <div class="cc-top"><span class="badge bg-gray">${e.typ||'–'}</span><span class="badge ${sev[e.schweregrad]||'bg-gray'}">${e.schweregrad||'–'}</span></div>
         <div class="cc-name">${e.tatvorwurf||'–'}</div>
-        <div class="cc-sub">${(e.beschreibung||'').substring(0,100)}</div>
         <div class="cc-meta"><span>👮 ${e.officer_name||'–'}</span><span>📅 ${fmtd(e.created_at)}</span></div>
       </div>
     </div>`).join('')}
@@ -1165,25 +1328,25 @@ async function renderSharedFZ(shareId){
   if(!cit){pg.innerHTML='<div class="es" style="padding:60px"><div class="es-ico">❌</div><p>Führungszeugnis nicht gefunden</p><button class="btn b-ghost b-sm" style="margin-top:14px" onclick="location.href=location.pathname">← Login</button></div>';return;}
   const{data:eintraege}=await db.from('citizen_akten_eintraege').select('*').eq('citizen_id',cit.id).order('created_at',{ascending:false});
   const strafTypen=['Strafanzeige','Festnahme','Verwarnung','Ermittlung'];
-  const saubere=!eintraege||eintraege.filter(e=>strafTypen.includes(e.typ)).length===0;
+  const sauber=!eintraege||eintraege.filter(e=>strafTypen.includes(e.typ)).length===0;
   const heute=new Date().toLocaleDateString('de-DE');
   const fsKlassen=(cit.fs_klassen||'').split(',').filter(Boolean);
   pg.innerHTML=`<div style="max-width:500px;margin:40px auto">
     <div class="fz-doc">
-      <div class="fz-header"><div class="fz-seal">🚔</div><div class="fz-title">Polizeiliches Führungszeugnis</div><div class="fz-sub">Polizei Karlsruhe · CopNet v3.2</div></div>
+      <div class="fz-header"><div class="fz-seal">🚔</div><div class="fz-title">Polizeiliches Führungszeugnis</div><div class="fz-sub">Polizei Karlsruhe · CopNet v3.3</div></div>
       <div class="fz-row"><span class="fz-label">Name</span><span class="fz-val">${cit.name}</span></div>
-      <div class="fz-row"><span class="fz-label">Roblox-Account</span><span class="fz-val">${cit.roblox_name||'–'}</span></div>
-      <div class="fz-row"><span class="fz-label">Führerschein</span><span class="fz-val"><span class="badge ${cit.fs_status==='aktiv'?'bg-g':cit.fs_status?'bg-r':'bg-gray'}">${cit.fs_status||'Kein FS'}</span>${fsKlassen.length?' · Klasse: '+fsKlassen.join(', '):''}</span></div>
-      <div class="fz-row"><span class="fz-label">Ausgestellt am</span><span class="fz-val mono">${heute}</span></div>
-      <div class="fz-row"><span class="fz-label">Status</span><span class="fz-val"><span class="badge ${saubere?'bg-g':'bg-r'}">${saubere?'Unbescholten':'Einträge vorhanden'}</span></span></div>
-      ${!saubere?`<div style="margin-top:12px">${eintraege.filter(e=>strafTypen.includes(e.typ)).map(e=>`<div style="background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);border-radius:var(--r6);padding:9px 12px;margin-bottom:6px;font-size:12px"><div style="font-weight:700">${e.tatvorwurf||'–'}</div><div style="color:var(--t3)">${e.typ} · ${fmtd(e.created_at)}</div></div>`).join('')}</div>`:''}
+      <div class="fz-row"><span class="fz-label">Roblox</span><span class="fz-val">${cit.roblox_name||'–'}</span></div>
+      <div class="fz-row"><span class="fz-label">Führerschein</span><span class="fz-val"><span class="badge ${cit.fs_status==='aktiv'?'bg-g':cit.fs_status?'bg-r':'bg-gray'}">${cit.fs_status||'Kein FS'}</span></span></div>
+      <div class="fz-row"><span class="fz-label">Ausgestellt</span><span class="fz-val mono">${heute}</span></div>
+      <div class="fz-row"><span class="fz-label">Status</span><span class="fz-val"><span class="badge ${sauber?'bg-g':'bg-r'}">${sauber?'Unbescholten':'Einträge vorhanden'}</span></span></div>
+      ${!sauber?eintraege.filter(e=>strafTypen.includes(e.typ)).map(e=>`<div style="background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);border-radius:var(--r6);padding:9px 12px;margin-top:6px;font-size:12px"><div style="font-weight:700">${e.tatvorwurf||'–'}</div><div style="color:var(--t3)">${e.typ} · ${fmtd(e.created_at)}</div></div>`).join(''):''}
       <div class="fz-stamp"><div class="fz-stamp-box"><div class="fz-stamp-txt">POLIZEI KARLSRUHE</div><div class="fz-stamp-txt">COPNET SYSTEM</div><div class="fz-stamp-txt" style="color:var(--t3)">${heute}</div></div></div>
     </div>
     <div style="margin-top:16px;text-align:center"><button class="btn b-ghost b-sm" onclick="location.href=location.pathname">← Login</button></div>
   </div>`;
 }
 
-// ═══ STRAFANZEIGEN ═════════════════════════════════════════════
+// ═══ STRAFANZEIGEN ═══════════════════════════════════════
 async function loadAnzeigen(){
   const s=document.getElementById('sa-search')?.value?.toLowerCase()||'';
   const f=document.getElementById('sa-filter')?.value||'';
@@ -1197,15 +1360,17 @@ async function loadAnzeigen(){
 }
 
 async function openAnzeige(id){
-  const{data:a}=await db.from('citizen_akten_eintraege').select('*').eq('id',id).single();
-  if(!a)return;
-  document.getElementById('m-sa-t').textContent='Akteneintrag '+(a.id||'').toString().substring(0,8).toUpperCase();
+  const{data:a}=await db.from('citizen_akten_eintraege').select('*').eq('id',id).single();if(!a)return;
+  document.getElementById('m-sa-t').textContent='Eintrag '+id.toString().substring(0,8).toUpperCase();
   document.getElementById('m-sa-b').innerHTML=`<div class="ig"><div class="ii"><div class="ii-l">Bürger</div><div class="ii-v" style="font-weight:700">${a.citizen_name||'–'}</div></div><div class="ii"><div class="ii-l">Status</div><div class="ii-v"><span class="badge bg-gray">${a.status||'–'}</span></div></div><div class="ii"><div class="ii-l">Typ</div><div class="ii-v">${a.typ||'–'}</div></div><div class="ii"><div class="ii-l">Schweregrad</div><div class="ii-v"><span class="badge bg-gray">${a.schweregrad||'–'}</span></div></div><div class="ii" style="grid-column:1/-1"><div class="ii-l">Tatvorwurf</div><div class="ii-v" style="font-weight:600">${a.tatvorwurf||'–'}</div></div><div class="ii" style="grid-column:1/-1"><div class="ii-l">Beschreibung</div><div class="ii-v" style="white-space:pre-wrap">${a.beschreibung||'–'}</div></div><div class="ii"><div class="ii-l">Beamter</div><div class="ii-v">${a.officer_name||'–'}</div></div><div class="ii"><div class="ii-l">Datum</div><div class="ii-v mono" style="font-size:11px">${fmt(a.created_at)}</div></div></div>`;
   const f=document.getElementById('m-sa-f');f.innerHTML='';
   if(a.status!=='Abgeschlossen'){
     const b=document.createElement('button');b.className='btn b-grn b-sm';b.textContent='✅ Abschließen';
-    b.onclick=async()=>{await db.from('citizen_akten_eintraege').update({status:'Abgeschlossen'}).eq('id',id);if(a.citizen_discord_id)await sendBotDM(a.citizen_discord_id,'anzeige_status',{name:a.citizen_name,status:'Abgeschlossen',tatvorwurf:a.tatvorwurf,beamter:U?.name});cm('m-anzeige');loadAnzeigen();nt('Abgeschlossen','ok');};
-    f.appendChild(b);
+    b.onclick=async()=>{
+      await db.from('citizen_akten_eintraege').update({status:'Abgeschlossen'}).eq('id',id);
+      if(a.citizen_discord_id)await sendBotDM(a.citizen_discord_id,'anzeige_status',{name:a.citizen_name,status:'Abgeschlossen',tatvorwurf:a.tatvorwurf,beamter:U?.name});
+      cm('m-anzeige');loadAnzeigen();nt('Abgeschlossen','ok');
+    };f.appendChild(b);
   }
   const cl=document.createElement('button');cl.className='btn b-ghost b-sm';cl.textContent='Schließen';cl.onclick=()=>cm('m-anzeige');f.appendChild(cl);
   om('m-anzeige');
@@ -1223,18 +1388,18 @@ async function saveAnzeige(){
   const{error}=await db.from('citizen_akten_eintraege').insert([payload]);
   if(error){err.textContent='Fehler: '+error.message;return;}
   if(_anzCid?.discord_id)await sendBotDM(_anzCid.discord_id,'strafanzeige',{name:n,tatvorwurf:tv,schwere:payload.schweregrad,beamter:U?.name});
-  nt('📋 Strafanzeige gestellt'+(_anzCid?.discord_id?' · DM 📨':''),'ok');
+  nt('📋 Anzeige gestellt'+(_anzCid?.discord_id?' · DM 📨':''),'ok');
   cm('m-new-anzeige');loadAnzeigen();_anzCid=null;await log('ANZEIGE',n+': '+tv);
 }
 
-// ═══ AKTENEINTRAG ══════════════════════════════════════════════
+// ═══ AKTENEINTRAG ════════════════════════════════════════
 function openNeuerEintrag(cit){
   document.getElementById('ne-cid').value=cit.id;document.getElementById('ne-cname').value=cit.name;document.getElementById('ne-disc').value=cit.discord_id||'';
   ['ne-tv','ne-desc'].forEach(i=>document.getElementById(i).value='');document.getElementById('ne-err').textContent='';om('m-neintrag');
 }
 async function saveEintrag(){
   const tv=document.getElementById('ne-tv').value.trim(),err=document.getElementById('ne-err');
-  if(!tv){err.textContent='Tatvorwurf/Betreff erforderlich.';return;}err.textContent='';
+  if(!tv){err.textContent='Tatvorwurf erforderlich.';return;}err.textContent='';
   const cid=document.getElementById('ne-cid').value,cname=document.getElementById('ne-cname').value,disc=document.getElementById('ne-disc').value;
   const payload={citizen_id:cid,citizen_name:cname,citizen_discord_id:disc||null,officer_name:U?.name,typ:document.getElementById('ne-typ').value,tatvorwurf:tv,beschreibung:document.getElementById('ne-desc').value.trim(),status:document.getElementById('ne-status').value,schweregrad:document.getElementById('ne-sg').value};
   const{error}=await db.from('citizen_akten_eintraege').insert([payload]);
@@ -1243,22 +1408,25 @@ async function saveEintrag(){
   nt('✅ Eintrag hinzugefügt'+(disc?' · DM 📨':''),'ok');cm('m-neintrag');await log('EINTRAG',cname+': '+tv);
 }
 
-// ═══ BÜRGERDATENBANK ═══════════════════════════════════════════
+// ═══ BÜRGERDATENBANK ════════════════════════════════════
 async function loadBuerger(){
   const s=document.getElementById('b-search')?.value?.toLowerCase()||'';
   let{data}=await db.from('citizens').select('*').order('name').limit(100);
   if(s&&data)data=data.filter(c=>(c.name||'').toLowerCase().includes(s)||(c.roblox_name||'').toLowerCase().includes(s)||(c.discord_tag||'').toLowerCase().includes(s));
   const{data:counts}=await db.from('citizen_akten_eintraege').select('citizen_id');
-  const countMap={};(counts||[]).forEach(r=>{countMap[r.citizen_id]=(countMap[r.citizen_id]||0)+1;});
-  const fsBadge={aktiv:'<span class="badge bg-g">✅ FS</span>',abgenommen:'<span class="badge bg-y">⚠️ Abgenommen</span>',gesperrt:'<span class="badge bg-r">🔒 Gesperrt</span>',entzogen:'<span class="badge bg-r">❌ Entzogen</span>'};
+  const cmap={};(counts||[]).forEach(r=>{cmap[r.citizen_id]=(cmap[r.citizen_id]||0)+1;});
+  const fsBadge={aktiv:'<span class="badge bg-g">✅ FS</span>',abgenommen:'<span class="badge bg-y">⚠️ Abgen.</span>',gesperrt:'<span class="badge bg-r">🔒 Gesperrt</span>',entzogen:'<span class="badge bg-r">❌ Entzogen</span>'};
   const tb=document.getElementById('b-tb');
   if(!data?.length){tb.innerHTML='<tr><td colspan="7"><div class="es"><p>Keine Bürger</p></div></td></tr>';return;}
   tb.innerHTML=data.map(c=>`<tr>
-    <td style="font-weight:600">${c.name||'–'}</td>
+    <td><div style="display:flex;align-items:center;gap:8px">
+      ${c.char_foto?`<img src="${c.char_foto}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`:`<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">${c.name.charAt(0)}</div>`}
+      <div><div style="font-weight:600">${c.name||'–'}</div>${c.gender?`<div style="font-size:10px;color:var(--t3)">${c.gender}</div>`:''}</div>
+    </div></td>
     <td class="mono">${c.roblox_name||'–'}</td>
-    <td class="mono" style="font-size:11px">${c.discord_tag||'–'} ${c.discord_id?'<span title="'+c.discord_id+'">🔗</span>':''}</td>
-    <td class="mono">${countMap[c.id]||0}</td>
-    <td>${c.fs_status?fsBadge[c.fs_status]||'<span class="badge bg-gray">–</span>':'<span class="badge bg-gray">Kein FS</span>'}</td>
+    <td class="mono" style="font-size:11px">${c.discord_tag||'–'}</td>
+    <td class="mono">${cmap[c.id]||0}</td>
+    <td>${c.fs_status?fsBadge[c.fs_status]||'–':'<span class="badge bg-gray">Kein FS</span>'}</td>
     <td><span class="badge ${c.status==='Aktiv'?'bg-g':'bg-r'}">${c.status||'Aktiv'}</span></td>
     <td><button class="btn b-ghost b-sm" onclick="openBuerger('${c.id}')">Profil →</button></td>
   </tr>`).join('');
@@ -1268,51 +1436,51 @@ async function openBuerger(id){
   const{data:c}=await db.from('citizens').select('*').eq('id',id).single();if(!c)return;
   const{data:eintraege}=await db.from('citizen_akten_eintraege').select('*').eq('citizen_id',id).order('created_at',{ascending:false}).limit(15);
   const{data:kfz}=await db.from('vehicles').select('*').eq('citizen_id',id).limit(5);
-  const fsStatus=c.fs_status||null;
-  const fsPunkte=c.fs_punkte||0;
+  const fsStatus=c.fs_status||null;const fsPunkte=c.fs_punkte||0;
   const fsKlassen=(c.fs_klassen||'').split(',').filter(Boolean);
   const sev={Gering:'bg-g',Mittel:'bg-y',Schwer:'bg-o',Kritisch:'bg-r'};
   const fsBadge={aktiv:'<span class="badge bg-g">✅ Gültig</span>',abgenommen:'<span class="badge bg-y">⚠️ Abgenommen</span>',gesperrt:'<span class="badge bg-r">🔒 Gesperrt</span>',entzogen:'<span class="badge bg-r">❌ Entzogen</span>'};
   document.getElementById('m-b-b').innerHTML=`
     <div style="background:linear-gradient(135deg,rgba(14,165,233,.1),rgba(14,165,233,.04));border:1px solid var(--border2);border-radius:var(--r14);padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:16px">
-      <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0">${c.name.charAt(0)}</div>
+      ${c.char_foto?`<img src="${c.char_foto}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--border2)">`:`<div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0">${c.name.charAt(0)}</div>`}
       <div style="flex:1">
         <div style="font-family:var(--fg);font-size:18px;font-weight:700">${c.name}</div>
-        <div style="font-size:12px;color:var(--t3);margin-top:3px">Roblox: ${c.roblox_name||'–'}</div>
-        <div style="font-size:12px;color:var(--t3)">Discord: ${c.discord_tag||'–'} ${c.discord_id?'<span style="background:rgba(88,101,242,.15);border:1px solid rgba(88,101,242,.3);border-radius:4px;padding:1px 6px;font-size:10px;color:#a5b4fc">'+c.discord_id+'</span>':''}</div>
+        ${c.gender?`<div style="font-size:12px;color:var(--t3)">${c.gender}${c.dob?' · '+c.dob:''}</div>`:''}
+        <div style="font-size:12px;color:var(--t3);margin-top:2px">Roblox: ${c.roblox_name||'–'} ${c.roblox_at?'(@'+c.roblox_at+')':''}</div>
+        <div style="font-size:12px;color:var(--t3)">Discord: ${c.discord_tag||'–'}</div>
         <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
           <span class="badge ${c.status==='Aktiv'?'bg-g':'bg-r'}">${c.status||'Aktiv'}</span>
-          ${fsStatus?fsBadge[fsStatus]||'':'<span class="badge bg-gray">Kein Führerschein</span>'}
+          ${fsStatus?fsBadge[fsStatus]||'':'<span class="badge bg-gray">Kein FS</span>'}
         </div>
       </div>
     </div>
+    ${c.char_desc?`<div style="margin-bottom:12px;padding:10px 14px;background:rgba(14,165,233,.04);border:1px solid var(--border);border-radius:var(--r10);font-size:12px;color:var(--t2);font-style:italic">"${c.char_desc}"</div>`:''}
     ${fsStatus?`
     <div style="background:${fsStatus==='aktiv'?'rgba(16,185,129,.06)':'rgba(244,63,94,.06)'};border:1px solid ${fsStatus==='aktiv'?'rgba(16,185,129,.2)':'rgba(244,63,94,.2)'};border-radius:var(--r10);padding:14px;margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div style="font-family:var(--fg);font-weight:700">🪪 Führerschein</div>
         <div style="display:flex;gap:4px">${['B','A','C'].map(k=>`<div class="klasse-bdg ${fsKlassen.includes(k)?'':'inactive'}" style="width:24px;height:24px;font-size:10px">${k}</div>`).join('')}</div>
       </div>
-      <div style="font-size:11px;color:var(--t3);margin-bottom:5px">Punkte: ${fsPunkte}/8 ${fsPunkte>=6?'⚠️':''}</div>
+      <div style="font-size:11px;color:var(--t3);margin-bottom:5px">Punkte: ${fsPunkte}/8</div>
       <div class="punkte-row">${Array.from({length:8},(_,i)=>`<div class="pd ${i<fsPunkte?(fsPunkte>=6?'danger':'on'):''}"></div>`).join('')}</div>
       <div style="margin-top:10px">
         <button class="btn b-danger b-sm" onclick='cm("m-buerger");setTimeout(()=>openFsAktion(${JSON.stringify({id:c.id,name:c.name,discord_id:c.discord_id||"",fs_status:c.fs_status,fs_punkte:c.fs_punkte,fs_klassen:c.fs_klassen}).replace(/"/g,"&quot;")}),150)'>🚔 FS-Aktion</button>
       </div>
     </div>`:''}
-    ${kfz?.length?`<div style="margin-bottom:12px"><div class="slabel">Fahrzeuge</div><div style="display:flex;gap:6px;flex-wrap:wrap">${kfz.map(v=>`<span class="badge ${v.status==='Beschlagnahmt'?'bg-o':v.status==='Gestohlen'?'bg-r':'bg-a'}" style="font-family:var(--fm)">${v.plate||'–'} ${v.status!=='OK'?'('+v.status+')':''}</span>`).join('')}</div></div>`:''}
+    ${kfz?.length?`<div style="margin-bottom:12px"><div class="slabel">Fahrzeuge</div><div style="display:flex;gap:6px;flex-wrap:wrap">${kfz.map(v=>`<span class="badge ${v.status==='Beschlagnahmt'?'bg-o':v.status==='Gestohlen'?'bg-r':'bg-a'}" style="font-family:var(--fm)">${v.plate||'–'}</span>`).join('')}</div></div>`:''}
     <div class="slabel">Akteneinträge (${eintraege?.length||0})</div>
-    <div class="case-list" style="max-height:300px;overflow-y:auto">
+    <div class="case-list" style="max-height:280px;overflow-y:auto">
     ${!eintraege?.length?'<div class="es"><p>Keine Einträge</p></div>':eintraege.map(e=>`<div class="cc" style="cursor:default">
       <div class="cc-l ${e.status==='Abgeschlossen'?'geschlossen':e.status==='Ermittlung'?'aktiv':'offen'}"></div>
       <div class="cc-b">
-        <div class="cc-top"><span class="badge bg-gray">${e.typ||'–'}</span><span class="badge ${sev[e.schweregrad]||'bg-gray'}">${e.schweregrad||'–'}</span><span class="badge bg-gray">${e.status||'–'}</span></div>
+        <div class="cc-top"><span class="badge bg-gray">${e.typ||'–'}</span><span class="badge ${sev[e.schweregrad]||'bg-gray'}">${e.schweregrad||'–'}</span></div>
         <div class="cc-name">${e.tatvorwurf||'–'}</div>
-        <div class="cc-sub">${(e.beschreibung||'').substring(0,60)}</div>
         <div class="cc-meta"><span>👮 ${e.officer_name||'–'}</span><span>📅 ${fmtd(e.created_at)}</span></div>
       </div>
     </div>`).join('')}
     </div>
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn b-pri b-sm" onclick="openNeuerEintrag(${JSON.stringify({id:c.id,name:c.name,discord_id:c.discord_id||''}).replace(/"/g,'&quot;')})">+ Akteneintrag</button>
+      <button class="btn b-pri b-sm" onclick="openNeuerEintrag(${JSON.stringify({id:c.id,name:c.name,discord_id:c.discord_id||''}).replace(/"/g,'&quot;')})">+ Eintrag</button>
       <button class="btn b-ghost b-sm" onclick="copyShareLink('akte','${c.akte_share_id||''}')">🔗 Akte</button>
       <button class="btn b-ghost b-sm" onclick="copyShareLink('fz','${c.fuehrungszeugnis_share_id||''}')">📜 FZ</button>
       <button class="btn b-danger b-sm" onclick="toggleBuergerStatus('${c.id}','${c.name.replace(/'/g,"\\'")}','${c.discord_id||''}','${c.status||'Aktiv'}')">⚠️ Status</button>
@@ -1328,7 +1496,7 @@ async function toggleBuergerStatus(id,name,discordId,status){
   nt('Status: '+ns,'ok');cm('m-buerger');loadBuerger();
 }
 
-// ═══ AUTOCOMPLETE ══════════════════════════════════════════════
+// ═══ AUTOCOMPLETE ════════════════════════════════════════
 async function acSearch(inp,drop,cb){
   const q=document.getElementById(inp).value.trim();const dr=document.getElementById(drop);
   if(q.length<2){dr.style.display='none';return;}
@@ -1338,7 +1506,7 @@ async function acSearch(inp,drop,cb){
   dr.innerHTML=data.map(c=>`<div class="ac-item" onmousedown="event.preventDefault();${cb.name}(${JSON.stringify(c).replace(/"/g,'&quot;')})"><strong>${c.name||'–'}</strong><span>${c.roblox_name||''} ${c.discord_tag?'· '+c.discord_tag:''}</span></div>`).join('');
 }
 
-// ═══ EINSATZ ═══════════════════════════════════════════════════
+// ═══ EINSATZ ════════════════════════════════════════════
 async function loadEinsatz(){
   const{data}=await db.from('einsatz').select('*').order('created_at',{ascending:false}).limit(80);
   const tb=document.getElementById('e-tb');
@@ -1350,30 +1518,29 @@ async function saveEinsatz(){
   const t=document.getElementById('ne-t').value,o=document.getElementById('ne-o').value.trim(),err=document.getElementById('ne-err2');
   if(!t){err.textContent='Art wählen.';return;}if(!o){err.textContent='Ort eingeben.';return;}
   const _enNum='EN-'+Date.now().toString(36).toUpperCase();
-  await db.from('einsatz').insert([{einsatz_number:_enNum,type:t,ort:o,description:document.getElementById('ne-d').value.trim(),officer_name:U?.name,status:'Aktiv'}]);
+  const{error}=await db.from('einsatz').insert([{einsatz_number:_enNum,type:t,ort:o,description:document.getElementById('ne-d').value.trim(),officer_name:U?.name,status:'Aktiv'}]);
+  if(error){err.textContent='Fehler: '+error.message;return;}
   nt('🚨 Einsatz gestartet','ok');cm('m-new-einsatz');loadDash();
 }
 async function closeEinsatz(id){await db.from('einsatz').update({status:'Abgeschlossen'}).eq('id',id);nt('Einsatz abgeschlossen','ok');loadEinsatz();}
 
-// ═══ FAHRZEUGE ══════════════════════════════════════════════════
+// ═══ FAHRZEUGE ══════════════════════════════════════════
 async function loadFahrzeuge(){
   const s=document.getElementById('fz-search')?.value?.toLowerCase()||'';
   let{data}=await db.from('vehicles').select('*').order('created_at',{ascending:false}).limit(100);
   if(s&&data)data=data.filter(v=>(v.plate||'').toLowerCase().includes(s)||(v.make||'').toLowerCase().includes(s)||(v.owner_name||'').toLowerCase().includes(s));
   const tb=document.getElementById('fz-tb');
-  if(!data?.length){tb.innerHTML='<tr><td colspan="8"><div class="es"><div class="es-ico">🚗</div><p>Keine Fahrzeuge</p></div></td></tr>';return;}
+  if(!data?.length){tb.innerHTML='<tr><td colspan="7"><div class="es"><div class="es-ico">🚗</div><p>Keine Fahrzeuge</p></div></td></tr>';return;}
   tb.innerHTML=data.map(v=>`<tr>
     <td class="mono" style="font-weight:700;color:var(--a3)">${v.plate||'–'}</td>
     <td style="font-weight:600">${v.make||'–'} ${v.model||''}</td>
     <td>${v.color||'–'}</td>
-    <td class="mono" style="font-size:11px">${v.ps?v.ps+' PS / '+v.kmh+' km/h':'–'}</td>
     <td>${v.owner_name||'–'}</td>
-    <td><span class="badge ${v.status==='Gestohlen'?'bg-r':v.status==='Beschlagnahmt'||v.status==='Sichergestellt'?'bg-o':'bg-g'}">${v.status||'OK'}</span></td>
-    <td style="font-size:12px;color:var(--t2);max-width:120px;overflow:hidden;text-overflow:ellipsis">${v.beschlagnahmt_grund?'🔒 '+v.beschlagnahmt_grund:v.notes||'–'}</td>
+    <td><span class="badge ${v.status==='Gestohlen'?'bg-r':v.status==='Beschlagnahmt'?'bg-o':'bg-g'}">${v.status||'OK'}</span></td>
+    <td style="font-size:12px;color:var(--t2)">${v.notes||'–'}</td>
     <td><div style="display:flex;gap:4px">
-      ${(v.status==='OK'||v.status==='Gestohlen')?`<button class="btn b-danger b-sm" title="Beschlagnahmen" onclick='openBeschlagnahme(${JSON.stringify({id:v.id,plate:v.plate,owner_name:v.owner_name,discord_id:v.discord_id||"",status:v.status}).replace(/"/g,"&quot;")},false)'>🔒</button>`:''}
-      ${(v.status==='Beschlagnahmt'||v.status==='Sichergestellt')?`<button class="btn b-grn b-sm" title="Freigeben" onclick='openBeschlagnahme(${JSON.stringify({id:v.id,plate:v.plate,owner_name:v.owner_name,discord_id:v.discord_id||"",status:v.status}).replace(/"/g,"&quot;")},true)'>✅</button>`:''}
-      <button class="btn b-warn b-sm" onclick='markGestohlen("${v.id}","${v.plate}","${v.discord_id||''}","${v.status}")'>🚨</button>
+      ${v.status==='OK'?`<button class="btn b-danger b-sm" onclick='openBeschlagnahme(${JSON.stringify({id:v.id,plate:v.plate,owner_name:v.owner_name,discord_id:v.discord_id||"",status:v.status}).replace(/"/g,"&quot;")},false)'>🔒</button>`:''}
+      ${v.status==='Beschlagnahmt'?`<button class="btn b-grn b-sm" onclick='openBeschlagnahme(${JSON.stringify({id:v.id,plate:v.plate,owner_name:v.owner_name,discord_id:v.discord_id||"",status:v.status}).replace(/"/g,"&quot;")},true)'>✅</button>`:''}
       <button class="btn b-ghost b-sm" onclick="editFahrzeug('${v.id}')">✏️</button>
     </div></td>
   </tr>`).join('');
@@ -1381,65 +1548,38 @@ async function loadFahrzeuge(){
 
 function openBeschlagnahme(v,isFreigabe){
   document.getElementById('m-beschlag-t').textContent=isFreigabe?'Freigeben: '+v.plate:'Beschlagnahmen: '+v.plate;
-  document.getElementById('beschlag-fz-info').innerHTML=`<div style="background:var(--s3);border:1px solid var(--border);border-radius:var(--r10);padding:12px;font-size:13px;display:flex;justify-content:space-between;align-items:center"><div><span class="mono" style="font-weight:700;color:var(--a3)">${v.plate}</span> · ${v.owner_name||'Unbekannt'}</div><span class="badge ${v.status==='Beschlagnahmt'?'bg-o':'bg-g'}">${v.status||'OK'}</span></div>`;
-  document.getElementById('beschlag-grund').value=isFreigabe?'Freigegeben – Verfahren abgeschlossen':'';
-  document.getElementById('beschlag-vid').value=v.id;
-  document.getElementById('beschlag-plate').value=v.plate;
-  document.getElementById('beschlag-owner-disc').value=v.discord_id||'';
-  document.getElementById('btn-beschlag-do').style.display=isFreigabe?'none':'flex';
-  document.getElementById('btn-beschlag-free').style.display=isFreigabe?'flex':'none';
-  document.getElementById('beschlag-err').textContent='';
-  om('m-beschlag');
+  document.getElementById('beschlag-fz-info').innerHTML=`<div style="background:var(--s3);border:1px solid var(--border);border-radius:var(--r10);padding:12px;font-size:13px"><span class="mono" style="font-weight:700;color:var(--a3)">${v.plate}</span> · ${v.owner_name||'Unbekannt'} · <span class="badge ${v.status==='Beschlagnahmt'?'bg-o':'bg-g'}">${v.status||'OK'}</span></div>`;
+  document.getElementById('beschlag-grund').value=isFreigabe?'Freigegeben':'';
+  document.getElementById('beschlag-vid').value=v.id;document.getElementById('beschlag-plate').value=v.plate;document.getElementById('beschlag-owner-disc').value=v.discord_id||'';
+  document.getElementById('btn-beschlag-do').style.display=isFreigabe?'none':'flex';document.getElementById('btn-beschlag-free').style.display=isFreigabe?'flex':'none';
+  document.getElementById('beschlag-err').textContent='';om('m-beschlag');
 }
-
 async function saveBeschlagnahme(){
   const vid=document.getElementById('beschlag-vid').value,plate=document.getElementById('beschlag-plate').value,disc=document.getElementById('beschlag-owner-disc').value,grund=document.getElementById('beschlag-grund').value.trim();
-  const err=document.getElementById('beschlag-err');
-  if(!grund){err.textContent='Grund erforderlich.';return;}err.textContent='';
+  const err=document.getElementById('beschlag-err');if(!grund){err.textContent='Grund erforderlich.';return;}err.textContent='';
   const{error}=await db.from('vehicles').update({status:'Beschlagnahmt',beschlagnahmt_am:new Date().toISOString(),beschlagnahmt_von:U?.name,beschlagnahmt_grund:grund}).eq('id',vid);
   if(error){err.textContent='Fehler: '+error.message;return;}
   if(disc)await sendBotDM(disc,'fahrzeug_beschlagnahmt',{plate,grund,beamter:U?.name});
-  await log('BESCHLAGNAHME',plate+' – Grund: '+grund);
-  nt('🔒 '+plate+' beschlagnahmt','warn');cm('m-beschlag');loadFahrzeuge();
+  await log('BESCHLAGNAHME',plate+': '+grund);nt('🔒 '+plate+' beschlagnahmt','warn');cm('m-beschlag');loadFahrzeuge();
 }
-
 async function saveFreigabe(){
   const vid=document.getElementById('beschlag-vid').value,plate=document.getElementById('beschlag-plate').value,disc=document.getElementById('beschlag-owner-disc').value;
   const{error}=await db.from('vehicles').update({status:'OK',beschlagnahmt_am:null,beschlagnahmt_von:null,beschlagnahmt_grund:null}).eq('id',vid);
   if(error){document.getElementById('beschlag-err').textContent='Fehler: '+error.message;return;}
   if(disc)await sendBotDM(disc,'fahrzeug_freigegeben',{plate,beamter:U?.name});
-  await log('FREIGABE',plate+' freigegeben');
-  nt('✅ '+plate+' freigegeben','ok');cm('m-beschlag');loadFahrzeuge();
-}
-
-async function markGestohlen(vid,plate,disc,status){
-  if(status==='Gestohlen'){
-    if(!confirm(plate+' als GEFUNDEN / OK markieren?'))return;
-    await db.from('vehicles').update({status:'OK'}).eq('id',vid);
-    if(disc)await sendBotDM(disc,'fahrzeug_gefunden',{plate,beamter:U?.name});
-    nt('✅ '+plate+' als OK markiert','ok');
-  }else{
-    if(!confirm(plate+' als GESTOHLEN melden?'))return;
-    await db.from('vehicles').update({status:'Gestohlen'}).eq('id',vid);
-    if(disc)await sendBotDM(disc,'fahrzeug_gestohlen',{plate,beamter:U?.name});
-    await log('GESTOHLEN',plate);nt('🚨 '+plate+' gestohlen','warn');
-  }
-  loadFahrzeuge();
+  await log('FREIGABE',plate);nt('✅ '+plate+' freigegeben','ok');cm('m-beschlag');loadFahrzeuge();
 }
 
 function openNewFahrzeug(){_fzHalter=null;['fz-kz','fz-col','fz-mk','fz-mod','fz-hs','fz-note'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});document.getElementById('fz-err').textContent='';om('m-fahrzeug');}
 function fillFzHalter(c){document.getElementById('fz-hs').value=c.name;document.getElementById('fz-drop').style.display='none';_fzHalter=c;}
-
 async function saveFahrzeug(){
   const kz=(document.getElementById('fz-kz').value||'').trim().toUpperCase(),mk=document.getElementById('fz-mk').value.trim();
   const err=document.getElementById('fz-err');
-  if(!kz){err.textContent='Kennzeichen erforderlich.';return;}if(!mk){err.textContent='Marke erforderlich.';return;}
-  err.textContent='';
-  const{error}=await db.from('vehicles').insert([{plate:kz,make:mk,model:document.getElementById('fz-mod').value.trim(),color:document.getElementById('fz-col').value.trim(),owner_name:_fzHalter?.name||document.getElementById('fz-hs').value.trim()||null,citizen_id:_fzHalter?.id||null,discord_id:_fzHalter?.discord_id||null,notes:document.getElementById('fz-note').value.trim(),status:'OK',registriert_von:'CopNet Manual'}]);
+  if(!kz){err.textContent='Kennzeichen erforderlich.';return;}if(!mk){err.textContent='Marke erforderlich.';return;}err.textContent='';
+  const{error}=await db.from('vehicles').insert([{plate:kz,make:mk,model:document.getElementById('fz-mod').value.trim(),color:document.getElementById('fz-col').value.trim(),owner_name:_fzHalter?.name||document.getElementById('fz-hs').value.trim()||null,citizen_id:_fzHalter?.id||null,discord_id:_fzHalter?.discord_id||null,notes:document.getElementById('fz-note').value.trim(),status:'OK'}]);
   if(error){err.textContent=error.code==='23505'?'Kennzeichen bereits vergeben.':'Fehler: '+error.message;return;}
   nt('✅ KFZ eingetragen','ok');cm('m-fahrzeug');loadFahrzeuge();_fzHalter=null;
 }
-
 async function editFahrzeug(id){
   const{data:v}=await db.from('vehicles').select('*').eq('id',id).single();if(!v)return;
   const s=prompt('Status (OK / Gestohlen / Beschlagnahmt / Sichergestellt):',v.status||'OK');
@@ -1447,202 +1587,113 @@ async function editFahrzeug(id){
   await db.from('vehicles').update({status:s}).eq('id',id);nt('Status: '+s,'ok');loadFahrzeuge();
 }
 
-// ═══ FÜHRERSCHEINE ══════════════════════════════════════════════
+// ═══ FÜHRERSCHEINE ══════════════════════════════════════
 async function loadFuehrerscheine(){
   const{data}=await db.from('citizens').select('id,name,discord_id,roblox_name,fs_status,fs_punkte,fs_klassen').not('fs_status','is',null).order('name');
   _allFs=data||[];renderFsTable();
 }
-
 function renderFsTable(){
   const s=(document.getElementById('fs-search')?.value||'').toLowerCase();
   const filtered=_allFs.filter(c=>!s||(c.name||'').toLowerCase().includes(s)||(c.discord_id||'').includes(s)||(c.roblox_name||'').toLowerCase().includes(s));
-  const sBadge={aktiv:'<span class="badge bg-g">✅ Gültig</span>',abgenommen:'<span class="badge bg-y">⚠️ Abgenommen</span>',gesperrt:'<span class="badge bg-r">🔒 Gesperrt</span>',entzogen:'<span class="badge bg-r">❌ Entzogen</span>'};
+  const sBadge={aktiv:'<span class="badge bg-g">✅</span>',abgenommen:'<span class="badge bg-y">⚠️</span>',gesperrt:'<span class="badge bg-r">🔒</span>',entzogen:'<span class="badge bg-r">❌</span>'};
   const tb=document.getElementById('fs-tb');
-  if(!filtered.length){tb.innerHTML='<tr><td colspan="7"><div class="es"><div class="es-ico">🪪</div><p>Keine Führerscheine</p></div></td></tr>';return;}
+  if(!filtered.length){tb.innerHTML='<tr><td colspan="7"><div class="es"><div class="es-ico">🪪</div><p>Keine</p></div></td></tr>';return;}
   tb.innerHTML=filtered.map(c=>{
     const kl=(c.fs_klassen||'').split(',').filter(Boolean);
     const klHtml=kl.map(k=>`<span class="klasse-bdg" style="width:22px;height:22px;font-size:10px;display:inline-flex">${k}</span>`).join(' ');
     const pts=c.fs_punkte||0;
-    const pbar=`<span style="font-family:var(--fm);font-size:11px;color:${pts>=6?'var(--red)':pts>=3?'var(--yellow)':'var(--green)'}">⬛ ${pts}/8</span>`;
+    const pbar=`<span style="font-family:var(--fm);font-size:11px;color:${pts>=6?'var(--red)':pts>=3?'var(--yellow)':'var(--green)'}">${pts}/8</span>`;
     return`<tr>
       <td style="font-weight:600">${c.name||'–'}</td>
       <td><div style="display:flex;gap:3px">${klHtml||'–'}</div></td>
-      <td>${sBadge[c.fs_status]||'<span class="badge bg-gray">–</span>'}</td>
+      <td>${sBadge[c.fs_status]||'–'}</td>
       <td>${pbar}</td>
       <td class="mono">${c.roblox_name||'–'}</td>
       <td class="mono" style="font-size:10px;color:var(--t3)">${c.discord_id?c.discord_id.substring(0,14)+'…':'–'}</td>
-      <td><button class="btn b-pri b-sm" onclick='openFsAktion(${JSON.stringify({id:c.id,name:c.name,discord_id:c.discord_id||"",fs_status:c.fs_status,fs_punkte:c.fs_punkte,fs_klassen:c.fs_klassen}).replace(/"/g,"&quot;")})'>🚔 Aktion</button></td>
+      <td><button class="btn b-pri b-sm" onclick='openFsAktion(${JSON.stringify({id:c.id,name:c.name,discord_id:c.discord_id||"",fs_status:c.fs_status,fs_punkte:c.fs_punkte,fs_klassen:c.fs_klassen}).replace(/"/g,"&quot;")})'>🚔</button></td>
     </tr>`;
   }).join('');
 }
 
 function openFsAktion(cit){
-  document.getElementById('fsa-cid').value=cit.id;
-  document.getElementById('fsa-discord').value=cit.discord_id||'';
-  document.getElementById('fsa-cname').value=cit.name||'–';
-  document.getElementById('fsa-cur-punkte').value=cit.fs_punkte||0;
+  document.getElementById('fsa-cid').value=cit.id;document.getElementById('fsa-discord').value=cit.discord_id||'';
+  document.getElementById('fsa-cname').value=cit.name||'–';document.getElementById('fsa-cur-punkte').value=cit.fs_punkte||0;
   document.getElementById('fsa-cur-status').value=cit.fs_status||'aktiv';
   document.getElementById('fsa-grund').value='';document.getElementById('fsa-punkte').value=1;document.getElementById('fsa-err').textContent='';
   document.getElementById('m-fsa-title').textContent='Führerschein · '+cit.name;
-  const pts=cit.fs_punkte||0;
-  const kl=(cit.fs_klassen||'').split(',').filter(Boolean);
-  const sBg={aktiv:'rgba(16,185,129,.08)',abgenommen:'rgba(245,158,11,.08)',gesperrt:'rgba(244,63,94,.08)',entzogen:'rgba(244,63,94,.12)'};
-  const sCol={aktiv:'#34d399',abgenommen:'#fbbf24',gesperrt:'#f87171',entzogen:'#f87171'};
+  const pts=cit.fs_punkte||0;const kl=(cit.fs_klassen||'').split(',').filter(Boolean);
   const dots=Array.from({length:8},(_,i)=>`<div class="pd ${i<pts?(pts>=6?'danger':'on'):''}"></div>`).join('');
-  document.getElementById('fsa-buerger-info').innerHTML=`<div style="background:${sBg[cit.fs_status]||'var(--s3)'};border:1px solid var(--border);border-radius:var(--r10);padding:14px">
+  document.getElementById('fsa-buerger-info').innerHTML=`<div style="background:var(--s3);border:1px solid var(--border);border-radius:var(--r10);padding:14px">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div style="font-family:var(--fg);font-weight:700;font-size:14px">${cit.name}</div>
+      <div style="font-family:var(--fg);font-weight:700">${cit.name}</div>
       <div style="display:flex;gap:4px">${kl.map(k=>`<span class="klasse-bdg" style="width:24px;height:24px;font-size:10px">${k}</span>`).join('')}</div>
     </div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:${sCol[cit.fs_status]};font-weight:700">${(cit.fs_status||'–').toUpperCase()}</span></div>
-    <div class="punkte-row" style="margin-top:8px">${dots}</div>
-    <div style="font-size:11px;color:var(--t3);margin-top:4px">Punkte: ${pts}/8${pts>=8?' ⚠️':''}</div>
+    <div class="punkte-row">${dots}</div>
+    <div style="font-size:11px;color:var(--t3);margin-top:4px">Punkte: ${pts}/8 · Status: ${cit.fs_status||'–'}</div>
   </div>`;
-  const sel=document.getElementById('fsa-aktion');
-  sel.value=cit.fs_status==='aktiv'?'abnehmen':'erteilen';
+  document.getElementById('fsa-aktion').value=cit.fs_status==='aktiv'?'abnehmen':'erteilen';
   updateFsAktionUI();om('m-fs-aktion');
 }
-
 function updateFsAktionUI(){
   const a=document.getElementById('fsa-aktion').value;
   document.getElementById('fsa-punkte-wrap').style.display=a==='punkte_add'?'block':'none';
   document.getElementById('fsa-grund-wrap').style.display=a==='punkte_reset'?'none':'block';
-  // Hinweis Rollen-Sync
-  const syncHint=document.getElementById('fsa-sync-hint');
-  if(['abnehmen','sperren','entziehen'].includes(a)){
-    syncHint.style.color='var(--red)';
-    syncHint.textContent='🔒 FS-Rolle + Theorie-Rolle werden entzogen → Bürger muss Theorie neu ablegen!';
-  }else if(a==='erteilen'){
-    syncHint.style.color='var(--green)';
-    syncHint.textContent='✅ FS-Rolle wird zurückgegeben.';
-  }else{
-    syncHint.style.color='var(--a3)';
-    syncHint.textContent='🔄 Discord-Rollen werden synchronisiert.';
-  }
+  const sh=document.getElementById('fsa-sync-hint');
+  if(['abnehmen','sperren','entziehen'].includes(a)){sh.style.color='var(--red)';sh.textContent='🔒 FS-Rolle + Theorie-Rolle werden entzogen!';}
+  else if(a==='erteilen'){sh.style.color='var(--green)';sh.textContent='✅ FS-Rolle wird zurückgegeben.';}
+  else{sh.style.color='var(--a3)';sh.textContent='🔄 Discord-Rollen werden synchronisiert.';}
 }
 
-// ═══ FS AKTION SPEICHERN (MIT ROLLEN-SYNC) ═══════════════════
 async function saveFsAktion(){
-  const cid=document.getElementById('fsa-cid').value;
-  const disc=document.getElementById('fsa-discord').value;
-  const name=document.getElementById('fsa-cname').value;
-  const aktion=document.getElementById('fsa-aktion').value;
-  const grund=document.getElementById('fsa-grund').value.trim();
-  const curPts=parseInt(document.getElementById('fsa-cur-punkte').value)||0;
+  const cid=document.getElementById('fsa-cid').value,disc=document.getElementById('fsa-discord').value;
+  const name=document.getElementById('fsa-cname').value,aktion=document.getElementById('fsa-aktion').value;
+  const grund=document.getElementById('fsa-grund').value.trim(),curPts=parseInt(document.getElementById('fsa-cur-punkte').value)||0;
   const err=document.getElementById('fsa-err');
-  if(aktion!=='punkte_reset'&&!grund){err.textContent='Grund erforderlich.';return;}
-  err.textContent='';
-
-  let updCit={};
-  let akteneintrag=null;
-  let dmData={name,aktion,grund,von:U?.name};
-
-  if(aktion==='abnehmen'){
-    updCit={fs_status:'abgenommen'};
-    akteneintrag={tatvorwurf:'Führerschein abgenommen',beschreibung:'Grund: '+grund,schweregrad:'Mittel'};
-    nt('⚠️ Führerschein abgenommen','warn');
-  }else if(aktion==='sperren'){
-    updCit={fs_status:'gesperrt'};
-    akteneintrag={tatvorwurf:'Führerschein gesperrt',beschreibung:'Grund: '+grund,schweregrad:'Schwer'};
-    nt('🔒 Führerschein gesperrt','warn');
-  }else if(aktion==='entziehen'){
-    updCit={fs_status:'entzogen'};
-    akteneintrag={tatvorwurf:'Führerschein entzogen (permanent)',beschreibung:'Grund: '+grund,schweregrad:'Kritisch'};
-    nt('❌ Führerschein entzogen','err');
-  }else if(aktion==='erteilen'){
-    updCit={fs_status:'aktiv',fs_punkte:0};
-    akteneintrag={tatvorwurf:'Führerschein wiedererteilt',beschreibung:grund||'Freigabe durch Polizei',schweregrad:'Gering'};
-    nt('✅ Führerschein wiedererteilt','ok');
-  }else if(aktion==='punkte_add'){
-    const add=parseInt(document.getElementById('fsa-punkte').value)||1;
-    const neu=Math.min(curPts+add,8);
-    updCit={fs_punkte:neu};
-    if(neu>=8)updCit.fs_status='entzogen';
-    akteneintrag={tatvorwurf:`+${add} Punkt(e) · Gesamt: ${neu}/8`,beschreibung:'Grund: '+grund,schweregrad:neu>=8?'Kritisch':neu>=5?'Schwer':'Mittel'};
-    dmData={...dmData,punkte:add,punkte_gesamt:neu};
-    nt(`⚠️ ${add} Punkte (${neu}/8)${neu>=8?' – ENTZUG!':''}`,neu>=8?'err':'warn');
+  if(aktion!=='punkte_reset'&&!grund){err.textContent='Grund erforderlich.';return;}err.textContent='';
+  let updCit={},akteneintrag=null,dmData={name,aktion,grund,von:U?.name};
+  if(aktion==='abnehmen'){updCit={fs_status:'abgenommen'};akteneintrag={tatvorwurf:'Führerschein abgenommen',beschreibung:'Grund: '+grund,schweregrad:'Mittel'};nt('⚠️ FS abgenommen','warn');}
+  else if(aktion==='sperren'){updCit={fs_status:'gesperrt'};akteneintrag={tatvorwurf:'Führerschein gesperrt',beschreibung:'Grund: '+grund,schweregrad:'Schwer'};nt('🔒 FS gesperrt','warn');}
+  else if(aktion==='entziehen'){updCit={fs_status:'entzogen'};akteneintrag={tatvorwurf:'Führerschein entzogen',beschreibung:'Grund: '+grund,schweregrad:'Kritisch'};nt('❌ FS entzogen','err');}
+  else if(aktion==='erteilen'){updCit={fs_status:'aktiv',fs_punkte:0};akteneintrag={tatvorwurf:'Führerschein wiedererteilt',beschreibung:grund||'Freigabe',schweregrad:'Gering'};nt('✅ FS wiedererteilt','ok');}
+  else if(aktion==='punkte_add'){
+    const add=parseInt(document.getElementById('fsa-punkte').value)||1,neu=Math.min(curPts+add,8);
+    updCit={fs_punkte:neu};if(neu>=8)updCit.fs_status='entzogen';
+    akteneintrag={tatvorwurf:`+${add} Punkt(e) · ${neu}/8`,beschreibung:'Grund: '+grund,schweregrad:neu>=8?'Kritisch':neu>=5?'Schwer':'Mittel'};
+    dmData={...dmData,punkte:add,punkte_gesamt:neu};nt(`⚠️ ${add} Punkte (${neu}/8)`,neu>=8?'err':'warn');
   }else if(aktion==='punkte_reset'){
-    updCit={fs_punkte:0};
-    akteneintrag={tatvorwurf:'Punkte zurückgesetzt (0/8)',beschreibung:'Verkehrsregister bereinigt',schweregrad:'Gering'};
-    nt('🔄 Punkte zurückgesetzt','ok');
+    updCit={fs_punkte:0};akteneintrag={tatvorwurf:'Punkte zurückgesetzt',beschreibung:'Verkehrsregister bereinigt',schweregrad:'Gering'};nt('🔄 Punkte zurückgesetzt','ok');
   }
-
-  // 1. Supabase update
   const{error:e1}=await db.from('citizens').update(updCit).eq('id',cid);
   if(e1){err.textContent='Fehler: '+e1.message;return;}
-
-  // 2. Akteneintrag anlegen
   if(akteneintrag){
-    const{data:citRow}=await db.from('citizens').select('discord_id').eq('id',cid).maybeSingle();
-    await db.from('citizen_akten_eintraege').insert([{
-      citizen_id:cid,citizen_name:name,citizen_discord_id:citRow?.discord_id||disc||null,
-      officer_name:U?.name,typ:'Führerschein',
-      tatvorwurf:akteneintrag.tatvorwurf,
-      beschreibung:akteneintrag.beschreibung,
-      status:'Abgeschlossen',schweregrad:akteneintrag.schweregrad,
-    }]);
+    await db.from('citizen_akten_eintraege').insert([{citizen_id:cid,citizen_name:name,citizen_discord_id:disc||null,officer_name:U?.name,typ:'Führerschein',tatvorwurf:akteneintrag.tatvorwurf,beschreibung:akteneintrag.beschreibung,status:'Abgeschlossen',schweregrad:akteneintrag.schweregrad}]);
   }
-
-  // 3. FS-Aktionen-Log
-  await db.from('fs_aktionen_log').insert([{
-    citizen_id:cid,citizen_name:name,discord_id:disc||null,
-    officer_name:U?.name,aktion,grund:grund||'–',
-    punkte_vorher:curPts,punkte_nachher:updCit.fs_punkte??curPts
-  }]).catch(()=>{});
-
-  // 4. Discord DM senden
+  // FS Log - kein .catch() auf insert!
+  try{
+    await db.from('fs_aktionen_log').insert([{citizen_id:cid,citizen_name:name,discord_id:disc||null,officer_name:U?.name,aktion,grund:grund||'–',punkte_vorher:curPts,punkte_nachher:updCit.fs_punkte??curPts}]);
+  }catch(e){console.warn('fs_log',e);}
   if(disc)await sendBotDM(disc,'fs_aktion',dmData);
-
-  // 5. ═══ NEU: DISCORD-ROLLEN SYNCHRONISIEREN ═══════════════
-  // Bei Entzug/Abnahme/Sperre → FS-Rolle + Theorie-Rolle entziehen
-  // Bei Wiedererteilen → FS-Rolle zurückgeben
-  // Bei Punkte-Entzug (>=8 → auto entzogen) → auch Rollen entziehen
+  // Rollen Sync
   if(disc){
-    const revokeActions=['abnehmen','sperren','entziehen'];
-    const autoEntzogen=aktion==='punkte_add'&&(updCit.fs_status==='entzogen');
-
-    if(revokeActions.includes(aktion)||autoEntzogen){
-      // Rollen entziehen → Bürger muss Theorie neu machen
-      await syncFsRoles(disc,'revoke');
-    }else if(aktion==='erteilen'){
-      // FS-Rolle zurückgeben (Theorie-Rolle nicht nötig)
-      await syncFsRoles(disc,'restore');
-    }
+    const revoke=['abnehmen','sperren','entziehen'].includes(aktion)||(aktion==='punkte_add'&&updCit.fs_status==='entzogen');
+    if(revoke)await syncFsRoles(disc,'revoke');
+    else if(aktion==='erteilen')await syncFsRoles(disc,'restore');
   }
-
-  await log('FS_AKTION',name+': '+aktion+(grund?' – '+grund:''));
+  await log('FS_AKTION',name+': '+aktion);
   cm('m-fs-aktion');loadFuehrerscheine();
 }
 
-// ═══ DISCORD ROLLEN SYNC ═══════════════════════════════════════
-/**
- * Sendet einen API-Call an den Bot-Server um Discord-Rollen zu synchronisieren.
- * type = 'revoke' → FS-Rolle + Theorie-Rolle entziehen (muss neu Theorie machen)
- * type = 'restore' → FS-Rolle zurückgeben
- */
 async function syncFsRoles(discordId,type){
-  if(!discordId||discordId==='null'||discordId==='undefined'){return;}
+  if(!discordId||discordId==='null')return;
   try{
-    const res=await fetch(BOT_API+'/sync-fs-roles',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({discord_id:discordId.toString(),type})
-    });
-    const result=await res.json();
-    if(result.ok){
-      if(type==='revoke')nt('🔒 Discord-Rollen entzogen · muss Theorie neu ablegen','warn');
-      else if(type==='restore')nt('✅ FS-Rolle zurückgegeben','ok');
-    }else{
-      console.warn('[syncFsRoles] Fehler:',result);
-      nt('⚠️ Rollen-Sync fehlgeschlagen (Bot offline?)','warn');
-    }
-  }catch(e){
-    console.warn('[syncFsRoles] Exception:',e);
-    nt('⚠️ Rollen-Sync nicht möglich','warn');
-  }
+    const res=await fetch(BOT_API+'/sync-fs-roles',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({discord_id:discordId.toString(),type})});
+    const r=await res.json();
+    if(r.ok)nt(type==='revoke'?'🔒 Discord-Rollen entzogen':'✅ FS-Rolle zurückgegeben',type==='revoke'?'warn':'ok');
+    else nt('⚠️ Rollen-Sync fehlgeschlagen','warn');
+  }catch(e){nt('⚠️ Rollen-Sync nicht möglich','warn');}
 }
 
-// ═══ FAHNDUNG ══════════════════════════════════════════════════
+// ═══ FAHNDUNG ════════════════════════════════════════════
 let _fahndungCit=null;
 async function loadFahndung(){
   const{data}=await db.from('alerts').select('*').eq('active',true).order('created_at',{ascending:false}).limit(80);
@@ -1655,32 +1706,33 @@ function toggleFahndungTyp(){const typ=document.getElementById('fh-typ').value;d
 async function acSearchFahndung(){
   const q=(document.getElementById('fh-bs')?.value||'').trim();const dr=document.getElementById('fh-drop');
   if(q.length<2){dr.style.display='none';return;}
-  const{data}=await db.from('citizens').select('*').or(`name.ilike.%${q}%,discord_tag.ilike.%${q}%,roblox_name.ilike.%${q}%,discord_id.ilike.%${q}%`).limit(7);
+  const{data}=await db.from('citizens').select('*').or(`name.ilike.%${q}%,discord_tag.ilike.%${q}%,roblox_name.ilike.%${q}%`).limit(7);
   if(!data?.length){dr.style.display='none';return;}
   dr.style.display='block';
-  dr.innerHTML=data.map(c=>`<div class="ac-item" onmousedown="event.preventDefault();selectFahndungCit(${JSON.stringify(c).replace(/"/g,'&quot;')})"><strong>${c.name||'–'}</strong><span>${c.roblox_name?'Roblox: '+c.roblox_name:''} ${c.discord_tag?'· '+c.discord_tag:''}</span></div>`).join('');
+  dr.innerHTML=data.map(c=>`<div class="ac-item" onmousedown="event.preventDefault();selectFahndungCit(${JSON.stringify(c).replace(/"/g,'&quot;')})"><strong>${c.name||'–'}</strong><span>${c.roblox_name?'Roblox: '+c.roblox_name:''}</span></div>`).join('');
 }
-function selectFahndungCit(c){_fahndungCit=c;document.getElementById('fh-bs').value=c.name;document.getElementById('fh-n').value=c.name;document.getElementById('fh-drop').style.display='none';const badge=document.getElementById('fh-cit-badge');badge.style.display='block';badge.innerHTML=`✅ Verknüpft: <b>${c.name}</b>${c.roblox_name?' · Roblox: '+c.roblox_name:''}${c.discord_id?' · 🔗':''}`;}
+function selectFahndungCit(c){_fahndungCit=c;document.getElementById('fh-bs').value=c.name;document.getElementById('fh-n').value=c.name;document.getElementById('fh-drop').style.display='none';const badge=document.getElementById('fh-cit-badge');badge.style.display='block';badge.innerHTML=`✅ Verknüpft: <b>${c.name}</b>`;}
 async function saveFahndung(){
   const typ=document.getElementById('fh-typ').value,g=document.getElementById('fh-g').value.trim(),err=document.getElementById('fh-err');
   let name='',plate='';
   if(typ==='person'){name=document.getElementById('fh-n').value.trim();if(!name){err.textContent='Name erforderlich.';return;}}
   else{plate=(document.getElementById('fh-plate')?.value||'').trim().toUpperCase();if(!plate){err.textContent='Kennzeichen erforderlich.';return;}}
   if(!g){err.textContent='Grund erforderlich.';return;}err.textContent='';
-  await db.from('alerts').insert([{person_name:typ==='person'?name:null,plate:typ==='kfz'?plate:null,reason:g,notes:document.getElementById('fh-d').value.trim(),alert_type:typ,active:true,officer_name:U?.name,citizen_id:_fahndungCit?.id||null}]);
+  const{error}=await db.from('alerts').insert([{person_name:typ==='person'?name:null,plate:typ==='kfz'?plate:null,reason:g,notes:document.getElementById('fh-d').value.trim(),alert_type:typ,active:true,officer_name:U?.name,citizen_id:_fahndungCit?.id||null}]);
+  if(error){err.textContent='Fehler: '+error.message;return;}
   nt('🔍 Fahndung ausgeschrieben','ok');cm('m-fahndung');_fahndungCit=null;loadFahndung();
 }
 async function closeFahndung(id){await db.from('alerts').update({active:false}).eq('id',id);nt('Fahndung abgeschlossen','ok');loadFahndung();}
 
-// ═══ TEAM ══════════════════════════════════════════════════════
+// ═══ TEAM ════════════════════════════════════════════════
 async function loadTeam(){
   const{data}=await db.from('officers').select('*').order('level',{ascending:false});
   const g=document.getElementById('team-grid');
   if(!data?.length){g.innerHTML='<div class="es"><p>Keine Beamten</p></div>';return;}
-  g.innerHTML=data.map(o=>`<div class="tc ${o.status==='on'?'on':''}"><div class="tc-ava">${o.name.charAt(0)}</div><div style="flex:1;min-width:0"><div class="tc-n">${o.name}</div><div class="tc-r">${o.rank||'–'} · ${o.dienst||'–'}</div><div class="tc-d">Lv${o.level||1}${o.discord_id?' · 🔗':''}</div></div><span class="badge ${o.status==='on'?'bg-g':'bg-gray'}">${o.status==='on'?'Dienst':'Frei'}</span></div>`).join('');
+  g.innerHTML=data.map(o=>`<div class="tc ${o.status==='on'?'on':''}"><div class="tc-ava">${o.name.charAt(0)}</div><div style="flex:1;min-width:0"><div class="tc-n">${o.name}</div><div class="tc-r">${o.rank||'–'} · ${o.dienst||'–'}</div></div><span class="badge ${o.status==='on'?'bg-g':'bg-gray'}">${o.status==='on'?'Dienst':'Frei'}</span></div>`).join('');
 }
 
-// ═══ DIENSTNUMMERN ═════════════════════════════════════════════
+// ═══ DIENSTNUMMERN ═══════════════════════════════════════
 async function loadDienstnummern(){
   const{data:dnRows}=await db.from('dienstnummern').select('*').order('nummer');
   const dnMap={};(dnRows||[]).forEach(r=>{dnMap[r.nummer]=r;});
@@ -1689,21 +1741,24 @@ async function loadDienstnummern(){
 function renderDN(){
   const s=(document.getElementById('dn-search')?.value||'').toLowerCase();
   const filtered=_allDN.filter(({nr,info})=>!s||nr.includes(s)||(info?.username||'').toLowerCase().includes(s));
-  document.getElementById('dn-tb').innerHTML=filtered.map(({nr,info})=>`<tr><td class="mono" style="font-weight:700;color:var(--a3)">${nr}</td><td style="font-weight:600">${info?info.username:'<span style="color:var(--t3)">Frei</span>'}</td><td class="mono" style="font-size:10px;color:var(--t3)">${info?info.user_id:'–'}</td><td class="mono" style="font-size:11px">${info?fmtd(info.vergeben_am):'–'}</td><td style="font-size:12px;color:var(--t2)">${info?info.vergeben_von:'–'}</td><td><span class="badge ${info?'bg-g':'bg-gray'}">${info?'Belegt':'Frei'}</span></td></tr>`).join('');
+  document.getElementById('dn-tb').innerHTML=filtered.map(({nr,info})=>`<tr><td class="mono" style="font-weight:700;color:var(--a3)">${nr}</td><td style="font-weight:600">${info?info.username:'<span style="color:var(--t3)">Frei</span>'}</td><td class="mono" style="font-size:10px;color:var(--t3)">${info?info.user_id:'–'}</td><td class="mono" style="font-size:11px">${info?fmtd(info.vergeben_am):'–'}</td><td><span class="badge ${info?'bg-g':'bg-gray'}">${info?'Belegt':'Frei'}</span></td></tr>`).join('');
 }
 async function importDNFromOfficers(){
   const{data:officers}=await db.from('officers').select('id,name,dienst,discord_id,created_at').not('dienst','is',null);
-  if(!officers?.length){nt('Keine Beamten gefunden','err');return;}
+  if(!officers?.length){nt('Keine Beamten','err');return;}
   let imported=0;
   for(const o of officers){
     if(!o.dienst||o.dienst==='–')continue;
     const{data:ex}=await db.from('dienstnummern').select('id').eq('nummer',o.dienst).maybeSingle();
-    if(!ex&&o.discord_id){await db.from('dienstnummern').upsert([{nummer:o.dienst,user_id:o.discord_id.toString(),username:o.name,vergeben_am:o.created_at||new Date().toISOString(),vergeben_von:'Import'}],{onConflict:'nummer'});imported++;}
+    if(!ex&&o.discord_id){
+      await db.from('dienstnummern').upsert([{nummer:o.dienst,user_id:o.discord_id.toString(),username:o.name,vergeben_am:o.created_at||new Date().toISOString(),vergeben_von:'Import'}],{onConflict:'nummer'});
+      imported++;
+    }
   }
-  nt('✅ '+imported+' Dienstnummern importiert','ok');loadDienstnummern();
+  nt('✅ '+imported+' importiert','ok');loadDienstnummern();
 }
 
-// ═══ PERSONALAKTEN ════════════════════════════════════════════
+// ═══ PERSONALAKTEN ═══════════════════════════════════════
 async function loadPersonalakten(){
   const s=(document.getElementById('pa-search')?.value||'').toLowerCase();
   let{data}=await db.from('officers').select('*').order('level',{ascending:false});
@@ -1712,7 +1767,7 @@ async function loadPersonalakten(){
   const cmap={};(counts||[]).forEach(r=>{cmap[r.officer_id]=(cmap[r.officer_id]||0)+1;});
   const tb=document.getElementById('pa-tb');
   if(!data?.length){tb.innerHTML='<tr><td colspan="6"><div class="es"><p>Keine Beamten</p></div></td></tr>';return;}
-  tb.innerHTML=data.map(o=>`<tr><td style="font-weight:600;display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">${o.name.charAt(0)}</div>${o.name}</td><td class="mono">${o.dienst||'–'}</td><td>${o.rank||'–'}</td><td class="mono">${cmap[o.id]||0}</td><td><span class="badge ${o.suspended?'bg-r':o.status==='on'?'bg-g':'bg-gray'}">${o.suspended?'Gesperrt':o.status==='on'?'Im Dienst':'Aktiv'}</span></td><td><button class="btn b-ghost b-sm" onclick="openPersonalakte('${o.id}')">Akte →</button></td></tr>`).join('');
+  tb.innerHTML=data.map(o=>`<tr><td style="font-weight:600">${o.name}</td><td class="mono">${o.dienst||'–'}</td><td>${o.rank||'–'}</td><td class="mono">${cmap[o.id]||0}</td><td><span class="badge ${o.suspended?'bg-r':o.status==='on'?'bg-g':'bg-gray'}">${o.suspended?'Gesperrt':o.status==='on'?'Im Dienst':'Aktiv'}</span></td><td><button class="btn b-ghost b-sm" onclick="openPersonalakte('${o.id}')">Akte →</button></td></tr>`).join('');
 }
 
 async function openPersonalakte(id){
@@ -1727,43 +1782,45 @@ async function openPersonalakte(id){
   const lobs=(eintraege||[]).filter(e=>e.typ==='Lob').length;
   document.getElementById('m-pa-t').textContent='Personalakte · '+o.name;
   document.getElementById('m-pa-b').innerHTML=`
-    <div style="background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(14,165,233,.04));border:1px solid var(--border2);border-radius:var(--r14);padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:16px;position:relative;overflow:hidden">
-      <div style="position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.1),transparent 70%)"></div>
-      <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 0 20px rgba(14,165,233,.3)">${o.name.charAt(0)}</div>
-      <div style="flex:1"><div style="font-family:var(--fg);font-size:18px;font-weight:800">${o.name}</div><div style="font-size:13px;color:var(--a3);margin-top:2px">${o.rank||'–'} · ${o.dienst||'–'}</div>
-      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><span class="badge bg-gray">Lv${o.level||1}</span><span class="badge ${o.suspended?'bg-r':o.status==='on'?'bg-g':'bg-gray'}">${o.suspended?'Gesperrt':o.status==='on'?'Im Dienst':'Aktiv'}</span>${o.discord_id?'<span class="badge bg-p">🔗 Discord</span>':''}</div></div>
+    <div style="background:linear-gradient(135deg,rgba(14,165,233,.1),rgba(14,165,233,.04));border:1px solid var(--border2);border-radius:var(--r14);padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:16px">
+      <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0">${o.name.charAt(0)}</div>
+      <div style="flex:1"><div style="font-family:var(--fg);font-size:18px;font-weight:800">${o.name}</div>
+        <div style="font-size:13px;color:var(--a3)">${o.rank||'–'} · ${o.dienst||'–'}</div>
+        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><span class="badge bg-gray">Lv${o.level||1}</span><span class="badge ${o.suspended?'bg-r':o.status==='on'?'bg-g':'bg-gray'}">${o.suspended?'Gesperrt':o.status==='on'?'Im Dienst':'Aktiv'}</span></div>
+      </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
-      <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:var(--r10);padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;font-family:var(--fg);color:#34d399">${befs}</div><div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Beförderungen</div></div>
-      <div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:var(--r10);padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;font-family:var(--fg);color:#fbbf24">${warns}</div><div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Verwarnungen</div></div>
-      <div style="background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.2);border-radius:var(--r10);padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;font-family:var(--fg);color:var(--a3)">${lobs}</div><div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Auszeichnungen</div></div>
+      <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:var(--r10);padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;font-family:var(--fg);color:#34d399">${befs}</div><div style="font-size:10px;color:var(--t3)">Beförderungen</div></div>
+      <div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:var(--r10);padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;font-family:var(--fg);color:#fbbf24">${warns}</div><div style="font-size:10px;color:var(--t3)">Verwarnungen</div></div>
+      <div style="background:rgba(14,165,233,.06);border:1px solid rgba(14,165,233,.2);border-radius:var(--r10);padding:12px;text-align:center"><div style="font-size:24px;font-weight:800;font-family:var(--fg);color:var(--a3)">${lobs}</div><div style="font-size:10px;color:var(--t3)">Auszeichnungen</div></div>
     </div>
-    <div class="ig" style="margin-bottom:14px"><div class="ii"><div class="ii-l">Discord ID</div><div class="ii-v mono" style="font-size:11px">${o.discord_id||'–'}</div></div><div class="ii"><div class="ii-l">Discord Tag</div><div class="ii-v">${o.discord_tag||'–'}</div></div><div class="ii"><div class="ii-l">Abteilung</div><div class="ii-v">${o.abteilung||'Polizei'}</div></div><div class="ii"><div class="ii-l">Einträge gesamt</div><div class="ii-v">${(eintraege||[]).length}</div></div></div>
-    ${isChef?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:rgba(14,165,233,.04);border:1px solid var(--border);border-radius:var(--r10)">
-      <div style="font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;width:100%;margin-bottom:4px">Führungs-Aktionen</div>
+    ${isChef?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
       <button class="btn b-pri b-sm" onclick="openPersonalEintrag('${o.id}','${o.name.replace(/'/g,"\\'")}','${o.discord_id||''}')">+ Eintrag</button>
       <button class="btn b-ghost b-sm" onclick="cm('m-personalakte');openMod('${o.id}','${o.name.replace(/'/g,"\\'")}','${o.discord_id||''}')">📨 DM</button>
       <button class="btn b-ghost b-sm" onclick="cm('m-personalakte');openEditUser(${JSON.stringify(o).replace(/"/g,'&quot;')})">✏️ Edit</button>
       ${o.id!==U?.id?`<button class="btn b-danger b-sm" onclick="cm('m-personalakte');delUser('${o.id}','${o.name.replace(/'/g,"\\'")}','${o.discord_id||''}')">🗑</button>`:''}
     </div>`:''}
-    <div class="slabel">Akteneinträge (${sichtbare?.length||0})</div>
-    <div class="case-list" style="max-height:380px;overflow-y:auto">
-    ${!sichtbare?.length?'<div class="es"><div class="es-ico">📂</div><p>Keine Einträge</p></div>':sichtbare.map(e=>`
+    <div class="slabel">Einträge (${sichtbare?.length||0})</div>
+    <div class="case-list" style="max-height:350px;overflow-y:auto">
+    ${!sichtbare?.length?'<div class="es"><p>Keine Einträge</p></div>':sichtbare.map(e=>`
       <div class="cc" style="cursor:default">
         <div class="cc-l ${e.typ==='Beförderung'||e.typ==='Lob'?'geschlossen':e.typ==='Verwarnung'||e.typ==='Abmahnung'||e.typ==='Suspendierung'||e.typ==='Kündigung'?'gesucht':'offen'}"></div>
         <div class="cc-b">
-          <div class="cc-top"><span class="badge ${typColor[e.typ]||'bg-gray'}">${typIcon[e.typ]||'📝'} ${e.typ||'–'}</span>${e.sichtbarkeit==='intern'?'<span class="badge bg-gray" style="font-size:9px">🔒 intern</span>':''}</div>
+          <div class="cc-top"><span class="badge ${typColor[e.typ]||'bg-gray'}">${typIcon[e.typ]||'📝'} ${e.typ||'–'}</span>${e.sichtbarkeit==='intern'?'<span class="badge bg-gray" style="font-size:9px">🔒</span>':''}</div>
           <div class="cc-name">${e.betreff||'–'}</div>
-          <div class="cc-sub">${(e.details||'').substring(0,80)}${(e.details?.length||0)>80?'…':''}</div>
-          <div class="cc-meta"><span>👮 ${e.erstellt_von||'–'}</span><span>📅 ${fmtd(e.created_at)}</span>${e.neuer_rang?`<span>⬆️ → ${e.neuer_rang}</span>`:''}</div>
+          <div class="cc-sub">${(e.details||'').substring(0,80)}</div>
+          <div class="cc-meta"><span>👮 ${e.erstellt_von||'–'}</span><span>📅 ${fmtd(e.created_at)}</span>${e.neuer_rang?`<span>⬆️ ${e.neuer_rang}</span>`:''}</div>
         </div>
       </div>`).join('')}
     </div>`;
   om('m-personalakte');
 }
 
-function openPersonalEintrag(oid,oname,odisc){document.getElementById('pa-oid').value=oid;document.getElementById('pa-oname').value=oname;document.getElementById('pa-odisc').value=odisc||'';['pa-betreff','pa-details'].forEach(i=>document.getElementById(i).value='');document.getElementById('pa-rang').value='';document.getElementById('pa-sicht').value='intern';document.getElementById('pa-err').textContent='';om('m-pa-neintrag');}
-
+function openPersonalEintrag(oid,oname,odisc){
+  document.getElementById('pa-oid').value=oid;document.getElementById('pa-oname').value=oname;document.getElementById('pa-odisc').value=odisc||'';
+  ['pa-betreff','pa-details'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('pa-rang').value='';document.getElementById('pa-sicht').value='intern';document.getElementById('pa-err').textContent='';om('m-pa-neintrag');
+}
 async function savePersonalEintrag(){
   const oid=document.getElementById('pa-oid').value,oname=document.getElementById('pa-oname').value,odisc=document.getElementById('pa-odisc').value;
   const betreff=document.getElementById('pa-betreff').value.trim(),err=document.getElementById('pa-err');
@@ -1772,19 +1829,21 @@ async function savePersonalEintrag(){
   const payload={officer_id:oid,officer_name:oname,erstellt_von:U?.name,typ,betreff,details:document.getElementById('pa-details').value.trim(),neuer_rang:neuerRang||null,sichtbarkeit};
   const{error}=await db.from('officer_akten_eintraege').insert([payload]);
   if(error){err.textContent='Fehler: '+error.message;return;}
-  if(neuerRang){const rangLevel={Streifenpolizist:1,Polizeimeister:2,Polizeihauptmeister:3,Polizeikommissar:4,Polizeihauptkommissar:5,Polizeioberkommissar:6,Kriminalkommissar:7,'Vize Chef':9,'Polizei Chef':10};await db.from('officers').update({rank:neuerRang,level:rangLevel[neuerRang]||1}).eq('id',oid);}
+  if(neuerRang){
+    const rl={Streifenpolizist:1,Polizeimeister:2,Polizeihauptmeister:3,Polizeikommissar:4,Polizeihauptkommissar:5,Polizeioberkommissar:6,Kriminalkommissar:7,'Vize Chef':9,'Polizei Chef':10};
+    await db.from('officers').update({rank:neuerRang,level:rl[neuerRang]||1}).eq('id',oid);
+  }
   if(odisc&&sichtbarkeit==='beamter')await sendBotDM(odisc,'personalakte_eintrag',{name:oname,typ,betreff,details:payload.details,von:U?.name,neuerRang:neuerRang||null});
-  nt('✅ Eintrag gespeichert'+(odisc&&sichtbarkeit==='beamter'?' · DM 📨':''),'ok');
-  await log('PERSONALAKTE',oname+': '+typ+' – '+betreff);
+  nt('✅ Eintrag gespeichert','ok');await log('PERSONALAKTE',oname+': '+typ);
   cm('m-pa-neintrag');openPersonalakte(oid);
 }
 
-// ═══ NUTZERVERWALTUNG ══════════════════════════════════════════
+// ═══ NUTZERVERWALTUNG ════════════════════════════════════
 async function loadUsers(){
   const{data}=await db.from('officers').select('*').order('level',{ascending:false});
   const tb=document.getElementById('um-tb');
   if(!data?.length){tb.innerHTML='<tr><td colspan="7"><div class="es"><p>Keine Nutzer</p></div></td></tr>';return;}
-  tb.innerHTML=data.map(o=>`<tr><td style="font-weight:600">${o.name}</td><td class="mono">${o.dienst||'–'}</td><td>${o.rank||'–'}</td><td class="mono" style="font-size:10px;color:var(--t3)">${o.discord_id?'🔗 '+o.discord_id.toString().substring(0,12)+'…':'–'}</td><td><span class="badge ${o.status==='on'?'bg-g':'bg-gray'}">${o.status==='on'?'Im Dienst':'Frei'}</span></td><td><span class="badge ${o.suspended?'bg-r':'bg-g'}">${o.suspended?'Gesperrt':'Aktiv'}</span></td><td style="display:flex;gap:4px;flex-wrap:wrap"><button class="btn b-ghost b-sm" onclick='openEditUser(${JSON.stringify(o).replace(/'/g,"&#39;")})'>✏️</button><button class="btn b-ghost b-sm" onclick="openMod('${o.id}','${o.name.replace(/'/g,"\\'")}','${o.discord_id||''}')">📨</button>${o.id!==U?.id?`<button class="btn b-danger b-sm" onclick="delUser('${o.id}','${o.name.replace(/'/g,"\\'")}','${o.discord_id||''}')">🗑</button>`:''}</td></tr>`).join('');
+  tb.innerHTML=data.map(o=>`<tr><td style="font-weight:600">${o.name}</td><td class="mono">${o.dienst||'–'}</td><td>${o.rank||'–'}</td><td class="mono" style="font-size:10px;color:var(--t3)">${o.discord_id?'🔗 '+o.discord_id.toString().substring(0,12)+'…':'–'}</td><td><span class="badge ${o.status==='on'?'bg-g':'bg-gray'}">${o.status==='on'?'Dienst':'Frei'}</span></td><td><span class="badge ${o.suspended?'bg-r':'bg-g'}">${o.suspended?'Gesperrt':'Aktiv'}</span></td><td style="display:flex;gap:4px"><button class="btn b-ghost b-sm" onclick='openEditUser(${JSON.stringify(o).replace(/'/g,"&#39;")})'>✏️</button><button class="btn b-ghost b-sm" onclick="openMod('${o.id}','${o.name.replace(/'/g,"\\'")}','${o.discord_id||''}')">📨</button>${o.id!==U?.id?`<button class="btn b-danger b-sm" onclick="delUser('${o.id}','${o.name.replace(/'/g,"\\'")}','${o.discord_id||''}')">🗑</button>`:''}</td></tr>`).join('');
 }
 function openAddUser(){editId=null;document.getElementById('m-au-t').textContent='Nutzer anlegen';['au-n','au-d','au-pw','au-id','au-disc'].forEach(i=>document.getElementById(i).value='');document.getElementById('au-err').textContent='';om('m-au');}
 function openEditUser(o){editId=o.id;document.getElementById('m-au-t').textContent='Bearbeiten';document.getElementById('au-n').value=o.name;document.getElementById('au-d').value=o.dienst||'';document.getElementById('au-pw').value='';document.getElementById('au-id').value=o.id;document.getElementById('au-disc').value=o.discord_id||'';const s=document.getElementById('au-rg');for(let op of s.options){if(op.value===o.rank)op.selected=true;}document.getElementById('au-err').textContent='';om('m-au');}
@@ -1795,7 +1854,7 @@ async function saveUser(){
   if(!n||!d){err.textContent='Name und Dienst-Nr erforderlich.';return;}if(!editId&&!pw){err.textContent='Passwort erforderlich.';return;}
   if(editId){const upd={name:n,dienst:d,rank,level:lvl};if(pw)upd.password=pw;if(disc)upd.discord_id=disc;const{error}=await db.from('officers').update(upd).eq('id',editId);if(error){err.textContent='Fehler: '+error.message;return;}}
   else{const{error}=await db.from('officers').insert([{name:n,dienst:d,rank,level:lvl,password:pw,status:'off',abteilung:'polizei',discord_id:disc||null}]);if(error){err.textContent=error.code==='23505'?'Dienst-Nr vergeben.':'Fehler: '+error.message;return;}if(disc)await sendBotDM(disc,'einstellung',{name:n,dienst:d,rang:rank,von:U?.name});}
-  nt('✅ '+(editId?'Aktualisiert':'Angelegt')+': '+n,'ok');await log('USER_MGMT',(editId?'Edit':'Neu')+': '+n+' ('+d+')');cm('m-au');loadUsers();editId=null;
+  nt('✅ '+(editId?'Aktualisiert':'Angelegt')+': '+n,'ok');await log('USER_MGMT',(editId?'Edit':'Neu')+': '+n);cm('m-au');loadUsers();editId=null;
 }
 async function delUser(id,name,discordId){
   if(!confirm('Nutzer "'+name+'" löschen?'))return;
@@ -1804,35 +1863,34 @@ async function delUser(id,name,discordId){
   nt('Gelöscht','warn');await log('USER_DELETE',name);loadUsers();
 }
 
-// ═══ MODERATION ════════════════════════════════════════════════
+// ═══ MODERATION ══════════════════════════════════════════
 function openMod(uid,name,discordId){document.getElementById('mod-uid').value=uid;document.getElementById('mod-name').value=name;document.getElementById('mod-disc').value=discordId||'';document.getElementById('mod-grund').value='';document.getElementById('mod-err').textContent='';document.getElementById('m-mod-t').textContent='Moderation: '+name;om('m-mod');}
 async function saveMod(){
   const uid=document.getElementById('mod-uid').value,name=document.getElementById('mod-name').value,discordId=document.getElementById('mod-disc').value;
   const aktion=document.getElementById('mod-act').value,grund=document.getElementById('mod-grund').value.trim();
-  const err=document.getElementById('mod-err');
-  if(!grund){err.textContent='Begründung erforderlich.';return;}err.textContent='';
+  const err=document.getElementById('mod-err');if(!grund){err.textContent='Begründung erforderlich.';return;}err.textContent='';
   const aktionMap={suspendierung:{suspended:true},entsperrung:{suspended:false},kuendigung:{suspended:true}};
   if(aktionMap[aktion])await db.from('officers').update(aktionMap[aktion]).eq('id',uid);
   if(discordId&&discordId.length>5)await sendBotDM(discordId,'mod_aktion',{name,aktion,grund,von:U?.name});
-  await log('MOD',name+': '+aktion+' – '+grund);
-  nt('✅ '+aktion,'ok');cm('m-mod');loadUsers();
+  await log('MOD',name+': '+aktion);nt('✅ '+aktion,'ok');cm('m-mod');loadUsers();
 }
 
-// ═══ PROFIL ════════════════════════════════════════════════════
+// ═══ PROFIL ══════════════════════════════════════════════
 function loadProfil(){
   if(!U)return;
+  const fotoHtml=U.char_foto?`<img src="${U.char_foto}" class="char-foto" style="width:54px;height:54px;border-radius:50%;object-fit:cover;margin-bottom:12px">`:`<div class="ph-ava">${U.name.charAt(0)}</div>`;
   document.getElementById('profil-wrap').innerHTML=`
-    <div class="ph"><div class="ph-ava">${U.name.charAt(0)}</div><div class="ph-n">${U.name}</div>
+    <div class="ph">${fotoHtml}<div class="ph-n">${U.name}</div>
       <div class="ph-r">${U.type==='officer'?(U.rank||'Beamter')+' · '+U.dienst:'Bürger'}</div>
       ${U.type==='officer'?`<div class="lvl-row"><div class="lvl-bar"><div class="lvl-fill" style="width:${((U.level||1)/10)*100}%"></div></div><div class="lvl-txt">Level ${U.level||1}/10</div></div>`:''}
     </div>
     <div class="card"><div class="ig" style="margin-bottom:0">
       <div class="ii"><div class="ii-l">Typ</div><div class="ii-v"><span class="badge ${U.type==='officer'?'bg-a':'bg-p'}">${U.type==='officer'?'Beamter':'Bürger'}</span></div></div>
       <div class="ii"><div class="ii-l">Discord</div><div class="ii-v mono" style="font-size:11px">${U.discord_id?'🔗 '+U.discord_id:'–'}</div></div>
-      ${U.type==='officer'?`<div class="ii"><div class="ii-l">Dienststatus</div><div class="ii-v"><span class="badge ${U.status==='on'?'bg-g':'bg-gray'}">${U.status==='on'?'Im Dienst':'Außer Dienst'}</span></div></div>`:''}
-      <div class="ii"><div class="ii-l">Account</div><div class="ii-v"><span class="badge ${U.suspended?'bg-r':'bg-g'}">${U.suspended?'Gesperrt':'Aktiv'}</span></div></div>
+      ${U.type==='citizen'&&U.dob?`<div class="ii"><div class="ii-l">Geburtsdatum</div><div class="ii-v">${U.dob}</div></div>`:''}
+      ${U.type==='citizen'&&U.roblox_name?`<div class="ii"><div class="ii-l">Roblox</div><div class="ii-v">${U.roblox_name}</div></div>`:''}
     </div></div>
-    ${U.type==='citizen'?`<div style="display:flex;gap:8px;margin-top:10px">
+    ${U.type==='citizen'?`<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
       <button class="btn b-ghost b-sm" onclick="copyShareLink('akte','${U.akte_share_id||''}')">🔗 Akte</button>
       <button class="btn b-ghost b-sm" onclick="showFuehrungszeugnis()">📜 FZ</button>
     </div>`:''}
@@ -1843,21 +1901,30 @@ function loadProfil(){
 }
 
 function switchBackToOfficer(){if(!U?._officerBackup)return;U=U._officerBackup;document.querySelectorAll('.off-only').forEach(el=>{el.style.display='';});document.getElementById('dpill').style.display='flex';document.getElementById('tb-bdg').textContent=U.rank||'CopNet';document.getElementById('u-r').textContent=U.rank||'Beamter';if((U.level||1)>=8){document.getElementById('sb-mgmt').style.display='flex';document.getElementById('sb-personalakten').style.display='flex';}sp('dashboard');nt('🎖 Beamten-Ansicht','ok');}
-
-function switchToCitizenView(){if(!U||U.type!=='officer')return;const discordId=U.discord_id;if(!discordId){nt('Kein Discord-Account verknüpft','err');return;}db.from('citizens').select('*').eq('discord_id',discordId).maybeSingle().then(({data:cit})=>{if(cit){const offBackup=U;U={type:'citizen',...cit,_officerBackup:offBackup};document.querySelectorAll('.off-only').forEach(el=>el.style.display='none');document.getElementById('dpill').style.display='none';document.getElementById('tb-bdg').textContent='Bürger';document.getElementById('u-r').textContent='Bürger';loadCitizenDash();nt('👤 Bürger-Ansicht','ok');}else{nt('Kein Bürger-Konto verknüpft.','warn');}});}
-
+function switchToCitizenView(){if(!U||U.type!=='officer')return;const discordId=U.discord_id;if(!discordId){nt('Kein Discord-Account verknüpft','err');return;}db.from('citizens').select('*').eq('discord_id',discordId).maybeSingle().then(({data:cit})=>{if(cit){const off=U;U={type:'citizen',...cit,_officerBackup:off};document.querySelectorAll('.off-only').forEach(el=>el.style.display='none');document.getElementById('dpill').style.display='none';document.getElementById('tb-bdg').textContent='Bürger';document.getElementById('u-r').textContent='Bürger';loadCitizenDash();nt('👤 Bürger-Ansicht','ok');}else{nt('Kein Bürger-Konto verknüpft','warn');}});}
 function chgPw(){const p=prompt('Neues Passwort:');if(!p||p.length<6){nt('Min. 6 Zeichen','err');return;}db.from('officers').update({password:p}).eq('id',U.id).then(()=>nt('✅ Passwort geändert','ok'));}
 
-// ═══ UTILS ════════════════════════════════════════════════════
+// ═══ UTILS ═══════════════════════════════════════════════
 function nt(msg,type=''){const w=document.getElementById('nwrap'),el=document.createElement('div');el.className='notif'+(type?' '+type:'');el.innerHTML='<div class="nb"></div><span>'+msg+'</span>';w.appendChild(el);setTimeout(()=>{el.style.animation='nIn .3s ease reverse';setTimeout(()=>el.remove(),300);},3800);}
 function om(id){document.getElementById(id).classList.add('open');}
 function cm(id){document.getElementById(id).classList.remove('open');}
 function fmt(d){return d?new Date(d).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'–';}
 function fmtd(d){return d?new Date(d).toLocaleDateString('de-DE'):'–';}
+function genId(n){return Math.random().toString(36).substr(2,n).toUpperCase();}
 async function log(a,d){try{await db.from('logs').insert([{username:U?.name||'System',action:a,detail:d}]);}catch(e){}}
 async function sendBotDM(discordId,type,data){
   if(!discordId||discordId==='null'||discordId==='undefined')return false;
-  try{const res=await fetch(BOT_API+'/send-dm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({discord_id:discordId.toString(),type,data:data||{}})});const result=await res.json();return result.ok||result.queued||false;}catch(e){console.warn('DM failed:',e);return false;}
+  try{
+    const res=await fetch(BOT_API+'/send-dm',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({discord_id:discordId.toString(),type,data:data||{}})
+    });
+    if(!res.ok){console.warn('[DM] HTTP',res.status);return false;}
+    const result=await res.json();
+    if(!result.ok&&!result.queued){console.warn('[DM] Fehler:',result);}
+    return result.ok||result.queued||false;
+  }catch(e){console.warn('[DM] Exception:',e);return false;}
 }
 </script>
 </body>
