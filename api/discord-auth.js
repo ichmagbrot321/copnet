@@ -1,7 +1,7 @@
 // api/discord-auth.js
 const SUPABASE_URL = 'https://vekozqxmawzatvyofsxq.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
-const CLIENT_ID     = '1458870244365041849';
+const CLIENT_ID     = '1504172250499252337';
 const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const GUILD_ID      = '1421878115558232180';
 const REDIRECT_URI  = 'https://copnet-rho.vercel.app/';
