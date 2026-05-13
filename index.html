@@ -1823,7 +1823,7 @@ function renderFsTable(){
       <td><b>${c.name||'–'}</b></td>
       <td><div style="display:flex;gap:2px">${kl.map(k=>`<div class="klasse-bdg" style="width:18px;height:18px;font-size:10px">${k}</div>`).join('')||'–'}</div></td>
       <td>${sBadge[c.fs_status]||'–'}</td>
-      <td><span style="color:${pts>=6?'var(--red)':pts>=3?'var(--amber)':'var(--green)';font-weight:700}">${pts}/8</span></td>
+      <td><span style="color:${pts>=6?'var(--red)':pts>=3?'var(--amber)':'var(--green)'};font-weight:700">${pts}/8</span></td>
       <td class="mono">${c.roblox_name||'–'}</td>
       <td class="mono" style="font-size:10px;color:var(--text3)">${c.discord_id?c.discord_id.substring(0,14)+'…':'–'}</td>
       <td><button class="btn" style="padding:2px 8px;font-size:11px" onclick='openFsAktion(${JSON.stringify({id:c.id,name:c.name,discord_id:c.discord_id||"",fs_status:c.fs_status,fs_punkte:c.fs_punkte,fs_klassen:c.fs_klassen}).replace(/"/g,"&quot;")})'>🪪 Aktion</button></td>
