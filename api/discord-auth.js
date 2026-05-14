@@ -4,7 +4,7 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const CLIENT_ID     = '1504172250499252337';
 const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const GUILD_ID      = '1421878115558232180';
-const REDIRECT_URI  = 'https://copnet-rho.vercel.app/';
+const REDIRECT_URI  = 'https://discord.com/oauth2/authorize?client_id=1504172250499252337&response_type=code&redirect_uri=https%3A%2F%2Fcopnet-rho.vercel.app%2F&scope=identify+guilds.members.read+guilds+email+guilds.join;
 
 function getIP(req) {
   const fwd = req.headers['x-forwarded-for'];
