@@ -946,11 +946,27 @@ async function handleOfficerDiscordLogin(discordData){
   let rank=dn.rank||null,level=dn.level||1;
   if(roles){let best=0;for(const rid of roles){const r=ROLLEN_MAP[String(rid)];if(r&&r.level>best){rank=r.rank;level=r.level;best=r.level;}}}
   if(!rank)rank='Streifenpolizist';
-  const{data:officer}=await db.from('officers').upsert(
-    [{discord_id:discord_id.toString(),discord_tag:username,dienst:dn.nummer,rank,level,status:'off',abteilung:'polizei',name:dn.username||username}],
-    {onConflict:'discord_id'}
-  ).select().single();
-  U={type:'officer',...(officer||{discord_id:discord_id.toString(),discord_tag:username,dienst:dn.nummer,rank,level,name:dn.username||username,status:'off'})};
+
+  const{data:existing}=await db.from('officers').select('*').eq('discord_id',discord_id.toString()).maybeSingle();
+  let officer;
+  if(existing){
+    const{data:upd}=await db.from('officers').update({
+      discord_tag:username,dienst:dn.nummer,rank,level,name:dn.username||username
+    }).eq('discord_id',discord_id.toString()).select().single();
+    officer=upd||existing;
+  }else{
+    const{data:ins}=await db.from('officers').insert([{
+      discord_id:discord_id.toString(),discord_tag:username,
+      dienst:dn.nummer,rank,level,status:'off',abteilung:'polizei',
+      name:dn.username||username
+    }]).select().single();
+    officer=ins;
+  }
+
+  U={type:'officer',...(officer||{
+    discord_id:discord_id.toString(),discord_tag:username,
+    dienst:dn.nummer,rank,level,name:dn.username||username,status:'off'
+  })};
   try{await db.from('dienstnummern').update({username:U.name,rank:U.rank,level:U.level}).eq('nummer',dn.nummer);}catch(e){}
   document.getElementById('login').style.display='none';
   startApp();nt('Zugang gewährt · '+rank+' '+U.name,'ok');
