@@ -4,7 +4,7 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const CLIENT_ID     = '1504172250499252337';
 const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const GUILD_ID      = '1421878115558232180';
-const REDIRECT_URI  = 'https://discord.com/oauth2/authorize?client_id=1504172250499252337&response_type=code&redirect_uri=https%3A%2F%2Fcopnet-rho.vercel.app%2F&scope=identify+guilds.members.read+guilds+email+guilds.join;
+const REDIRECT_URI  = 'https://copnet-rho.vercel.app/';
 
 function getIP(req) {
   const fwd = req.headers['x-forwarded-for'];
@@ -72,7 +72,7 @@ export default async function handler(req, res) {
 
   const ip = getIP(req);
 
-  // IP-Ban BEFORE Discord exchange – blocks anyone hitting the page
+  // IP-Ban BEFORE Discord exchange
   const earlyBan = await checkBan(null, ip);
   if (earlyBan) {
     return res.status(403).json({
@@ -90,8 +90,11 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
-        client_id: CLIENT_ID, client_secret: CLIENT_SECRET,
-        grant_type: 'authorization_code', code, redirect_uri: REDIRECT_URI,
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: REDIRECT_URI,
       }),
     });
     const tokenData = await tokenRes.json();
@@ -132,13 +135,16 @@ export default async function handler(req, res) {
     roles = m.roles || [];
     if (m.nick) displayName = m.nick;
 
-    // Save visit log (ip stored here → can ban later by IP even without account)
+    // Save visit log
     await sbPost('visit_logs', { discord_id: user.id, username: displayName, ip, action: 'login_success' }).catch(() => {});
 
     return res.status(200).json({
-      discord_id: user.id, username: displayName || user.username,
+      discord_id: user.id,
+      username: displayName || user.username,
       avatar: user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : null,
-      email: user.email || null, roles, ip,
+      email: user.email || null,
+      roles,
+      ip,
     });
   } catch (err) {
     return res.status(500).json({ error: 'Internal server error', detail: err.message });
