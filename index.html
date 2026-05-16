@@ -510,6 +510,13 @@ tr.sel td{background:#cce4f7;}
     <div class="fg"><label>Tatvorwurf / Betreff *</label><input id="ne-tv" placeholder="§ 249 StGB Raub..."></div>
     <div class="fg"><label>Beschreibung</label><textarea id="ne-desc"></textarea></div>
     <div class="fg"><label>Status</label><select id="ne-status"><option>Offen</option><option>Ermittlung</option><option>Abgeschlossen</option></select></div>
+    <div class="fg"><label>Beweisfoto (optional)</label>
+      <div class="foto-zone" style="height:70px;padding:8px">
+        <input type="file" accept="image/*" onchange="previewEintragFoto(this)">
+        <img id="ne-foto-prev" class="foto-preview" style="width:50px;height:50px">
+        <div style="font-size:11px;color:var(--text3)" id="ne-foto-lbl">📸 Foto anhängen (optional)</div>
+      </div>
+    </div>
     <input type="hidden" id="ne-cid"><input type="hidden" id="ne-cname"><input type="hidden" id="ne-disc">
     <div class="f-err" id="ne-err"></div>
     <div class="btn-row"><button class="btn primary" onclick="saveEintrag()">💾 Speichern</button><button class="btn" onclick="closeWin('win-neintrag')">Abbrechen</button></div>
@@ -525,6 +532,13 @@ tr.sel td{background:#cce4f7;}
     <div class="fg"><label>Tatvorwurf *</label><input id="nsa-tv" placeholder="§ 249 StGB Raub..."></div>
     <div class="fg"><label>Beschreibung</label><textarea id="nsa-desc"></textarea></div>
     <div class="frow"><div class="fg"><label>Status</label><select id="nsa-s"><option>Offen</option><option>Ermittlung</option></select></div><div class="fg"><label>Schweregrad</label><select id="nsa-sg"><option>Gering</option><option>Mittel</option><option>Schwer</option><option>Kritisch</option></select></div></div>
+    <div class="fg"><label>Beweisfoto (optional)</label>
+      <div class="foto-zone" style="height:70px;padding:8px">
+        <input type="file" accept="image/*" onchange="previewAnzeigeFoto(this)">
+        <img id="nsa-foto-prev" class="foto-preview" style="width:50px;height:50px">
+        <div style="font-size:11px;color:var(--text3)" id="nsa-foto-lbl">📸 Foto anhängen (optional)</div>
+      </div>
+    </div>
     <div class="f-err" id="nsa-err"></div>
     <div class="btn-row"><button class="btn primary" onclick="saveAnzeige()">📋 Anzeige stellen</button><button class="btn" onclick="closeWin('win-new-anzeige')">Abbrechen</button></div>
   </div></div>
@@ -681,6 +695,7 @@ let U=null,editId=null,_fzHalter=null,_anzCid=null,_pendingDiscordData=null;
 let _allDN=[],_allFs=[];
 let _regData={};
 let _fotoBase64=null;
+let _eintragFoto=null,_anzFoto=null;
 let _fahndungCit=null;
 let _dnFoundEntry=null;
 let _openWindows=[];
@@ -730,6 +745,31 @@ function previewFoto(input){
     prev.src=_fotoBase64;prev.style.display='block';
     document.getElementById('foto-icon').style.display='none';
     document.getElementById('foto-lbl').textContent='✅ Datei ausgewählt';
+  };r.readAsDataURL(f);
+}
+
+function previewEintragFoto(input){
+  const f=input.files[0];if(!f)return;
+  if(f.size>3*1024*1024){nt('Foto max. 3MB!','err');return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    _eintragFoto=e.target.result;
+    const prev=document.getElementById('ne-foto-prev');
+    if(prev){prev.src=_eintragFoto;prev.style.display='block';}
+    const lbl=document.getElementById('ne-foto-lbl');
+    if(lbl)lbl.textContent='✅ Foto bereit';
+  };r.readAsDataURL(f);
+}
+function previewAnzeigeFoto(input){
+  const f=input.files[0];if(!f)return;
+  if(f.size>3*1024*1024){nt('Foto max. 3MB!','err');return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    _anzFoto=e.target.result;
+    const prev=document.getElementById('nsa-foto-prev');
+    if(prev){prev.src=_anzFoto;prev.style.display='block';}
+    const lbl=document.getElementById('nsa-foto-lbl');
+    if(lbl)lbl.textContent='✅ Foto bereit';
   };r.readAsDataURL(f);
 }
 
@@ -950,8 +990,9 @@ async function handleOfficerDiscordLogin(discordData){
   const{data:existing}=await db.from('officers').select('*').eq('discord_id',discord_id.toString()).maybeSingle();
   let officer;
   if(existing){
+    // FIX: Rang/Level nicht überschreiben – Chefänderungen bleiben erhalten
     const{data:upd}=await db.from('officers').update({
-      discord_tag:username,dienst:dn.nummer,rank,level,name:dn.username||username
+      discord_tag:username,dienst:dn.nummer,name:dn.username||username
     }).eq('discord_id',discord_id.toString()).select().single();
     officer=upd||existing;
   }else{
@@ -1154,7 +1195,9 @@ async function openAnzeige(id){
     <div class="ig-item" style="grid-column:1/-1"><div class="ig-label">Beschreibung</div><div class="ig-val" style="white-space:pre-wrap;font-size:11px">${a.beschreibung||'–'}</div></div>
     <div class="ig-item"><div class="ig-label">Beamter</div><div class="ig-val">${a.officer_name||'–'}</div></div>
     <div class="ig-item"><div class="ig-label">Datum</div><div class="ig-val mono">${fmt(a.created_at)}</div></div>
-  </div></div>`;
+  </div>
+  ${a.foto_base64?`<div style="margin-top:10px"><div class="fs-title" style="margin-bottom:6px">📸 Beweisfoto</div><img src="${a.foto_base64}" style="max-width:100%;max-height:280px;object-fit:contain;border:1px solid var(--border);display:block"></div>`:''}
+  </div>`;
   const tb=document.getElementById('ad-toolbar');tb.innerHTML='';
   if(a.status!=='Abgeschlossen'){
     const b=document.createElement('button');b.className='btn success';b.textContent='✅ Abschließen';
@@ -1168,7 +1211,14 @@ async function openAnzeige(id){
   openWindow('win-anzeige-detail');
 }
 
-function openNewAnzeige(){_anzCid=null;['nsa-bs','nsa-n','nsa-tv','nsa-desc'].forEach(i=>document.getElementById(i).value='');document.getElementById('nsa-err').style.display='none';openWindow('win-new-anzeige');}
+function openNewAnzeige(){
+  _anzCid=null;_anzFoto=null;
+  ['nsa-bs','nsa-n','nsa-tv','nsa-desc'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('nsa-err').style.display='none';
+  const prev=document.getElementById('nsa-foto-prev');if(prev){prev.style.display='none';prev.src='';}
+  const lbl=document.getElementById('nsa-foto-lbl');if(lbl)lbl.textContent='📸 Foto anhängen (optional)';
+  openWindow('win-new-anzeige');
+}
 function fillAnzeigeCit(c){document.getElementById('nsa-bs').value=c.name;document.getElementById('nsa-drop').style.display='none';document.getElementById('nsa-n').value=c.name;_anzCid=c;}
 
 async function saveAnzeige(){
@@ -1176,7 +1226,7 @@ async function saveAnzeige(){
   const err=document.getElementById('nsa-err');
   if(!n){showFErr(err,'Name erforderlich.');return;}if(!tv){showFErr(err,'Tatvorwurf erforderlich.');return;}
   err.style.display='none';
-  const payload={citizen_id:_anzCid?.id||null,citizen_name:n,citizen_discord_id:_anzCid?.discord_id||null,officer_name:U?.name,typ:'Strafanzeige',tatvorwurf:tv,beschreibung:document.getElementById('nsa-desc').value.trim(),status:document.getElementById('nsa-s').value,schweregrad:document.getElementById('nsa-sg').value};
+  const payload={citizen_id:_anzCid?.id||null,citizen_name:n,citizen_discord_id:_anzCid?.discord_id||null,officer_name:U?.name,typ:'Strafanzeige',tatvorwurf:tv,beschreibung:document.getElementById('nsa-desc').value.trim(),status:document.getElementById('nsa-s').value,schweregrad:document.getElementById('nsa-sg').value,foto_base64:_anzFoto||null};
   const{error}=await db.from('citizen_akten_eintraege').insert([payload]);
   if(error){showFErr(err,'Fehler: '+error.message);return;}
   if(_anzCid?.discord_id)await sendBotDM(_anzCid.discord_id,'strafanzeige',{name:n,tatvorwurf:tv,schwere:payload.schweregrad,beamter:U?.name});
@@ -1186,6 +1236,9 @@ async function saveAnzeige(){
 
 // ═══ AKTENEINTRAG ═════════════════════════════════════════════════
 function openNeuerEintrag(cit){
+  _eintragFoto=null;
+  const prev=document.getElementById('ne-foto-prev');if(prev){prev.style.display='none';prev.src='';}
+  const lbl=document.getElementById('ne-foto-lbl');if(lbl)lbl.textContent='📸 Foto anhängen (optional)';
   document.getElementById('ne-cid').value=cit.id;document.getElementById('ne-cname').value=cit.name;document.getElementById('ne-disc').value=cit.discord_id||'';
   ['ne-tv','ne-desc'].forEach(i=>document.getElementById(i).value='');document.getElementById('ne-err').style.display='none';openWindow('win-neintrag');
 }
@@ -1193,7 +1246,7 @@ async function saveEintrag(){
   const tv=document.getElementById('ne-tv').value.trim(),err=document.getElementById('ne-err');
   if(!tv){showFErr(err,'Tatvorwurf erforderlich.');return;}err.style.display='none';
   const cid=document.getElementById('ne-cid').value,cname=document.getElementById('ne-cname').value,disc=document.getElementById('ne-disc').value;
-  const payload={citizen_id:cid,citizen_name:cname,citizen_discord_id:disc||null,officer_name:U?.name,typ:document.getElementById('ne-typ').value,tatvorwurf:tv,beschreibung:document.getElementById('ne-desc').value.trim(),status:document.getElementById('ne-status').value,schweregrad:document.getElementById('ne-sg').value};
+  const payload={citizen_id:cid,citizen_name:cname,citizen_discord_id:disc||null,officer_name:U?.name,typ:document.getElementById('ne-typ').value,tatvorwurf:tv,beschreibung:document.getElementById('ne-desc').value.trim(),status:document.getElementById('ne-status').value,schweregrad:document.getElementById('ne-sg').value,foto_base64:_eintragFoto||null};
   const{error}=await db.from('citizen_akten_eintraege').insert([payload]);
   if(error){showFErr(err,'Fehler: '+error.message);return;}
   if(disc)await sendBotDM(disc,'akteneintrag',{name:cname,typ:payload.typ,tatvorwurf:tv,beamter:U?.name});
@@ -1260,8 +1313,8 @@ async function openBuerger(id){
     ${kfz?.length?`<div style="margin:0 10px 8px"><b style="font-size:11px">Fahrzeuge:</b> ${kfz.map(v=>`<span class="badge ${v.status==='Beschlagnahmt'?'b-amber':v.status==='Gestohlen'?'b-red':'b-green'}" style="margin:0 2px">${v.plate||'–'}</span>`).join('')}</div>`:''}
     <div style="padding:0 10px 6px"><b style="font-size:11px;text-transform:uppercase;color:var(--text3)">Akteneinträge (${eintraege?.length||0})</b></div>
     <div style="margin:0 10px;overflow-y:auto;max-height:220px" class="table-wrap">
-      <table><thead><tr><th>Typ</th><th>Tatvorwurf</th><th>Schwere</th><th>Status</th><th>Beamter</th><th>Datum</th></tr></thead>
-      <tbody>${!eintraege?.length?`<tr class="empty-row"><td colspan="6">Keine Einträge</td></tr>`:eintraege.map(e=>`<tr><td><span class="badge b-gray">${e.typ||'–'}</span></td><td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.tatvorwurf||'–'}</td><td><span class="badge ${sev[e.schweregrad]||'b-gray'}">${e.schweregrad||'–'}</span></td><td><span class="badge b-gray">${e.status||'–'}</span></td><td style="font-size:10px">${e.officer_name||'–'}</td><td class="mono" style="font-size:10px">${fmtd(e.created_at)}</td></tr>`).join('')}</tbody>
+      <table><thead><tr><th>Typ</th><th>Tatvorwurf</th><th>Schwere</th><th>Status</th><th>Beamter</th><th>Datum</th><th>Foto</th></tr></thead>
+      <tbody>${!eintraege?.length?`<tr class="empty-row"><td colspan="7">Keine Einträge</td></tr>`:eintraege.map(e=>`<tr onclick="openAnzeige('${e.id}')" style="cursor:pointer"><td><span class="badge b-gray">${e.typ||'–'}</span></td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.tatvorwurf||'–'}</td><td><span class="badge ${sev[e.schweregrad]||'b-gray'}">${e.schweregrad||'–'}</span></td><td><span class="badge b-gray">${e.status||'–'}</span></td><td style="font-size:10px">${e.officer_name||'–'}</td><td class="mono" style="font-size:10px">${fmtd(e.created_at)}</td><td>${e.foto_base64?'<span title="Foto vorhanden" style="font-size:14px">📸</span>':''}</td></tr>`).join('')}</tbody>
       </table>
     </div>`;
   openWindow('win-b-detail');
