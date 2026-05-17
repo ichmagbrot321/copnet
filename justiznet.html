@@ -1063,19 +1063,33 @@ async function acSrch(inp,drop,cb){
 function fillVCit(c){document.getElementById('nv-bs').value=c.name;document.getElementById('nv-bd').style.display='none';document.getElementById('nv-n').value=c.name;_vcid=c.id;}
 function fillVLCit(c){document.getElementById('vl-bs').value=c.name;document.getElementById('vl-bd').style.display='none';document.getElementById('vl-n').value=c.name;_vlcid=c.id;}
 
+async function _ensureAnzCache(){
+  // If cache is empty or was only partially filled by dashboard (≤5 rows), fetch all
+  if(_anzCache.length<=5){
+    const{data}=await db.from('citizen_akten_eintraege').select('*')
+      .in('typ',['Strafanzeige','Festnahme','Ermittlung'])
+      .order('created_at',{ascending:false}).limit(200);
+    if(data?.length)_anzCache=data;
+  }
+}
 async function acSrchAnzeigen(inp,drop){
   const q=document.getElementById(inp).value.trim();const dr=document.getElementById(drop);
   if(q.length<1){dr.style.display='none';return;}
-  // Search by name/tatvorwurf
-  const{data:d1}=await db.from('citizen_akten_eintraege').select('*')
+  const qu=q.toUpperCase();
+  // Make sure we have a full cache before searching by ID
+  await _ensureAnzCache();
+  // 1. Local ID search (works even for partial UUID hex chars)
+  const cacheHits=(_anzCache||[]).filter(a=>{
+    const sid=(a.id||'').toString().substring(0,8).toUpperCase();
+    return sid.startsWith(qu)||(a.id||'').toUpperCase().replace(/-/g,'').startsWith(qu.replace(/-/g,''));
+  }).slice(0,4);
+  // 2. DB search by name / tatvorwurf
+  const{data:dbHits}=await db.from('citizen_akten_eintraege').select('*')
     .in('typ',['Strafanzeige','Festnahme','Ermittlung'])
     .or(`citizen_name.ilike.%${q}%,tatvorwurf.ilike.%${q}%`).limit(6);
-  // Also search by ID prefix (user can type the short ID numbers)
-  const{data:d2}=await db.from('citizen_akten_eintraege').select('*')
-    .in('typ',['Strafanzeige','Festnahme','Ermittlung'])
-    .filter('id::text','ilike',`${q}%`).limit(4);
+  // Merge and deduplicate
   const seen=new Set();
-  const data=[...(d1||[]),...(d2||[])].filter(a=>{if(seen.has(a.id))return false;seen.add(a.id);return true;});
+  const data=[...cacheHits,...(dbHits||[])].filter(a=>{if(seen.has(a.id))return false;seen.add(a.id);return true;});
   if(!data.length){dr.style.display='none';return;}
   dr.style.display='block';
   dr.innerHTML=data.map(a=>{
