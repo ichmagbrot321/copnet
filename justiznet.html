@@ -357,10 +357,19 @@ tr.sel td{background:#c8e6c9;}
   <div class="wtoolbar">
     <input type="text" id="as" placeholder="🔍 Suchen..." onkeyup="loadA()" style="height:22px;padding:0 6px;border:1px solid var(--border);font-size:11px;border-radius:2px;width:180px">
     <button class="tbtn" onclick="loadA()">🔄</button>
+    <div class="t-sep"></div>
+    <span style="font-size:10px;color:var(--text3)">Auf Zeile klicken zum Öffnen</span>
   </div>
   <div class="winbody"><div style="margin:10px" class="table-wrap"><table><thead><tr><th>ID</th><th>Bürger</th><th>Tatvorwurf</th><th>Typ</th><th>Schwere</th><th>Status</th><th>Beamter</th><th>Foto</th><th>Datum</th><th></th></tr></thead><tbody id="a-tb"></tbody></table></div></div>
   <div class="wstatus"><div class="ws-item" id="a-count">–</div></div>
   <div class="win-resize" onmousedown="resizeStart(event,'win-anzeigen')"></div>
+</div>
+
+<div class="win" id="win-anz-detail" style="left:280px;top:80px;width:520px;height:560px">
+  <div class="wintitle" onmousedown="dragStart(event,'win-anz-detail')"><span class="wt-ico">📋</span><span class="wt-txt" id="anz-detail-title">Strafanzeige · Detail</span><button class="wt-btn wt-min" onclick="minWin('win-anz-detail')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-anz-detail')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-anz-detail')">✕</button></div>
+  <div class="wtoolbar" id="anz-detail-toolbar"></div>
+  <div class="winbody" id="anz-detail-body"></div>
+  <div class="win-resize" onmousedown="resizeStart(event,'win-anz-detail')"></div>
 </div>
 
 <div class="win" id="win-vorladungen" style="left:120px;top:80px;width:820px;height:500px">
@@ -760,10 +769,14 @@ async function loadV(){
 async function openVDetail(idx){
   const v=_vCache[idx];if(!v)return;
   const id=v.id;
-  const[{data:bew},{data:prot}]=await Promise.all([
+  const queries=[
     db.from('justiz_beweise').select('*').eq('verfahren_id',id).order('created_at',{ascending:false}),
-    db.from('justiz_protokolle').select('*').eq('verfahren_id',id).order('created_at',{ascending:false})
-  ]);
+    db.from('justiz_protokolle').select('*').eq('verfahren_id',id).order('created_at',{ascending:false}),
+  ];
+  if(v.strafanzeige_id)queries.push(db.from('citizen_akten_eintraege').select('*').eq('id',v.strafanzeige_id).single());
+  const results=await Promise.all(queries);
+  const bew=results[0].data,prot=results[1].data;
+  const origAnzeige=v.strafanzeige_id?(results[2]?.data||null):null;
   document.getElementById('vd-title').textContent='Verfahren · '+v.az;
   const steps=['Ermittlung','Anklage','Verhandlung','Urteil'];
   const si=steps.indexOf(v.status);
@@ -781,6 +794,12 @@ async function openVDetail(idx){
         ${v.urteil?`<div class="ig-item" style="grid-column:1/-1"><div class="ig-label">Urteil</div><div class="ig-val" style="font-weight:700;color:var(--green)">${v.urteil}${v.strafmass?' – '+v.strafmass:''}</div></div>`:''}
       </div>
       ${v.beschreibung?`<div style="padding:8px 10px;background:var(--panel);border:1px solid var(--border);font-size:12px;line-height:1.5;color:var(--text2);margin-bottom:10px">${v.beschreibung}</div>`:''}
+      ${origAnzeige?.foto_base64?`
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text2);margin-bottom:6px">📸 Beweisfoto (Strafanzeige)</div>
+        <div style="border:1px solid #a5d6a7;background:#e8f5e9;padding:6px;text-align:center;margin-bottom:10px">
+          <div style="font-size:10px;color:var(--green);margin-bottom:4px">Aufgenommen von ${origAnzeige.officer_name||'–'} · Tatvorwurf: ${origAnzeige.tatvorwurf||'–'}</div>
+          <img src="${origAnzeige.foto_base64}" style="max-width:100%;max-height:220px;object-fit:contain;display:block;margin:0 auto;border:1px solid var(--border)">
+        </div>`:''}
       ${bew?.length?`<div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Beweise (${bew.length})</div>
         <div class="tline">${bew.map(b=>`<div class="tl-item"><div class="tl-type">${b.typ||'Beweis'} · ${b.bezeichnung||''}</div><div class="tl-txt">${b.beschreibung||''}</div>${b.foto_base64?`<img src="${b.foto_base64}" style="max-width:100%;max-height:180px;object-fit:contain;border:1px solid var(--border);margin-top:6px;display:block">`:''}
           <div class="tl-meta">${b.eingereicht_von||'–'} · ${fmt(b.created_at)}</div></div>`).join('')}</div>`:''}
@@ -937,7 +956,7 @@ async function loadA(){
   document.getElementById('a-count').textContent=(_anzCache.length)+' Strafanzeigen';
   const tb=document.getElementById('a-tb');
   if(!_anzCache.length){tb.innerHTML=`<tr class="empty-row"><td colspan="10">Keine Strafanzeigen gefunden</td></tr>`;return;}
-  tb.innerHTML=_anzCache.map((a,i)=>`<tr>
+  tb.innerHTML=_anzCache.map((a,i)=>`<tr style="cursor:pointer" onclick="openAnzDetail(${i})" onmouseenter="this.style.background='#f0f7f2'" onmouseleave="this.style.background=''">
     <td class="mono" style="font-size:10px">${(a.id||'').toString().substring(0,8).toUpperCase()}</td>
     <td><b>${a.citizen_name||'–'}</b></td>
     <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.tatvorwurf||'–'}</td>
@@ -945,10 +964,41 @@ async function loadA(){
     <td><span class="badge ${SEV[a.schweregrad]||'b-gray'}">${a.schweregrad||'–'}</span></td>
     <td><span class="badge ${a.status==='Offen'?'b-amber':a.status==='Ermittlung'?'b-jblue':'b-green'}">${a.status||'–'}</span></td>
     <td style="font-size:11px">${a.officer_name||'–'}</td>
-    <td>${a.foto_base64?'<span title="Foto vorhanden" style="font-size:14px">📸</span>':''}</td>
+    <td>${a.foto_base64?'<span title="Beweisfoto vorhanden" style="font-size:14px">📸</span>':''}</td>
     <td class="mono" style="font-size:10px">${fmtd(a.created_at)}</td>
-    <td><button class="btn success" style="padding:2px 6px;font-size:11px" onclick="prefillVerfahrenFromAnzeige(${i})">→ Verfahren</button></td>
+    <td onclick="event.stopPropagation()"><button class="btn success" style="padding:2px 6px;font-size:11px" onclick="prefillVerfahrenFromAnzeige(${i})">→ Verfahren</button></td>
   </tr>`).join('');
+}
+
+// ═══ STRAFANZEIGE DETAIL ══════════════════════════════════════════
+function openAnzDetail(idx){
+  const a=_anzCache[idx];if(!a)return;
+  document.getElementById('anz-detail-title').textContent='Strafanzeige · '+(a.citizen_name||'–');
+  document.getElementById('anz-detail-body').innerHTML=`
+    <div style="padding:12px">
+      <div class="info-grid" style="margin-bottom:12px">
+        <div class="ig-item"><div class="ig-label">Bürger</div><div class="ig-val"><b>${a.citizen_name||'–'}</b></div></div>
+        <div class="ig-item"><div class="ig-label">Status</div><div class="ig-val"><span class="badge ${a.status==='Offen'?'b-amber':a.status==='Ermittlung'?'b-jblue':'b-green'}">${a.status||'–'}</span></div></div>
+        <div class="ig-item"><div class="ig-label">Typ</div><div class="ig-val"><span class="badge b-gray">${a.typ||'–'}</span></div></div>
+        <div class="ig-item"><div class="ig-label">Schweregrad</div><div class="ig-val"><span class="badge ${SEV[a.schweregrad]||'b-gray'}">${a.schweregrad||'–'}</span></div></div>
+        <div class="ig-item" style="grid-column:1/-1"><div class="ig-label">Tatvorwurf</div><div class="ig-val"><b>${a.tatvorwurf||'–'}</b></div></div>
+        <div class="ig-item" style="grid-column:1/-1"><div class="ig-label">Beschreibung</div><div class="ig-val" style="white-space:pre-wrap;font-size:11px;color:var(--text2)">${a.beschreibung||'–'}</div></div>
+        <div class="ig-item"><div class="ig-label">Aufnehmender Beamter</div><div class="ig-val">${a.officer_name||'–'}</div></div>
+        <div class="ig-item"><div class="ig-label">Datum</div><div class="ig-val mono">${fmt(a.created_at)}</div></div>
+      </div>
+      ${a.foto_base64?`
+        <div class="fs-title" style="margin-bottom:8px">📸 Beweisfoto</div>
+        <div style="border:1px solid var(--border);background:var(--panel);padding:6px;text-align:center">
+          <img src="${a.foto_base64}" style="max-width:100%;max-height:340px;object-fit:contain;display:block;margin:0 auto">
+        </div>`
+      :'<div style="padding:20px;text-align:center;color:var(--text3);font-style:italic;border:1px solid var(--border);background:var(--panel)">Kein Beweisfoto vorhanden</div>'}
+    </div>`;
+  const tb=document.getElementById('anz-detail-toolbar');tb.innerHTML='';
+  const b=document.createElement('button');b.className='btn success';b.style.cssText='padding:2px 8px;font-size:11px';b.textContent='⚖️ → Verfahren anlegen';
+  b.onclick=()=>{closeWin('win-anz-detail');prefillVerfahrenFromAnzeige(idx);};tb.appendChild(b);
+  const cl=document.createElement('button');cl.className='btn';cl.style.cssText='padding:2px 8px;font-size:11px';cl.textContent='Schließen';
+  cl.onclick=()=>closeWin('win-anz-detail');tb.appendChild(cl);
+  openWindow('win-anz-detail');
 }
 
 // ═══ VORLADUNGEN ══════════════════════════════════════════════════
