@@ -227,7 +227,9 @@ tr.sel td{background:#cce4f7;}
 <body>
 
 <div id="boot">
-  <div class="boot-logo">🖥️</div>
+  <div class="boot-logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Baden-W%C3%BCrttemberg_Wappen.svg/120px-Baden-W%C3%BCrttemberg_Wappen.svg.png" alt="🛡️" onerror="this.outerHTML='🛡️'" style="width:96px;height:auto;filter:drop-shadow(0 0 20px rgba(0,100,255,.5))">
+  </div>
   <div class="boot-text">CopNet Karlsruhe</div>
   <div class="boot-sub">Polizeiinformationssystem v3.3</div>
   <div class="boot-bar-bg"><div class="boot-bar-fill" id="bp"></div></div>
@@ -238,18 +240,22 @@ tr.sel td{background:#cce4f7;}
 <div id="notif-wrap"></div>
 
 <div id="lock-screen" style="display:none" onclick="showLogin()">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Baden-W%C3%BCrttemberg_Wappen.svg/120px-Baden-W%C3%BCrttemberg_Wappen.svg.png" alt="" onerror="this.style.display='none'" style="width:64px;height:auto;opacity:0.55;margin-bottom:4px">
   <div class="ls-time" id="ls-time">00:00</div>
   <div class="ls-date" id="ls-date"></div>
+  <div style="font-size:11px;color:rgba(255,255,255,.5);letter-spacing:3px;text-transform:uppercase;margin-top:2px">Polizei Karlsruhe</div>
   <div class="ls-hint">▲ Klicken zum Entsperren</div>
 </div>
 
 <div id="login">
   <div class="login-box">
-    <div class="login-title-bar"><span>🔐 CopNet Anmeldung</span></div>
+    <div class="login-title-bar"><span>🔐 CopNet Anmeldung · Polizei BW</span></div>
     <div class="login-body">
       <div class="login-header">
-        <div class="login-badge">🚔</div>
-        <div class="login-name">COPNET KA</div>
+        <div class="login-badge">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Baden-W%C3%BCrttemberg_Wappen.svg/120px-Baden-W%C3%BCrttemberg_Wappen.svg.png" alt="🚔" onerror="this.outerHTML='🚔'" style="width:72px;height:auto;display:block;margin:0 auto">
+        </div>
+        <div class="login-name">COPNET KA · POLIZEI BW</div>
         <div class="login-sub">Polizei Karlsruhe · Nur für autorisierte Personen</div>
       </div>
       <div class="tab-bar">
