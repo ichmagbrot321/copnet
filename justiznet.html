@@ -199,7 +199,9 @@ tr.sel td{background:#c8e6c9;}
 <body>
 
 <div id="boot">
-  <div class="boot-logo">⚖️</div>
+  <div class="boot-logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Baden-W%C3%BCrttemberg_Wappen.svg/120px-Baden-W%C3%BCrttemberg_Wappen.svg.png" alt="⚖️" onerror="this.outerHTML='⚖️'" style="width:96px;height:auto;filter:drop-shadow(0 0 20px rgba(180,130,0,.5))">
+  </div>
   <div class="boot-text">JustizNet Karlsruhe</div>
   <div class="boot-sub">Justizsystem v3.1</div>
   <div class="boot-bar-bg"><div class="boot-bar-fill" id="bp"></div></div>
@@ -210,8 +212,10 @@ tr.sel td{background:#c8e6c9;}
 <div id="notif-wrap"></div>
 
 <div id="lock-screen" style="display:none" onclick="showLogin()">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Baden-W%C3%BCrttemberg_Wappen.svg/120px-Baden-W%C3%BCrttemberg_Wappen.svg.png" alt="" onerror="this.style.display='none'" style="width:64px;height:auto;opacity:0.55;margin-bottom:4px">
   <div class="ls-time" id="ls-time">00:00</div>
   <div class="ls-date" id="ls-date"></div>
+  <div style="font-size:11px;color:rgba(255,255,255,.5);letter-spacing:3px;text-transform:uppercase;margin-top:2px">Justiz Karlsruhe</div>
   <div class="ls-hint">▲ Klicken zum Entsperren</div>
 </div>
 
@@ -220,8 +224,10 @@ tr.sel td{background:#c8e6c9;}
     <div class="login-title-bar"><span>🔐 JustizNet Anmeldung</span></div>
     <div class="login-body">
       <div class="login-header">
-        <div class="login-badge">⚖️</div>
-        <div class="login-name">JUSTIZNET KA</div>
+        <div class="login-badge">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Baden-W%C3%BCrttemberg_Wappen.svg/120px-Baden-W%C3%BCrttemberg_Wappen.svg.png" alt="⚖️" onerror="this.outerHTML='⚖️'" style="width:72px;height:auto;display:block;margin:0 auto">
+        </div>
+        <div class="login-name">JUSTIZNET KA · LAND BW</div>
         <div class="login-sub">Justiz Karlsruhe · Nur für autorisierte Personen</div>
       </div>
       <div class="tab-bar">
@@ -849,9 +855,12 @@ function prefillVerfahrenFromAnzeige(idx){
   const a=_anzCache[idx];if(!a)return;
   openWindow('win-new-v');
   setTimeout(()=>{
+    const shortId=(a.id||'').toString().substring(0,8).toUpperCase();
     document.getElementById('nv-n').value=a.citizen_name||'';
     document.getElementById('nv-tv').value=a.tatvorwurf||'';
     document.getElementById('nv-anzeige-id').value=a.id||'';
+    // Show short ID + name in the Anzeige display field so it's clear which Anzeige is linked
+    document.getElementById('nv-az').value='#'+shortId+' · '+(a.citizen_name||'');
     if(U?.loginRole==='Staatsanwalt')document.getElementById('nv-sa').value=U.name;
     else document.getElementById('nv-ri').value=U.name;
   },100);
@@ -1056,16 +1065,28 @@ function fillVLCit(c){document.getElementById('vl-bs').value=c.name;document.get
 
 async function acSrchAnzeigen(inp,drop){
   const q=document.getElementById(inp).value.trim();const dr=document.getElementById(drop);
-  if(q.length<2){dr.style.display='none';return;}
-  const{data}=await db.from('citizen_akten_eintraege').select('*')
+  if(q.length<1){dr.style.display='none';return;}
+  // Search by name/tatvorwurf
+  const{data:d1}=await db.from('citizen_akten_eintraege').select('*')
     .in('typ',['Strafanzeige','Festnahme','Ermittlung'])
     .or(`citizen_name.ilike.%${q}%,tatvorwurf.ilike.%${q}%`).limit(6);
-  if(!data?.length){dr.style.display='none';return;}
+  // Also search by ID prefix (user can type the short ID numbers)
+  const{data:d2}=await db.from('citizen_akten_eintraege').select('*')
+    .in('typ',['Strafanzeige','Festnahme','Ermittlung'])
+    .filter('id::text','ilike',`${q}%`).limit(4);
+  const seen=new Set();
+  const data=[...(d1||[]),...(d2||[])].filter(a=>{if(seen.has(a.id))return false;seen.add(a.id);return true;});
+  if(!data.length){dr.style.display='none';return;}
   dr.style.display='block';
-  dr.innerHTML=data.map(a=>`<div class="ac-item" onmousedown="event.preventDefault();selectAnzeige('${a.id}','${(a.citizen_name||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${(a.tatvorwurf||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')}')"><strong>${a.citizen_name||'–'}</strong><span>${(a.tatvorwurf||'').substring(0,50)}</span></div>`).join('');
+  dr.innerHTML=data.map(a=>{
+    const sid=(a.id||'').toString().substring(0,8).toUpperCase();
+    const nm=(a.citizen_name||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    const tv=(a.tatvorwurf||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    return `<div class="ac-item" onmousedown="event.preventDefault();selectAnzeige('${a.id}','${sid}','${nm}','${tv}')"><strong><span class="mono" style="color:var(--win-blue);font-size:10px">#${sid}</span> ${a.citizen_name||'–'}</strong><span>${(a.tatvorwurf||'').substring(0,50)}</span></div>`;
+  }).join('');
 }
-function selectAnzeige(id,name,tv){
-  document.getElementById('nv-az').value=name;
+function selectAnzeige(id,shortId,name,tv){
+  document.getElementById('nv-az').value='#'+shortId+' · '+name;
   document.getElementById('nv-azd').style.display='none';
   document.getElementById('nv-anzeige-id').value=id;
   if(!document.getElementById('nv-n').value)document.getElementById('nv-n').value=name;
