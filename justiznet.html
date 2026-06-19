@@ -194,15 +194,24 @@ tr.sel td{background:#c8e6c9;}
 .sf-step:last-child{border-right:none;}
 .sf-step.done{background:#e8f5e9;color:var(--green);}
 .sf-step.cur{background:#1a5f3a;color:#fff;}
+
+/* RP Disclaimer Banner */
+#rp-disclaimer{position:fixed;top:0;left:0;right:0;z-index:99998;background:#e65c00;color:#fff;font-size:11px;font-weight:700;text-align:center;padding:4px 8px;letter-spacing:.3px;box-shadow:0 2px 8px rgba(0,0,0,.35);}
+#rp-disclaimer a{color:#fff;text-decoration:underline;cursor:pointer;}
+#boot{top:24px!important;}
+#lock-screen{top:24px!important;}
+#login{top:24px!important;}
 </style>
 </head>
 <body>
+<!-- RP DISCLAIMER BANNER -->
+<div id="rp-disclaimer">&#9888;&nbsp; FIKTIVES ROBLOX ROLEPLAY PROJEKT &ndash; keine echte Beh&ouml;rde oder staatliche Einrichtung &nbsp;&bull;&nbsp; Nur f&uuml;r RP-Nutzung &nbsp;&bull;&nbsp; <a onclick="openWindow&&openWindow('win-impressum')">Impressum / Disclaimer</a></div>
 
 <div id="boot">
   <div class="boot-logo">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Baden-W%C3%BCrttemberg_Wappen.svg/120px-Baden-W%C3%BCrttemberg_Wappen.svg.png" alt="⚖️" onerror="this.outerHTML='⚖️'" style="width:96px;height:auto;filter:drop-shadow(0 0 20px rgba(180,130,0,.5))">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 90" style="width:96px;height:auto;filter:drop-shadow(0 0 20px rgba(180,130,0,.5))"><path d="M40,3 L77,17 L77,50 Q77,77 40,87 Q3,77 3,50 L3,17 Z" fill="#b8860b" stroke="#7d5a00" stroke-width="2.5"/><path d="M40,9 L69,21 L69,50 Q69,71 40,80 Q11,71 11,50 L11,21 Z" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="1.5"/><text x="40" y="37" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="17" font-weight="900" fill="white">KA RP</text><text x="40" y="52" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="rgba(255,255,255,.9)">JUSTIZ</text><text x="40" y="65" text-anchor="middle" font-family="Arial,sans-serif" font-size="8.5" fill="rgba(255,255,255,.55)">ROLEPLAY FIKTIV</text></svg>
   </div>
-  <div class="boot-text">JustizNet Karlsruhe</div>
+  <div class="boot-text">JustizNet Karlsruhe RP</div>
   <div class="boot-sub">Justizsystem v3.1</div>
   <div class="boot-bar-bg"><div class="boot-bar-fill" id="bp"></div></div>
   <div class="boot-pct" id="bp-pct">0%</div>
@@ -212,10 +221,10 @@ tr.sel td{background:#c8e6c9;}
 <div id="notif-wrap"></div>
 
 <div id="lock-screen" style="display:none" onclick="showLogin()">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Baden-W%C3%BCrttemberg_Wappen.svg/120px-Baden-W%C3%BCrttemberg_Wappen.svg.png" alt="" onerror="this.style.display='none'" style="width:64px;height:auto;opacity:0.55;margin-bottom:4px">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 90" style="width:64px;height:auto;opacity:0.55;margin-bottom:4px"><path d="M40,3 L77,17 L77,50 Q77,77 40,87 Q3,77 3,50 L3,17 Z" fill="#c8930f"/><text x="40" y="42" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" font-weight="bold" fill="white">KA</text><text x="40" y="59" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="rgba(255,255,255,.8)">JUSTIZ RP</text></svg>
   <div class="ls-time" id="ls-time">00:00</div>
   <div class="ls-date" id="ls-date"></div>
-  <div style="font-size:11px;color:rgba(255,255,255,.5);letter-spacing:3px;text-transform:uppercase;margin-top:2px">Justiz Karlsruhe</div>
+  <div style="font-size:11px;color:rgba(255,255,255,.5);letter-spacing:3px;text-transform:uppercase;margin-top:2px">Karlsruhe RP Justiz</div>
   <div class="ls-hint">▲ Klicken zum Entsperren</div>
 </div>
 
@@ -225,15 +234,16 @@ tr.sel td{background:#c8e6c9;}
     <div class="login-body">
       <div class="login-header">
         <div class="login-badge">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Baden-W%C3%BCrttemberg_Wappen.svg/120px-Baden-W%C3%BCrttemberg_Wappen.svg.png" alt="⚖️" onerror="this.outerHTML='⚖️'" style="width:72px;height:auto;display:block;margin:0 auto">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 90" style="width:72px;height:auto;display:block;margin:0 auto"><path d="M40,3 L77,17 L77,50 Q77,77 40,87 Q3,77 3,50 L3,17 Z" fill="#b8860b" stroke="#7d5a00" stroke-width="2"/><text x="40" y="37" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="17" font-weight="900" fill="white">KA RP</text><text x="40" y="52" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="rgba(255,255,255,.9)">JUSTIZ</text><text x="40" y="65" text-anchor="middle" font-family="Arial,sans-serif" font-size="8" fill="rgba(255,255,255,.55)">ROLEPLAY FIKTIV</text></svg>
         </div>
-        <div class="login-name">JUSTIZNET KA · LAND BW</div>
-        <div class="login-sub">Justiz Karlsruhe · Nur für autorisierte Personen</div>
+        <div class="login-name">JUSTIZNET KA · KARLSRUHE RP</div>
+        <div class="login-sub">Karlsruhe RP Justiz · Nur für RP-Nutzung</div>
       </div>
       <div class="tab-bar">
         <button class="tab-btn act" id="tab-sa-btn" onclick="setRole('Staatsanwalt')">⚖️ Staatsanwalt</button>
         <button class="tab-btn" id="tab-ri-btn" onclick="setRole('Richter')">👨‍⚖️ Richter</button>
       </div>
+      <div style="background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:6px 10px;font-size:11px;text-align:center;margin-bottom:12px;border-radius:2px"><strong>&#9888; Nur f&uuml;r die Nutzung innerhalb des Roblox Roleplay Projekts.</strong></div>
       <div class="f-err" id="lerr"></div>
       <div class="fg"><label>Dienstnummer</label><input id="l-dienst" placeholder="JU-0001" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <div class="fg"><label>Passwort</label><input type="password" id="l-pass" onkeydown="if(event.key==='Enter')doLogin()"></div>
@@ -241,7 +251,7 @@ tr.sel td{background:#c8e6c9;}
         <button class="btn primary" id="lbtn" onclick="doLogin()" style="flex:1">🔑 Anmelden</button>
       </div>
     </div>
-    <div class="login-footer">JustizNet v3.1 · Nur für befugte Personen</div>
+    <div class="login-footer">JustizNet v3.1 · Karlsruhe RP · Alle Inhalte fiktiv · <a onclick="openWindow('win-impressum')" style="color:var(--win-gold,#b8860b);cursor:pointer">Impressum</a></div>
   </div>
 </div>
 
@@ -260,6 +270,7 @@ tr.sel td{background:#c8e6c9;}
   <div class="sm-item" onclick="openWindow('win-team')"><span class="si-ico">👥</span>Kollegium</div>
   <div class="sm-item" id="sm-mgmt" style="display:none" onclick="openWindow('win-mgmt')"><span class="si-ico">⚙️</span>Nutzerverwaltung</div>
   <div class="sm-sep"></div>
+    <div class="sm-item" onclick="openWindow('win-impressum')"><span class="si-ico">&#9432;</span>Impressum / Disclaimer</div>
   <div class="sm-item" onclick="openWindow('win-profil')"><span class="si-ico">👤</span>Mein Profil</div>
   <div class="sm-item" onclick="doLogout()"><span class="si-ico">🚪</span>Abmelden</div>
 </div>
@@ -282,7 +293,7 @@ tr.sel td{background:#c8e6c9;}
 <!-- ══════════ WINDOWS ══════════ -->
 
 <div class="win" id="win-dashboard" style="left:60px;top:30px;width:820px;height:520px">
-  <div class="wintitle" onmousedown="dragStart(event,'win-dashboard')"><span class="wt-ico">📊</span><span class="wt-txt">Übersicht · JustizNet Karlsruhe</span><button class="wt-btn wt-min" onclick="minWin('win-dashboard')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-dashboard')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-dashboard')">✕</button></div>
+  <div class="wintitle" onmousedown="dragStart(event,'win-dashboard')"><span class="wt-ico">📊</span><span class="wt-txt">Übersicht · JustizNet Karlsruhe RP</span><button class="wt-btn wt-min" onclick="minWin('win-dashboard')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-dashboard')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-dashboard')">✕</button></div>
   <div class="wtoolbar"><button class="tbtn" onclick="loadDash()">🔄 Aktualisieren</button><div class="t-sep"></div><button class="tbtn" onclick="openWindow('win-verfahren')">📂 Verfahren</button><button class="tbtn" onclick="openWindow('win-vorladungen')">✉️ Vorladungen</button></div>
   <div class="winbody"><div class="wcontent">
     <div class="stat-grid">
@@ -404,7 +415,7 @@ tr.sel td{background:#c8e6c9;}
 </div>
 
 <div class="win" id="win-team" style="left:140px;top:90px;width:660px;height:480px">
-  <div class="wintitle" onmousedown="dragStart(event,'win-team')"><span class="wt-ico">👥</span><span class="wt-txt">Kollegium · Justiz Karlsruhe</span><button class="wt-btn wt-min" onclick="minWin('win-team')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-team')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-team')">✕</button></div>
+  <div class="wintitle" onmousedown="dragStart(event,'win-team')"><span class="wt-ico">👥</span><span class="wt-txt">Kollegium · Karlsruhe RP Justiz</span><button class="wt-btn wt-min" onclick="minWin('win-team')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-team')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-team')">✕</button></div>
   <div class="wtoolbar"><button class="tbtn" onclick="loadTeam()">🔄 Refresh</button></div>
   <div class="winbody"><div style="margin:10px" class="table-wrap"><table><thead><tr><th>Name</th><th>Dienst-Nr</th><th>Rang</th><th>Abteilung</th><th>Status</th></tr></thead><tbody id="team-tb"></tbody></table></div></div>
   <div class="win-resize" onmousedown="resizeStart(event,'win-team')"></div>
@@ -608,7 +619,7 @@ async function doLogin(){
   if(data.suspended){showErr('Zugang gesperrt.');return;}
   U={...data,loginRole:_loginRole};
   document.getElementById('login').style.display='none';
-  document.getElementById('desktop').style.display='block';
+  document.getElementById('desktop').style.display='block';document.getElementById('rp-footer').style.display='block';
   document.getElementById('tb-user').textContent=U.name;
   if(U.level>=7){document.getElementById('sm-mgmt').style.display='flex';}
   buildDesktop();
@@ -1299,5 +1310,43 @@ function chgPw(){
   log('PW_CHANGE',U.name);
 }
 </script>
+
+<!-- IMPRESSUM / DISCLAIMER WINDOW -->
+<div class="win" id="win-impressum" style="left:200px;top:60px;width:600px;height:520px">
+  <div class="wintitle" onmousedown="dragStart(event,'win-impressum')"><span class="wt-ico">&#9432;</span><span class="wt-txt">Impressum &bull; Datenschutz &bull; Disclaimer</span><button class="wt-btn wt-cls" onclick="closeWin('win-impressum')">&#x2715;</button></div>
+  <div class="winbody" style="overflow:auto"><div class="wcontent" style="user-select:text;line-height:1.6;font-size:12px">
+    <div style="background:#fff3cd;border:1px solid #ffc107;padding:12px;margin-bottom:14px">
+      <strong style="font-size:13px">&#9888; WICHTIGER HINWEIS / DISCLAIMER</strong><br><br>
+      Dies ist ein <strong>fiktives Roblox Roleplay Projekt</strong> und steht in keinerlei Verbindung zu echten Beh&ouml;rden, der Polizei, dem Rettungsdienst, der Justiz oder staatlichen Stellen des Landes Baden-W&uuml;rttemberg oder der Bundesrepublik Deutschland.<br><br>
+      Alle dargestellten Inhalte, Personen, Vorf&auml;lle, Akten und Daten sind <strong>vollst&auml;ndig fiktiv</strong> und dienen ausschlie&szlig;lich dem Roleplay innerhalb einer Roblox-Spielwelt.
+    </div>
+    <h3 style="font-size:13px;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px">Impressum</h3>
+    <p>Dieses System ist ein privates Fanprojekt f&uuml;r Roblox Roleplay und dient ausschlie&szlig;lich der fiktiven Darstellung innerhalb eines Online-Rollenspiels. Es werden keine echten beh&ouml;rdlichen Daten verarbeitet.</p>
+    <p style="margin-top:6px">Betreiber: Karlsruhe RP Community &ndash; Roblox Roleplay Projekt (privat, nicht kommerziell)</p>
+    <br>
+    <h3 style="font-size:13px;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px">Disclaimer &amp; Haftungsausschluss</h3>
+    <ul style="margin-left:18px;color:#444;line-height:1.8">
+      <li>Alle Personen, Vorf&auml;lle, Akten und Daten sind <strong>vollst&auml;ndig fiktiv</strong></li>
+      <li>Logos und Bezeichnungen (CopNet, JustizNet, RettungsNet, &bdquo;KA RP&ldquo;) sind eigene Sch&ouml;pfungen &ndash; keine echten Beh&ouml;rdensymbole</li>
+      <li>Kein Bezug zu echten Polizei-, Justiz- oder Rettungsdienstbeh&ouml;rden</li>
+      <li>Der Zugang ist ausschlie&szlig;lich f&uuml;r Teilnehmer des Karlsruhe RP Roblox-Projekts bestimmt</li>
+      <li>Keine Haftung f&uuml;r den Inhalt externer Verlinkungen</li>
+    </ul>
+    <br>
+    <h3 style="font-size:13px;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px">Datenschutz</h3>
+    <p>Gespeichert werden ausschlie&szlig;lich Roblox-Nutzernamen, Discord-Nutzernamen und rollenspielbezogene Daten, die freiwillig eingegeben werden. Eine Weitergabe an Dritte findet nicht statt. S&auml;mtliche Daten k&ouml;nnen auf Anfrage gel&ouml;scht werden.</p>
+    <br>
+    <h3 style="font-size:13px;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px">Fanprojekt-Erkl&auml;rung</h3>
+    <p>Dieses Projekt ist ein Fanprojekt f&uuml;r Roblox Roleplay. Es ist <strong>nicht mit Beh&ouml;rden, Polizei oder staatlichen Stellen verbunden</strong>. Alle Systemnamen und Designs sind eigenst&auml;ndig und fiktiv.</p>
+    <br>
+    <p style="font-size:10px;color:#999;border-top:1px solid #eee;padding-top:8px;text-align:center">Karlsruhe RP &bull; Roblox Roleplay Projekt &bull; Nur f&uuml;r RP-Nutzung &bull; Alle Inhalte fiktiv &bull; Kein Bezug zu echten Beh&ouml;rden</p>
+  </div></div>
+  <div class="win-resize" onmousedown="resizeStart(event,'win-impressum')"></div>
+</div>
+
+<!-- RP FOOTER BAR -->
+<div id="rp-footer" style="display:none;position:fixed;bottom:40px;left:0;right:0;height:18px;background:rgba(0,0,0,.75);color:rgba(255,255,255,.45);font-size:9px;text-align:center;line-height:18px;z-index:5999;pointer-events:none;letter-spacing:.4px">
+  Fanprojekt f&uuml;r Roblox Roleplay &ndash; Nicht mit Beh&ouml;rden, Polizei oder staatlichen Stellen verbunden &ndash; Alle Inhalte sind fiktiv
+</div>
 </body>
 </html>
