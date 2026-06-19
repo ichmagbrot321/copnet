@@ -270,6 +270,7 @@ tr.sel td{background:#c8e6c9;}
   <div id="tb-apps" style="display:flex;gap:2px;align-items:center;overflow:hidden;flex:1"></div>
   <div class="tb-sep"></div>
   <div id="tb-sys" style="display:flex;align-items:center;padding:0 4px;gap:4px">
+    <div id="tb-live" title="Live-Aktualisierung aktiv" style="font-size:9px;color:#4ade80;padding:2px 6px;opacity:0.35;transition:opacity .4s;border-radius:2px;border:1px solid rgba(74,222,128,.25);cursor:default;letter-spacing:1px">⬤ LIVE</div>
     <div class="sys-icon" id="tb-user" style="font-size:11px;color:#ccc">–</div>
   </div>
   <div id="tb-clock" onclick="toggleStart()">
@@ -472,9 +473,8 @@ tr.sel td{background:#c8e6c9;}
     <div class="fg"><label>Beschreibung</label><textarea id="bew-desc" style="min-height:55px"></textarea></div>
     <div class="fg"><label>Beweisfoto (optional)</label>
       <div class="foto-zone" style="height:70px;padding:8px">
-        <input type="file" accept="image/*" onchange="previewBeweisfoto(this)">
-        <img id="bew-foto-prev" class="foto-preview" style="width:50px;height:50px">
-        <div style="font-size:11px;color:var(--text3)" id="bew-foto-lbl">📸 Foto anhängen (optional)</div>
+        <input type="file" accept="image/*" multiple onchange="previewBeweisfoto(this)">
+        <div style="font-size:11px;color:var(--text3)" id="bew-foto-lbl">📸 Fotos anhängen (optional, mehrere möglich)</div>
       </div>
     </div>
     <input type="hidden" id="bew-vid">
@@ -499,8 +499,15 @@ const SB_URL='https://vekozqxmawzatvyofsxq.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZla296cXhtYXd6YXR2eW9mc3hxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NzIwMDksImV4cCI6MjA4ODU0ODAwOX0.ASzxEi8Tmnv7AFd5vFV4Hw12FxzA8ysjEoTlXDLMYaE';
 const db=supabase.createClient(SB_URL,SB_KEY);
 
-let U=null,_loginRole='Staatsanwalt',_vcid=null,_vlcid=null,_beweisfoto=null;
+let U=null,_loginRole='Staatsanwalt',_vcid=null,_vlcid=null,_bwFotos=[];
 let _vCache=[],_anzCache=[];
+
+// Helper: render one or many photos stored in foto_base64 (string or JSON array)
+function renderFotos(fb){
+  if(!fb)return'';
+  let arr;try{arr=JSON.parse(fb);if(!Array.isArray(arr))arr=[fb];}catch(e){arr=[fb];}
+  return arr.map(f=>`<img src="${f}" style="max-width:100%;max-height:200px;object-fit:contain;border:1px solid var(--border);display:block;margin:4px 0">`).join('');
+}
 let _openWindows=[],_zBase=1000;
 
 // ═══ BOOT ═════════════════════════════════════════════════════════
@@ -535,6 +542,15 @@ function updateClock(){
   if(lsd)lsd.textContent=now.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
 }
 setInterval(updateClock,1000);updateClock();
+// ── Auto-Refresh (30 s) ──────────────────────────────────────────
+const _arMap={'win-dashboard':()=>loadDash(),'win-verfahren':()=>loadV(),'win-anzeigen':()=>loadA(),'win-vorladungen':()=>loadVL(),'win-team':()=>loadTeam()};
+function _autoRefresh(){
+  if(!U)return;
+  const el=document.getElementById('tb-live');
+  if(el){el.style.opacity='1';el.style.boxShadow='0 0 6px #4ade80';setTimeout(()=>{if(el){el.style.opacity='0.35';el.style.boxShadow='none';}},800);}
+  Object.entries(_arMap).forEach(([id,fn])=>{try{if(document.getElementById(id)?.classList.contains('open'))fn();}catch(e){}});
+}
+setInterval(_autoRefresh,30000);
 
 // ═══ UTILS ════════════════════════════════════════════════════════
 function nt(msg,type=''){
@@ -549,16 +565,23 @@ async function log(a,d){try{await db.from('logs').insert([{username:U?.name||'Sy
 function showFErr(el,msg){el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',5000);}
 
 function previewBeweisfoto(input){
-  const f=input.files[0];if(!f)return;
-  if(f.size>3*1024*1024){nt('Foto max. 3MB!','err');return;}
-  const r=new FileReader();
-  r.onload=e=>{
-    _beweisfoto=e.target.result;
-    const prev=document.getElementById('bew-foto-prev');
-    if(prev){prev.src=_beweisfoto;prev.style.display='block';}
-    const lbl=document.getElementById('bew-foto-lbl');
-    if(lbl)lbl.textContent='✅ Foto bereit';
-  };r.readAsDataURL(f);
+  const files=Array.from(input.files);if(!files.length)return;
+  _bwFotos=[];
+  const lbl=document.getElementById('bew-foto-lbl');
+  let grid=document.getElementById('bew-foto-grid');
+  if(!grid){grid=document.createElement('div');grid.id='bew-foto-grid';grid.style.cssText='display:flex;flex-wrap:wrap;gap:4px;margin-top:6px';lbl.parentNode.insertBefore(grid,lbl);}
+  grid.innerHTML='';
+  files.forEach(f=>{
+    if(f.size>3*1024*1024){nt('Foto '+f.name+' zu groß (max 3MB)','err');return;}
+    const r=new FileReader();
+    r.onload=ev=>{
+      _bwFotos.push(ev.target.result);
+      const img=document.createElement('img');img.src=ev.target.result;
+      img.style.cssText='width:52px;height:52px;object-fit:cover;border:1px solid var(--border)';
+      grid.appendChild(img);
+    };r.readAsDataURL(f);
+  });
+  if(lbl)lbl.textContent='✅ '+files.length+' Foto(s) ausgewählt';
 }
 
 // ═══ LOCK / LOGIN ═════════════════════════════════════════════════
@@ -592,8 +615,48 @@ async function doLogin(){
   await log('LOGIN',U.name+' als '+_loginRole);
   nt('Willkommen, '+_loginRole+' '+U.name,'ok');
   openWindow('win-dashboard');
+  setupRealtime();
 }
+
+// ═══ ECHTZEIT-SUBSCRIPTIONS ════════════════════════════════════════
+let _rtCh=null;
+function _pulseLive(){const el=document.getElementById('tb-live');if(el){el.style.opacity='1';el.style.boxShadow='0 0 8px #4ade80';setTimeout(()=>{if(el){el.style.opacity='0.55';el.style.boxShadow='none';}},700);}}
+function _isOpen(id){return!!document.getElementById(id)?.classList.contains('open');}
+function setupRealtime(){
+  if(_rtCh){try{db.removeChannel(_rtCh);}catch(e){}}
+  _rtCh=db.channel('justiznet-rt-'+Date.now())
+    .on('postgres_changes',{event:'*',schema:'public',table:'justiz_verfahren'},()=>{
+      _pulseLive();
+      if(_isOpen('win-verfahren'))loadV();
+      if(_isOpen('win-dashboard'))loadDash();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'justiz_protokolle'},()=>{
+      _pulseLive();
+      if(_isOpen('win-verfahren'))loadV();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'justiz_beweise'},()=>{
+      _pulseLive();
+      if(_isOpen('win-verfahren'))loadV();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'citizen_akten_eintraege'},()=>{
+      _pulseLive();
+      if(_isOpen('win-anzeigen'))loadA();
+      if(_isOpen('win-dashboard'))loadDash();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'officers'},()=>{
+      _pulseLive();
+      if(_isOpen('win-team'))loadTeam();
+      if(_isOpen('win-dashboard'))loadDash();
+    })
+    .subscribe(status=>{
+      const el=document.getElementById('tb-live');if(!el)return;
+      if(status==='SUBSCRIBED'){el.style.color='#4ade80';el.style.borderColor='rgba(74,222,128,.3)';el.style.opacity='0.55';el.title='⬤ LIVE – Echtzeit-Verbindung aktiv';}
+      else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){el.style.color='#f59e0b';el.style.borderColor='rgba(245,158,11,.3)';el.style.opacity='0.7';el.title='⬤ LIVE – Verbindung unterbrochen';}
+    });
+}
+
 async function doLogout(){
+  if(_rtCh){try{db.removeChannel(_rtCh);}catch(e){}_rtCh=null;}
   if(U)await log('LOGOUT',U.name);
   U=null;
   document.getElementById('desktop').style.display='none';
@@ -807,7 +870,7 @@ async function openVDetail(idx){
           <img src="${origAnzeige.foto_base64}" style="max-width:100%;max-height:220px;object-fit:contain;display:block;margin:0 auto;border:1px solid var(--border)">
         </div>`:''}
       ${bew?.length?`<div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Beweise (${bew.length})</div>
-        <div class="tline">${bew.map(b=>`<div class="tl-item"><div class="tl-type">${b.typ||'Beweis'} · ${b.bezeichnung||''}</div><div class="tl-txt">${b.beschreibung||''}</div>${b.foto_base64?`<img src="${b.foto_base64}" style="max-width:100%;max-height:180px;object-fit:contain;border:1px solid var(--border);margin-top:6px;display:block">`:''}
+        <div class="tline">${bew.map(b=>`<div class="tl-item"><div class="tl-type">${b.typ||'Beweis'} · ${b.bezeichnung||''}</div><div class="tl-txt">${b.beschreibung||''}</div>${b.foto_base64?renderFotos(b.foto_base64):''}
           <div class="tl-meta">${b.eingereicht_von||'–'} · ${fmt(b.created_at)}</div></div>`).join('')}</div>`:''}
       ${prot?.length?`<div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text2);margin:10px 0 6px">Protokoll (${prot.length})</div>
         <div class="tline">${prot.map(p=>`<div class="tl-item"><div class="tl-type">${p.typ||'Eintrag'}</div><div class="tl-txt">${p.inhalt||''}</div><div class="tl-meta">${p.autor||'–'} · ${fmt(p.created_at)}</div></div>`).join('')}</div>`:''}
@@ -831,9 +894,9 @@ async function openVDetail(idx){
     document.getElementById('bew-vid').value=id;
     ['bew-bez','bew-desc'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('bew-err').style.display='none';
-    _beweisfoto=null;
-    const prev=document.getElementById('bew-foto-prev');if(prev){prev.style.display='none';prev.src='';}
-    const lbl=document.getElementById('bew-foto-lbl');if(lbl)lbl.textContent='📸 Foto anhängen (optional)';
+    _bwFotos=[];
+    const grid=document.getElementById('bew-foto-grid');if(grid)grid.innerHTML='';
+    const lbl=document.getElementById('bew-foto-lbl');if(lbl)lbl.textContent='📸 Fotos anhängen (optional, mehrere möglich)';
     openWindow('win-beweis');
   };tb2.appendChild(bewBtn);
   const protBtn=document.createElement('button');protBtn.className='btn';protBtn.textContent='+ Protokoll';protBtn.style.cssText='padding:2px 8px;font-size:11px';
@@ -907,8 +970,16 @@ async function saveUrteil(){
   const upd={status:'Urteil',urteil:e,strafmass:document.getElementById('u-sm').value.trim()||null};
   await db.from('justiz_verfahren').update(upd).eq('id',vid);
   await db.from('justiz_protokolle').insert([{verfahren_id:vid,typ:'Urteil',inhalt:`Urteil: ${e}${upd.strafmass?' – Strafmaß: '+upd.strafmass:''}. Begründung: ${b}`,autor:U?.name}]);
+  // Close the linked Strafanzeige so it shows as Abgeschlossen
+  const{data:vd}=await db.from('justiz_verfahren').select('strafanzeige_id,az,beschuldigter').eq('id',vid).single();
+  if(vd?.strafanzeige_id){
+    await db.from('citizen_akten_eintraege').update({status:'Abgeschlossen'}).eq('id',vd.strafanzeige_id);
+  }
+  // Mark Verfahren as Eingestellt (completely closed) after Urteil is recorded
+  await db.from('justiz_verfahren').update({status:'Eingestellt'}).eq('id',vid);
+  await db.from('justiz_protokolle').insert([{verfahren_id:vid,typ:'Abschluss',inhalt:'Verfahren nach Urteil abgeschlossen.',autor:U?.name}]);
   await log('URTEIL','Verfahren #'+vid+': '+e);
-  nt('🔨 Urteil: '+e,'ok');closeWin('win-urteil');loadV();loadDash();
+  nt('🔨 Urteil: '+e+' – Verfahren abgeschlossen','ok');closeWin('win-urteil');loadV();loadDash();
 }
 
 // ═══ BEWEISE ══════════════════════════════════════════════════════
@@ -923,7 +994,7 @@ async function saveBeweis(){
     typ:document.getElementById('bew-typ').value,
     beschreibung:document.getElementById('bew-desc').value.trim(),
     eingereicht_von:U?.name,
-    foto_base64:_beweisfoto||null,
+    foto_base64:_bwFotos.length===1?_bwFotos[0]:(_bwFotos.length>1?JSON.stringify(_bwFotos):null),
   }]);
   if(error){showFErr(err,'Fehler: '+error.message);return;}
   nt('✅ Beweis hinzugefügt','ok');closeWin('win-beweis');
@@ -1064,13 +1135,11 @@ function fillVCit(c){document.getElementById('nv-bs').value=c.name;document.getE
 function fillVLCit(c){document.getElementById('vl-bs').value=c.name;document.getElementById('vl-bd').style.display='none';document.getElementById('vl-n').value=c.name;_vlcid=c.id;}
 
 async function _ensureAnzCache(){
-  // If cache is empty or was only partially filled by dashboard (≤5 rows), fetch all
-  if(_anzCache.length<=5){
-    const{data}=await db.from('citizen_akten_eintraege').select('*')
-      .in('typ',['Strafanzeige','Festnahme','Ermittlung'])
-      .order('created_at',{ascending:false}).limit(200);
-    if(data?.length)_anzCache=data;
-  }
+  // Always fetch a fresh full list so ID search always works
+  const{data}=await db.from('citizen_akten_eintraege').select('*')
+    .in('typ',['Strafanzeige','Festnahme','Ermittlung'])
+    .order('created_at',{ascending:false}).limit(200);
+  if(data?.length)_anzCache=data;
 }
 async function acSrchAnzeigen(inp,drop){
   const q=document.getElementById(inp).value.trim();const dr=document.getElementById(drop);
@@ -1187,12 +1256,18 @@ async function delUser(id,name){
 // ═══ PROFIL ═══════════════════════════════════════════════════════
 function loadProfil(){
   if(!U)return;
+  const foto=U.foto_base64||U.char_foto||null;
+  const fotoEl=foto
+    ?`<div style="width:72px;height:72px;border:2px solid rgba(255,255,255,.25);overflow:hidden;cursor:pointer;position:relative;flex-shrink:0" onclick="document.getElementById('pf-inp').click()" title="Profilbild ändern"><img src="${foto}" style="width:100%;height:100%;object-fit:cover"><div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);font-size:10px;text-align:center;padding:2px;color:#fff">✏️ Ändern</div></div>`
+    :`<div class="p-ava" style="width:72px;height:72px;cursor:pointer;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:26px" onclick="document.getElementById('pf-inp').click()" title="Foto hinzufügen">${U.name.charAt(0)}<div style="font-size:11px;margin-top:2px;opacity:.7">📸</div></div>`;
   document.getElementById('profil-wrap').innerHTML=`
     <div class="profile-hero">
-      <div class="p-ava">${U.name.charAt(0)}</div>
+      ${fotoEl}
+      <input type="file" id="pf-inp" accept="image/*" style="display:none" onchange="saveProfBild(this)">
       <div>
         <div class="p-name">${U.name}</div>
         <div class="p-sub">${U.loginRole||'–'} · ${U.rank||'–'} · ${U.dienst}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:3px">📸 Foto anklicken zum Ändern</div>
       </div>
     </div>
     <div style="padding:12px">
@@ -1207,6 +1282,15 @@ function loadProfil(){
         <button class="btn danger" onclick="doLogout()">🚪 Abmelden</button>
       </div>
     </div>`;
+}
+async function saveProfBild(input){
+  if(!input.files.length)return;
+  nt('📸 Wird hochgeladen…','');
+  const b64=await new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(input.files[0]);});
+  const compressed=await new Promise(res=>{const img=new Image();img.onload=()=>{const mx=480;let w=img.width,h=img.height;if(w>h){if(w>mx){h=Math.round(h*(mx/w));w=mx;}}else{if(h>mx){w=Math.round(w*(mx/h));h=mx;}}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);res(c.toDataURL('image/jpeg',.78));};img.src=b64;});
+  const{error}=await db.from('officers').update({foto_base64:compressed}).eq('id',U.id);
+  if(error){nt('❌ Fehler: '+error.message,'err');return;}
+  U.foto_base64=compressed;nt('✅ Profilbild gespeichert','ok');loadProfil();
 }
 function chgPw(){
   const p=prompt('Neues Passwort (min. 6 Zeichen):');
