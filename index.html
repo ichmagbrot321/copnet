@@ -391,6 +391,7 @@ tr.sel td{background:#cce4f7;}
   <div class="tb-sep"></div>
   <div id="tb-sys" style="display:flex;align-items:center;padding:0 4px;gap:4px">
     <div class="d-pill off" id="dpill" onclick="toggleDuty()" style="cursor:pointer;color:#ccc;font-size:10px;padding:2px 8px;border:1px solid rgba(255,255,255,.1);border-radius:2px;display:none">⬤ Außer Dienst</div>
+    <div id="tb-live" title="Live-Aktualisierung aktiv" style="font-size:9px;color:#4ade80;padding:2px 6px;opacity:0.35;transition:opacity .4s,box-shadow .4s;border-radius:2px;border:1px solid rgba(74,222,128,.25);cursor:default;letter-spacing:1px">⬤ LIVE</div>
     <div class="sys-icon" title="Benutzer" id="tb-user" style="font-size:11px;color:#ccc">–</div>
   </div>
   <div id="tb-clock" onclick="toggleStart()">
@@ -501,6 +502,29 @@ tr.sel td{background:#cce4f7;}
 </div>
 
 <!-- DIALOG WINDOWS -->
+<div class="win" id="win-cit-edit" style="left:440px;top:110px;width:440px;height:430px">
+  <div class="wintitle" onmousedown="dragStart(event,'win-cit-edit')"><span class="wt-ico">✏️</span><span class="wt-txt" id="ce-title">Bürgerprofil bearbeiten</span><button class="wt-btn wt-cls" onclick="closeWin('win-cit-edit')">✕</button></div>
+  <div class="winbody"><div class="wcontent" style="padding:12px">
+    <input type="hidden" id="ce-id">
+    <div class="fg"><label>Name</label><input id="ce-name"></div>
+    <div class="fg"><label>Roblox-Name</label><input id="ce-roblox"></div>
+    <div class="fg"><label>Discord-Tag</label><input id="ce-dtag"></div>
+    <div class="fg"><label>Profilbild</label>
+      <div class="foto-zone" style="height:64px;padding:8px">
+        <input type="file" accept="image/*" onchange="previewCitEdit(this)">
+        <div style="font-size:11px;color:var(--text3)" id="ce-flbl">📸 Neues Foto (optional)</div>
+      </div>
+      <div id="ce-pgrid" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px"></div>
+    </div>
+    <div class="f-err" id="ce-err"></div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="saveCitEdit()">💾 Speichern</button>
+      <button class="btn" onclick="closeWin('win-cit-edit')">Abbrechen</button>
+    </div>
+  </div></div>
+  <div class="win-resize" onmousedown="resizeStart(event,'win-cit-edit')"></div>
+</div>
+
 <div class="win" id="win-b-detail" style="left:350px;top:80px;width:600px;height:580px">
   <div class="wintitle" onmousedown="dragStart(event,'win-b-detail')"><span class="wt-ico">📁</span><span class="wt-txt" id="b-detail-title">Bürgerprofil</span><button class="wt-btn wt-min" onclick="minWin('win-b-detail')">–</button><button class="wt-btn wt-cls" onclick="closeWin('win-b-detail')">✕</button></div>
   <div class="wtoolbar" id="b-detail-toolbar"></div>
@@ -744,6 +768,15 @@ function updateClock(){
   if(lsd)lsd.textContent=now.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
 }
 setInterval(updateClock,1000);updateClock();
+// ── Auto-Refresh (30 s) ──────────────────────────────────────────
+const _arMap={'win-dashboard':()=>loadDash(),'win-einsatz':()=>loadEinsatz(),'win-anzeigen':()=>loadAnzeigen(),'win-buerger':()=>loadBuerger(),'win-team':()=>loadTeam(),'win-fahndung':()=>loadFahndung()};
+function _autoRefresh(){
+  if(!U)return;
+  const el=document.getElementById('tb-live');
+  if(el){el.style.opacity='1';el.style.boxShadow='0 0 6px #4ade80';setTimeout(()=>{if(el){el.style.opacity='0.35';el.style.boxShadow='none';}},800);}
+  Object.entries(_arMap).forEach(([id,fn])=>{try{if(document.getElementById(id)?.classList.contains('open'))fn();}catch(e){}});
+}
+setInterval(_autoRefresh,30000);
 
 // ═══ FOTO ═════════════════════════════════════════════════════════
 function previewFoto(input){
@@ -845,7 +878,7 @@ function buildDesktop(){
 }
 
 // ── FIX 1+2: openWindow mit Beamten-Guard ──
-const OFFICER_WINS=new Set(['win-dashboard','win-einsatz','win-anzeigen','win-buerger','win-fahrzeuge','win-fs','win-fahndung','win-team','win-dienstnummern','win-pa','win-mgmt','win-b-detail','win-neintrag','win-new-anzeige','win-new-einsatz','win-new-fahndung','win-new-fz','win-fsa','win-beschlag','win-dn-action','win-au','win-pa-detail','win-pa-neintrag','win-mod','win-anzeige-detail']);
+const OFFICER_WINS=new Set(['win-dashboard','win-einsatz','win-anzeigen','win-buerger','win-fahrzeuge','win-fs','win-fahndung','win-team','win-dienstnummern','win-pa','win-mgmt','win-b-detail','win-neintrag','win-new-anzeige','win-new-einsatz','win-new-fahndung','win-new-fz','win-fsa','win-beschlag','win-dn-action','win-au','win-pa-detail','win-pa-neintrag','win-mod','win-anzeige-detail','win-cit-edit']);
 
 function openWindow(id){
   if(OFFICER_WINS.has(id)&&U?.type!=='officer'){nt('Kein Zugriff – nur für Beamte','err');return;}
@@ -1092,6 +1125,48 @@ async function loginOff(){
 }
 
 // ═══ APP START ════════════════════════════════════════════════════
+// ═══ ECHTZEIT-SUBSCRIPTIONS ════════════════════════════════════════
+let _rtCh=null;
+function _pulseLive(){const el=document.getElementById('tb-live');if(el){el.style.opacity='1';el.style.boxShadow='0 0 8px #4ade80';setTimeout(()=>{if(el){el.style.opacity='0.55';el.style.boxShadow='none';}},700);}}
+function _isOpen(id){return!!document.getElementById(id)?.classList.contains('open');}
+function setupRealtime(){
+  if(_rtCh){try{db.removeChannel(_rtCh);}catch(e){}}
+  _rtCh=db.channel('copnet-rt-'+Date.now())
+    .on('postgres_changes',{event:'*',schema:'public',table:'einsatz'},()=>{
+      _pulseLive();
+      if(_isOpen('win-einsatz'))loadEinsatz();
+      if(_isOpen('win-dashboard'))loadDash();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'citizen_akten_eintraege'},()=>{
+      _pulseLive();
+      if(_isOpen('win-anzeigen'))loadAnzeigen();
+      if(_isOpen('win-buerger'))loadBuerger();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'alerts'},()=>{
+      _pulseLive();
+      if(_isOpen('win-fahndung'))loadFahndung();
+      if(_isOpen('win-dashboard'))loadDash();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'officers'},()=>{
+      _pulseLive();
+      if(_isOpen('win-team'))loadTeam();
+      if(_isOpen('win-dashboard'))loadDash();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'citizens'},()=>{
+      _pulseLive();
+      if(_isOpen('win-buerger'))loadBuerger();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'vehicles'},()=>{
+      _pulseLive();
+      if(_isOpen('win-fahrzeuge'))loadFahrzeuge?.();
+    })
+    .subscribe(status=>{
+      const el=document.getElementById('tb-live');if(!el)return;
+      if(status==='SUBSCRIBED'){el.style.color='#4ade80';el.style.borderColor='rgba(74,222,128,.3)';el.style.opacity='0.55';el.title='⬤ LIVE – Echtzeit-Verbindung aktiv';}
+      else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){el.style.color='#f59e0b';el.style.borderColor='rgba(245,158,11,.3)';el.style.opacity='0.7';el.title='⬤ LIVE – Verbindung unterbrochen, nutze Fallback';}
+    });
+}
+
 function startApp(){
   document.getElementById('login').style.display='none';
   document.getElementById('lock-screen').style.display='none';
@@ -1104,11 +1179,13 @@ function startApp(){
     if((U.level||1)>=8){document.getElementById('sm-pa').style.display='flex';document.getElementById('sm-mgmt').style.display='flex';}
   }
   buildDesktop();
+  setupRealtime();
   if(U.type==='officer')setTimeout(()=>openWindow('win-dashboard'),200);
   else setTimeout(()=>loadCitizenDash(),200);
 }
 
 async function doLogout(){
+  if(_rtCh){try{db.removeChannel(_rtCh);}catch(e){}_rtCh=null;}
   if(U?.type==='officer'&&U.status==='on')await db.from('officers').update({status:'off'}).eq('id',U.id);
   if(U)await log('LOGOUT',U.name);
   U=null;_pendingDiscordData=null;_regData={};_fotoBase64=null;
@@ -1303,6 +1380,8 @@ async function openBuerger(id){
   fzBtn.onclick=()=>openFZ(c);tb.appendChild(fzBtn);
   const stBtn=document.createElement('button');stBtn.className='btn danger';stBtn.innerHTML='⚠️ Status';
   stBtn.onclick=()=>toggleBuergerStatus(c.id,c.name,c.discord_id||'',c.status||'Aktiv');tb.appendChild(stBtn);
+  const editBtn=document.createElement('button');editBtn.className='btn';editBtn.innerHTML='✏️ Bearbeiten';
+  editBtn.onclick=()=>openCitEdit(c);tb.appendChild(editBtn);
   const pts=fsPunkte;const dots=Array.from({length:8},(_,i)=>`<div class="pd ${i<pts?(pts>=6?'danger':'on'):''}"></div>`).join('');
   document.getElementById('b-detail-body').innerHTML=`
     <div class="profile-hero">
@@ -1798,11 +1877,19 @@ async function saveMod(){
 // ═══ PROFIL ═══════════════════════════════════════════════════════
 function loadProfil(){
   if(!U)return;
-  const fotoHtml=U.char_foto?`<div style="width:50px;height:50px;overflow:hidden;flex-shrink:0"><img src="${U.char_foto}" style="width:100%;height:100%;object-fit:cover"></div>`:`<div style="width:50px;height:50px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:24px">${U.name.charAt(0)}</div>`;
+  const foto=U.type==='officer'?(U.foto_base64||U.char_foto||null):(U.char_foto||null);
+  const fotoEl=foto
+    ?`<div style="width:72px;height:72px;border:2px solid rgba(255,255,255,.25);overflow:hidden;cursor:pointer;position:relative;flex-shrink:0" onclick="document.getElementById('pf-inp').click()" title="Profilbild ändern"><img src="${foto}" style="width:100%;height:100%;object-fit:cover"><div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);font-size:10px;text-align:center;padding:2px;color:#fff">✏️ Ändern</div></div>`
+    :`<div style="width:72px;height:72px;background:rgba(255,255,255,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:26px;cursor:pointer;border:2px dashed rgba(255,255,255,.3);flex-shrink:0" onclick="document.getElementById('pf-inp').click()" title="Foto hinzufügen">${U.name.charAt(0)}<div style="font-size:11px;margin-top:2px;opacity:.7">📸</div></div>`;
   document.getElementById('profil-wrap').innerHTML=`
     <div class="profile-hero">
-      ${fotoHtml}
-      <div><div class="p-name">${U.name}</div><div class="p-sub">${U.type==='officer'?(U.rank||'Beamter')+' · '+U.dienst:'Bürger'}</div></div>
+      ${fotoEl}
+      <input type="file" id="pf-inp" accept="image/*" style="display:none" onchange="saveProfBild(this)">
+      <div>
+        <div class="p-name">${U.name}</div>
+        <div class="p-sub">${U.type==='officer'?(U.rank||'Beamter')+' · '+U.dienst:'Bürger'}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:3px">📸 Foto anklicken zum Ändern</div>
+      </div>
     </div>
     <div class="form-section">
       <div class="info-grid">
@@ -1820,6 +1907,17 @@ function loadProfil(){
         <button class="btn danger" onclick="doLogout()">🚪 Abmelden</button>
       </div>
     </div>`;
+}
+async function saveProfBild(input){
+  if(!input.files.length)return;
+  nt('📸 Wird hochgeladen…','');
+  const b64=await new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(input.files[0]);});
+  const compressed=await new Promise(res=>{const img=new Image();img.onload=()=>{const mx=480;let w=img.width,h=img.height;if(w>h){if(w>mx){h=Math.round(h*(mx/w));w=mx;}}else{if(h>mx){w=Math.round(w*(mx/h));h=mx;}}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);res(c.toDataURL('image/jpeg',.78));};img.src=b64;});
+  let error;
+  if(U.type==='officer'){({error}=await db.from('officers').update({foto_base64:compressed}).eq('id',U.id));if(!error)U.foto_base64=compressed;}
+  else{({error}=await db.from('citizens').update({char_foto:compressed}).eq('id',U.id));if(!error)U.char_foto=compressed;}
+  if(error){nt('❌ Fehler: '+error.message,'err');return;}
+  nt('✅ Profilbild gespeichert','ok');loadProfil();
 }
 
 function openFzForUser(){if(U)showFuehrungszeugnis(U);}
@@ -1937,6 +2035,50 @@ async function sendBotDM(discordId,type,data){
     if(!res.ok)return false;
     const result=await res.json();return result.ok||result.queued||false;
   }catch(e){return false;}
+}
+
+// ═══ BÜRGERPROFIL BEARBEITEN (Beamte) ═════════════════════════════
+let _cePhoto=null,_ceCitId=null;
+function openCitEdit(c){
+  _cePhoto=null;_ceCitId=c.id;
+  document.getElementById('ce-id').value=c.id;
+  document.getElementById('ce-name').value=c.name||'';
+  document.getElementById('ce-roblox').value=c.roblox_name||'';
+  document.getElementById('ce-dtag').value=c.discord_tag||'';
+  document.getElementById('ce-pgrid').innerHTML=c.char_foto?`<img src="${c.char_foto}" style="width:48px;height:48px;object-fit:cover;border:1px solid var(--border)" title="Aktuelles Foto">`:'';
+  document.getElementById('ce-flbl').textContent='📸 Neues Foto (optional, ersetzt aktuelles)';
+  document.getElementById('ce-title').textContent='Bearbeiten · '+c.name;
+  document.getElementById('ce-err').style.display='none';
+  openWindow('win-cit-edit');
+}
+function previewCitEdit(input){
+  if(!input.files.length)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    _cePhoto=e.target.result;
+    document.getElementById('ce-pgrid').innerHTML=`<img src="${_cePhoto}" style="width:48px;height:48px;object-fit:cover;border:2px solid var(--win-blue)">`;
+    document.getElementById('ce-flbl').textContent='✅ Neues Foto bereit';
+  };
+  r.readAsDataURL(input.files[0]);
+}
+async function saveCitEdit(){
+  const name=document.getElementById('ce-name').value.trim();
+  const err=document.getElementById('ce-err');
+  if(!name){showFErr(err,'Name erforderlich.');return;}
+  err.style.display='none';
+  const upd={name,roblox_name:document.getElementById('ce-roblox').value.trim()||null,discord_tag:document.getElementById('ce-dtag').value.trim()||null};
+  if(_cePhoto){
+    const compressed=await new Promise(res=>{const img=new Image();img.onload=()=>{const mx=480;let w=img.width,h=img.height;if(w>h){if(w>mx){h=Math.round(h*(mx/w));w=mx;}}else{if(h>mx){w=Math.round(w*(mx/h));h=mx;}}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);res(c.toDataURL('image/jpeg',.78));};img.src=_cePhoto;});
+    upd.char_foto=compressed;
+  }
+  const{error}=await db.from('citizens').update(upd).eq('id',_ceCitId);
+  if(error){showFErr(err,'Fehler: '+error.message);return;}
+  await log('CIT_EDIT',name+' (ID:'+_ceCitId+')');
+  nt('✅ Bürgerprofil aktualisiert','ok');
+  closeWin('win-cit-edit');
+  openBuerger(_ceCitId);
+  if(document.getElementById('win-buerger').classList.contains('open'))loadBuerger();
+  _cePhoto=null;
 }
 </script>
 </body>
