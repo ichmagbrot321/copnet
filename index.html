@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>CopNet · Karlsruhe PD</title>
+<title>CopNet · Karlsruhe RP</title>
 <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -222,13 +222,22 @@ tr.sel td{background:#cce4f7;}
 .ls-date{font-size:16px;color:rgba(255,255,255,.7);}
 .ls-hint{font-size:12px;color:rgba(255,255,255,.4);margin-top:8px;animation:fadeUpDown 2s infinite;}
 @keyframes fadeUpDown{0%,100%{opacity:.4;transform:translateY(0)}50%{opacity:.7;transform:translateY(-3px)}}
+
+/* RP Disclaimer Banner */
+#rp-disclaimer{position:fixed;top:0;left:0;right:0;z-index:99998;background:#e65c00;color:#fff;font-size:11px;font-weight:700;text-align:center;padding:4px 8px;letter-spacing:.3px;box-shadow:0 2px 8px rgba(0,0,0,.35);}
+#rp-disclaimer a{color:#fff;text-decoration:underline;cursor:pointer;}
+#boot{top:24px!important;}
+#lock-screen{top:24px!important;}
+#login{top:24px!important;}
 </style>
 </head>
 <body>
+<!-- RP DISCLAIMER BANNER -->
+<div id="rp-disclaimer">&#9888;&nbsp; FIKTIVES ROBLOX ROLEPLAY PROJEKT &ndash; keine echte Beh&ouml;rde oder staatliche Einrichtung &nbsp;&bull;&nbsp; Nur f&uuml;r RP-Nutzung &nbsp;&bull;&nbsp; <a onclick="openWindow&&openWindow('win-impressum')">Impressum / Disclaimer</a></div>
 
 <div id="boot">
   <div class="boot-logo">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Baden-W%C3%BCrttemberg_Wappen.svg/120px-Baden-W%C3%BCrttemberg_Wappen.svg.png" alt="🛡️" onerror="this.outerHTML='🛡️'" style="width:96px;height:auto;filter:drop-shadow(0 0 20px rgba(0,100,255,.5))">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 90" style="width:96px;height:auto;filter:drop-shadow(0 0 20px rgba(0,100,255,.5))"><path d="M40,3 L77,17 L77,50 Q77,77 40,87 Q3,77 3,50 L3,17 Z" fill="#0078d4" stroke="#005a9e" stroke-width="2.5"/><path d="M40,9 L69,21 L69,50 Q69,71 40,80 Q11,71 11,50 L11,21 Z" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="1.5"/><text x="40" y="37" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="17" font-weight="900" fill="white">KA RP</text><text x="40" y="52" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="rgba(255,255,255,.9)">POLICE</text><text x="40" y="65" text-anchor="middle" font-family="Arial,sans-serif" font-size="8.5" fill="rgba(255,255,255,.55)">ROLEPLAY FIKTIV</text></svg>
   </div>
   <div class="boot-text">CopNet Karlsruhe</div>
   <div class="boot-sub">Polizeiinformationssystem v3.3</div>
@@ -240,28 +249,29 @@ tr.sel td{background:#cce4f7;}
 <div id="notif-wrap"></div>
 
 <div id="lock-screen" style="display:none" onclick="showLogin()">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Baden-W%C3%BCrttemberg_Wappen.svg/120px-Baden-W%C3%BCrttemberg_Wappen.svg.png" alt="" onerror="this.style.display='none'" style="width:64px;height:auto;opacity:0.55;margin-bottom:4px">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 90" style="width:64px;height:auto;opacity:0.55;margin-bottom:4px"><path d="M40,3 L77,17 L77,50 Q77,77 40,87 Q3,77 3,50 L3,17 Z" fill="#3b88c3"/><text x="40" y="42" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" font-weight="bold" fill="white">KA</text><text x="40" y="59" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="rgba(255,255,255,.8)">POLICE RP</text></svg>
   <div class="ls-time" id="ls-time">00:00</div>
   <div class="ls-date" id="ls-date"></div>
-  <div style="font-size:11px;color:rgba(255,255,255,.5);letter-spacing:3px;text-transform:uppercase;margin-top:2px">Polizei Karlsruhe</div>
+  <div style="font-size:11px;color:rgba(255,255,255,.5);letter-spacing:3px;text-transform:uppercase;margin-top:2px">Karlsruhe RP Police</div>
   <div class="ls-hint">▲ Klicken zum Entsperren</div>
 </div>
 
 <div id="login">
   <div class="login-box">
-    <div class="login-title-bar"><span>🔐 CopNet Anmeldung · Polizei BW</span></div>
+    <div class="login-title-bar"><span>🔐 CopNet Anmeldung · Karlsruhe RP Police</span></div>
     <div class="login-body">
       <div class="login-header">
         <div class="login-badge">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Baden-W%C3%BCrttemberg_Wappen.svg/120px-Baden-W%C3%BCrttemberg_Wappen.svg.png" alt="🚔" onerror="this.outerHTML='🚔'" style="width:72px;height:auto;display:block;margin:0 auto">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 90" style="width:72px;height:auto;display:block;margin:0 auto"><path d="M40,3 L77,17 L77,50 Q77,77 40,87 Q3,77 3,50 L3,17 Z" fill="#0078d4" stroke="#005a9e" stroke-width="2"/><text x="40" y="37" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="17" font-weight="900" fill="white">KA RP</text><text x="40" y="52" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="rgba(255,255,255,.9)">POLICE</text><text x="40" y="65" text-anchor="middle" font-family="Arial,sans-serif" font-size="8" fill="rgba(255,255,255,.55)">ROLEPLAY FIKTIV</text></svg>
         </div>
-        <div class="login-name">COPNET KA · POLIZEI BW</div>
-        <div class="login-sub">Polizei Karlsruhe · Nur für autorisierte Personen</div>
+        <div class="login-name">COPNET KA · KARLSRUHE RP POLICE</div>
+        <div class="login-sub">Karlsruhe RP Police · Nur für RP-Nutzung</div>
       </div>
       <div class="tab-bar">
         <button class="tab-btn act" id="tab-off-btn" onclick="switchTab('off')">👮 Beamter</button>
         <button class="tab-btn" id="tab-cit-btn" onclick="switchTab('cit')">👤 Bürger</button>
       </div>
+      <div style="background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:6px 10px;font-size:11px;text-align:center;margin-bottom:12px;border-radius:2px"><strong>&#9888; Nur f&uuml;r die Nutzung innerhalb des Roblox Roleplay Projekts.</strong></div>
       <div class="f-err" id="lerr"></div>
       <div id="tab-off">
         <div class="fg"><label>Dienstnummer</label><input id="l-dienst" placeholder="15/001" onkeydown="if(event.key==='Enter')loginOff()"></div>
@@ -332,11 +342,11 @@ tr.sel td{background:#cce4f7;}
         </div>
       </div>
     </div>
-    <div class="login-footer">CopNet v3.3 · Nur für befugte Personen · <a href="https://karlsruhe-rp-vc.vercel.app/impressum" target="_blank" style="color:var(--win-blue)">Impressum</a></div>
+    <div class="login-footer">CopNet v3.3 · Nur für RP-Nutzung · <a href="https://karlsruhe-rp-vc.vercel.app/impressum" target="_blank" style="color:var(--win-blue)">Impressum</a></div>
   </div>
 </div>
 
-<!-- ══ DESKTOP mit BW Wappen Wasserzeichen ══ -->
+<!-- ══ DESKTOP mit RP Logo Wasserzeichen ══ -->
 <div id="desktop">
   <div id="desk-wappen" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.07;pointer-events:none;user-select:none;width:300px;height:300px;">
     <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
@@ -359,7 +369,7 @@ tr.sel td{background:#cce4f7;}
       <rect x="81" y="202" width="15" height="7" rx="3" fill="white"/>
       <rect x="104" y="202" width="15" height="7" rx="3" fill="white"/>
       <path d="M122,145 Q138,128 136,118" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <text x="100" y="218" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="10" font-weight="700" letter-spacing="2" fill="white">KARLSRUHE RP · POLIZEI</text>
+      <text x="100" y="218" text-anchor="middle" font-family="'Segoe UI',sans-serif" font-size="10" font-weight="700" letter-spacing="2" fill="white">KARLSRUHE RP · FIKTIV</text>
     </svg>
   </div>
   <div id="desk-icons"></div>
@@ -370,16 +380,17 @@ tr.sel td{background:#cce4f7;}
   <div class="sm-item" onclick="openWindow('win-dashboard')"><span class="si-ico">📊</span>Lagebild</div>
   <div class="sm-item" onclick="openWindow('win-einsatz')"><span class="si-ico">🚨</span>Einsatz</div>
   <div class="sm-item" onclick="openWindow('win-anzeigen')"><span class="si-ico">📋</span>Strafanzeigen</div>
-  <div class="sm-item" onclick="openWindow('win-buerger')"><span class="si-ico">👥</span>Bürgerdatenbank</div>
+  <div class="sm-item" onclick="openWindow('win-buerger')"><span class="si-ico">👥</span>RP Charakterdatenbank</div>
   <div class="sm-item" onclick="openWindow('win-fahrzeuge')"><span class="si-ico">🚗</span>KFZ-Register</div>
-  <div class="sm-item" onclick="openWindow('win-fs')"><span class="si-ico">🪪</span>Führerscheine</div>
-  <div class="sm-item" onclick="openWindow('win-fahndung')"><span class="si-ico">🔍</span>Fahndung</div>
+  <div class="sm-item" onclick="openWindow('win-fs')"><span class="si-ico">🪪</span>RP Führerscheine</div>
+  <div class="sm-item" onclick="openWindow('win-fahndung')"><span class="si-ico">🔍</span>RP Fahndung</div>
   <div class="sm-sep"></div>
   <div class="sm-item" onclick="openWindow('win-team')"><span class="si-ico">👮</span>Team</div>
   <div class="sm-item" onclick="openWindow('win-dienstnummern')"><span class="si-ico">🔢</span>Dienstnummern</div>
   <div class="sm-item" id="sm-pa" style="display:none" onclick="openWindow('win-pa')"><span class="si-ico">📂</span>Personalakten</div>
   <div class="sm-item" id="sm-mgmt" style="display:none" onclick="openWindow('win-mgmt')"><span class="si-ico">⚙️</span>Nutzerverwaltung</div>
   <div class="sm-sep"></div>
+    <div class="sm-item" onclick="openWindow('win-impressum')"><span class="si-ico">&#9432;</span>Impressum / Disclaimer</div>
   <div class="sm-item" onclick="openWindow('win-profil')"><span class="si-ico">👤</span>Mein Profil</div>
   <div class="sm-item" onclick="doLogout()"><span class="si-ico">🚪</span>Abmelden</div>
 </div>
@@ -415,7 +426,7 @@ tr.sel td{background:#cce4f7;}
       <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between"><span>Aktive Einsätze</span><button class="tbtn" onclick="openWindow('win-einsatz')" style="height:20px;font-size:10px">Alle →</button></div><div id="d-einsatz"></div></div>
       <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text2);margin-bottom:6px">Personal im Dienst</div><div id="d-team"></div></div>
     </div>
-    <div style="margin-top:10px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between"><span>Aktive Fahndungen</span><button class="tbtn" onclick="openWindow('win-fahndung')" style="height:20px;font-size:10px">Alle →</button></div><div id="d-fahndung"></div></div>
+    <div style="margin-top:10px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text2);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between"><span>Aktive RP Fahndungen</span><button class="tbtn" onclick="openWindow('win-fahndung')" style="height:20px;font-size:10px">Alle →</button></div><div id="d-fahndung"></div></div>
   </div></div>
   <div class="wstatus"><div class="ws-item">📡 System Online</div><div class="ws-item" id="d-status-time">–</div></div>
   <div class="win-resize" onmousedown="resizeStart(event,'win-dashboard')"></div>
@@ -438,7 +449,7 @@ tr.sel td{background:#cce4f7;}
 </div>
 
 <div class="win" id="win-buerger" style="left:140px;top:80px;width:900px;height:560px">
-  <div class="wintitle" onmousedown="dragStart(event,'win-buerger')"><span class="wt-ico">👥</span><span class="wt-txt">Bürgerdatenbank</span><button class="wt-btn wt-min" onclick="minWin('win-buerger')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-buerger')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-buerger')">✕</button></div>
+  <div class="wintitle" onmousedown="dragStart(event,'win-buerger')"><span class="wt-ico">👥</span><span class="wt-txt">RP Charakterdatenbank</span><button class="wt-btn wt-min" onclick="minWin('win-buerger')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-buerger')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-buerger')">✕</button></div>
   <div class="wtoolbar"><input type="text" class="search-bar" id="b-search" placeholder="🔍 Name, Roblox, Discord..." onkeyup="loadBuerger()" style="width:240px"><button class="tbtn" onclick="loadBuerger()">🔄</button></div>
   <div class="winbody"><div style="margin:10px" class="table-wrap"><table><thead><tr><th>Charakter</th><th>Roblox</th><th>Discord</th><th>Einträge</th><th>Führerschein</th><th>Status</th><th>Aktionen</th></tr></thead><tbody id="b-tb"></tbody></table></div></div>
   <div class="wstatus"><div class="ws-item" id="b-count">–</div></div>
@@ -453,21 +464,21 @@ tr.sel td{background:#cce4f7;}
 </div>
 
 <div class="win" id="win-fs" style="left:180px;top:100px;width:800px;height:500px">
-  <div class="wintitle" onmousedown="dragStart(event,'win-fs')"><span class="wt-ico">🪪</span><span class="wt-txt">Führerscheine</span><button class="wt-btn wt-min" onclick="minWin('win-fs')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-fs')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-fs')">✕</button></div>
+  <div class="wintitle" onmousedown="dragStart(event,'win-fs')"><span class="wt-ico">🪪</span><span class="wt-txt">RP Führerscheine</span><button class="wt-btn wt-min" onclick="minWin('win-fs')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-fs')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-fs')">✕</button></div>
   <div class="wtoolbar"><input type="text" class="search-bar" id="fs-search" placeholder="🔍 Name, Discord, Roblox..." onkeyup="renderFsTable()" style="width:220px"><button class="tbtn" onclick="loadFuehrerscheine()">🔄</button></div>
   <div class="winbody"><div style="margin:10px" class="table-wrap"><table><thead><tr><th>Name</th><th>Klassen</th><th>Status</th><th>Punkte</th><th>Roblox</th><th>Discord</th><th>Aktion</th></tr></thead><tbody id="fs-tb"></tbody></table></div></div>
   <div class="win-resize" onmousedown="resizeStart(event,'win-fs')"></div>
 </div>
 
 <div class="win" id="win-fahndung" style="left:200px;top:110px;width:700px;height:480px">
-  <div class="wintitle" onmousedown="dragStart(event,'win-fahndung')"><span class="wt-ico">🔍</span><span class="wt-txt">Fahndung</span><button class="wt-btn wt-min" onclick="minWin('win-fahndung')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-fahndung')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-fahndung')">✕</button></div>
-  <div class="wtoolbar"><button class="tbtn danger" onclick="openNewFahndung()">+ Fahndung ausschreiben</button><button class="tbtn" onclick="loadFahndung()">🔄</button></div>
+  <div class="wintitle" onmousedown="dragStart(event,'win-fahndung')"><span class="wt-ico">🔍</span><span class="wt-txt">RP Fahndung</span><button class="wt-btn wt-min" onclick="minWin('win-fahndung')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-fahndung')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-fahndung')">✕</button></div>
+  <div class="wtoolbar"><button class="tbtn danger" onclick="openNewFahndung()">+ RP RP Fahndung ausschreiben</button><button class="tbtn" onclick="loadFahndung()">🔄</button></div>
   <div class="winbody"><div style="margin:10px" class="table-wrap"><table><thead><tr><th>Typ</th><th>Name/Kennzeichen</th><th>Grund</th><th>Beamter</th><th>Datum</th><th>Aktion</th></tr></thead><tbody id="fahn-tb"></tbody></table></div></div>
   <div class="win-resize" onmousedown="resizeStart(event,'win-fahndung')"></div>
 </div>
 
 <div class="win" id="win-team" style="left:220px;top:120px;width:640px;height:460px">
-  <div class="wintitle" onmousedown="dragStart(event,'win-team')"><span class="wt-ico">👮</span><span class="wt-txt">Team · Beamte</span><button class="wt-btn wt-min" onclick="minWin('win-team')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-team')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-team')">✕</button></div>
+  <div class="wintitle" onmousedown="dragStart(event,'win-team')"><span class="wt-ico">👮</span><span class="wt-txt">Team · RP Police</span><button class="wt-btn wt-min" onclick="minWin('win-team')">–</button><button class="wt-btn wt-max" onclick="maxWin('win-team')">□</button><button class="wt-btn wt-cls" onclick="closeWin('win-team')">✕</button></div>
   <div class="wtoolbar"><button class="tbtn" onclick="loadTeam()">🔄 Refresh</button></div>
   <div class="winbody"><div style="margin:10px" class="table-wrap"><table><thead><tr><th>Name</th><th>Dienst-Nr</th><th>Rang</th><th>Status</th></tr></thead><tbody id="team-tb"></tbody></table></div></div>
   <div class="win-resize" onmousedown="resizeStart(event,'win-team')"></div>
@@ -583,7 +594,7 @@ tr.sel td{background:#cce4f7;}
 </div>
 
 <div class="win" id="win-new-fahndung" style="left:460px;top:150px;width:460px;height:420px">
-  <div class="wintitle" onmousedown="dragStart(event,'win-new-fahndung')"><span class="wt-ico">🔍</span><span class="wt-txt">Fahndung ausschreiben</span><button class="wt-btn wt-cls" onclick="closeWin('win-new-fahndung')">✕</button></div>
+  <div class="wintitle" onmousedown="dragStart(event,'win-new-fahndung')"><span class="wt-ico">🔍</span><span class="wt-txt">RP Fahndung ausschreiben</span><button class="wt-btn wt-cls" onclick="closeWin('win-new-fahndung')">✕</button></div>
   <div class="winbody"><div class="form-section">
     <div class="fg"><label>Typ</label><select id="fh-typ" onchange="toggleFahndungTyp()"><option value="person">👤 Person</option><option value="kfz">🚗 Fahrzeug</option></select></div>
     <div id="fh-person-wrap"><div class="ac-wrap fg"><label>Bürger suchen</label><input id="fh-bs" placeholder="Name, Discord..." oninput="acSearchFahndung()" autocomplete="off"><div class="ac-drop" id="fh-drop"></div></div><div class="fg"><label>Name *</label><input id="fh-n" placeholder="Vollständiger Name"></div></div>
@@ -592,7 +603,7 @@ tr.sel td{background:#cce4f7;}
     <div class="fg"><label>Details</label><textarea id="fh-d" style="min-height:50px"></textarea></div>
     <div id="fh-cit-badge" style="display:none" class="f-ok"></div>
     <div class="f-err" id="fh-err"></div>
-    <div class="btn-row"><button class="btn danger" onclick="saveFahndung()">🔍 Fahndung starten</button><button class="btn" onclick="closeWin('win-new-fahndung')">Abbrechen</button></div>
+    <div class="btn-row"><button class="btn danger" onclick="saveFahndung()">🔍 RP Fahndung starten</button><button class="btn" onclick="closeWin('win-new-fahndung')">Abbrechen</button></div>
   </div></div>
 </div>
 
@@ -850,8 +861,8 @@ const DESK_ICONS=[
   {ico:'📋',lbl:'Strafanzeigen',win:'win-anzeigen',role:'officer'},
   {ico:'👥',lbl:'Bürger',win:'win-buerger',role:'officer'},
   {ico:'🚗',lbl:'KFZ-Register',win:'win-fahrzeuge',role:'officer'},
-  {ico:'🪪',lbl:'Führerscheine',win:'win-fs',role:'officer'},
-  {ico:'🔍',lbl:'Fahndung',win:'win-fahndung',role:'officer'},
+  {ico:'🪪',lbl:'RP Führerscheine',win:'win-fs',role:'officer'},
+  {ico:'🔍',lbl:'RP Fahndung',win:'win-fahndung',role:'officer'},
   {ico:'👮',lbl:'Team',win:'win-team',role:'officer'},
   {ico:'🔢',lbl:'Dienstnummern',win:'win-dienstnummern',role:'officer'},
   {ico:'📂',lbl:'Personalakten',win:'win-pa',role:'chef'},
@@ -1170,7 +1181,7 @@ function setupRealtime(){
 function startApp(){
   document.getElementById('login').style.display='none';
   document.getElementById('lock-screen').style.display='none';
-  document.getElementById('desktop').style.display='block';
+  document.getElementById('desktop').style.display='block';document.getElementById('rp-footer').style.display='block';
   document.getElementById('taskbar').style.display='flex';
   document.getElementById('tb-user').textContent=(U.name||'–').split(' ')[0];
   if(U.type==='officer'){
@@ -1234,7 +1245,7 @@ async function loadDash(){
   const{data:od}=await db.from('officers').select('*').eq('status','on').order('name').limit(8);
   document.getElementById('d-team').innerHTML=!od?.length?'<div style="font-size:12px;color:var(--text3);padding:8px">Niemand im Dienst</div>':od.map(o=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #f0f0f0"><span style="font-size:16px">👮</span><div style="flex:1"><div style="font-size:12px;font-weight:600">${o.name}</div><div style="font-size:10px;color:var(--text3)">${o.rank||'–'} · ${o.dienst}</div></div><span class="badge b-green">DIENST</span></div>`).join('');
   const{data:fa}=await db.from('alerts').select('*').eq('active',true).order('created_at',{ascending:false}).limit(5);
-  document.getElementById('d-fahndung').innerHTML=!fa?.length?'<div style="font-size:12px;color:var(--text3);padding:8px">Keine Fahndungen</div>':fa.map(f=>`<div class="list-card"><div class="lc-head"><div class="lc-strip strip-amber"></div><div class="lc-name" style="font-size:12px">${f.person_name||f.plate||'–'}</div><span class="badge b-amber">${f.alert_type==='kfz'?'FAHRZEUG':'PERSON'}</span></div><div class="lc-body">${f.reason||'–'}</div></div>`).join('');
+  document.getElementById('d-fahndung').innerHTML=!fa?.length?'<div style="font-size:12px;color:var(--text3);padding:8px">Keine RP Fahndungen</div>':fa.map(f=>`<div class="list-card"><div class="lc-head"><div class="lc-strip strip-amber"></div><div class="lc-name" style="font-size:12px">${f.person_name||f.plate||'–'}</div><span class="badge b-amber">${f.alert_type==='kfz'?'FAHRZEUG':'PERSON'}</span></div><div class="lc-body">${f.reason||'–'}</div></div>`).join('');
 }
 
 async function loadCitizenDash(){openWindow('win-profil');}
@@ -1615,7 +1626,7 @@ async function syncFsRoles(discordId,type){
 async function loadFahndung(){
   const{data}=await db.from('alerts').select('*').eq('active',true).order('created_at',{ascending:false}).limit(80);
   const tb=document.getElementById('fahn-tb');
-  if(!data?.length){tb.innerHTML=`<tr class="empty-row"><td colspan="6">Keine Fahndungen</td></tr>`;return;}
+  if(!data?.length){tb.innerHTML=`<tr class="empty-row"><td colspan="6">Keine RP Fahndungen</td></tr>`;return;}
   tb.innerHTML=data.map(f=>`<tr>
     <td><span class="badge ${f.alert_type==='kfz'?'b-blue':'b-purple'}">${f.alert_type==='kfz'?'🚗 KFZ':'👤 Person'}</span></td>
     <td><b>${f.person_name||f.plate||'–'}</b></td>
@@ -1643,9 +1654,9 @@ async function saveFahndung(){
   if(!g){showFErr(err,'Grund erforderlich.');return;}err.style.display='none';
   const{error}=await db.from('alerts').insert([{person_name:typ==='person'?name:null,plate:typ==='kfz'?plate:null,reason:g,notes:document.getElementById('fh-d').value.trim(),alert_type:typ,active:true,officer_name:U?.name,citizen_id:_fahndungCit?.id||null}]);
   if(error){showFErr(err,'Fehler: '+error.message);return;}
-  nt('Fahndung ausgeschrieben','ok');closeWin('win-new-fahndung');_fahndungCit=null;loadFahndung();
+  nt('RP Fahndung ausgeschrieben','ok');closeWin('win-new-fahndung');_fahndungCit=null;loadFahndung();
 }
-async function closeFahndung(id){await db.from('alerts').update({active:false}).eq('id',id);nt('Fahndung abgeschlossen','ok');loadFahndung();}
+async function closeFahndung(id){await db.from('alerts').update({active:false}).eq('id',id);nt('RP Fahndung abgeschlossen','ok');loadFahndung();}
 
 // ═══ TEAM ═════════════════════════════════════════════════════════
 async function loadTeam(){
@@ -1933,8 +1944,8 @@ async function showFuehrungszeugnis(cit){
     <div style="padding:20px;max-width:400px;margin:0 auto">
       <div style="text-align:center;border-bottom:2px solid var(--border);padding-bottom:14px;margin-bottom:14px">
         <div style="font-size:36px">🚔</div>
-        <div style="font-size:18px;font-weight:700;color:var(--win-blue);margin:4px 0">POLIZEILICHES FÜHRUNGSZEUGNIS</div>
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:2px">Polizei Karlsruhe · CopNet v3.3</div>
+        <div style="font-size:18px;font-weight:700;color:var(--win-blue);margin:4px 0">RP FÜHRUNGSZEUGNIS (FIKTIV)</div>
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:2px">Karlsruhe RP Police · CopNet v3.3</div>
       </div>
       <table style="width:100%">
         ${[['Name',cit.name],['Roblox',cit.roblox_name||'–'],['Discord',cit.discord_tag||'–'],['Führerschein',cf?.fs_status||'Kein FS'],['Ausgestellt',heute]].map(([l,v])=>`<tr><td style="padding:6px 0;font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;width:40%">${l}</td><td style="padding:6px 0;font-size:12px">${v}</td></tr>`).join('')}
@@ -1943,7 +1954,7 @@ async function showFuehrungszeugnis(cit){
       ${!sauber?`<div style="margin-top:10px">${eintraege.filter(e=>strafTypen.includes(e.typ)).map(e=>`<div style="padding:6px 8px;background:#fde8e8;border:1px solid #ef9a9a;margin-bottom:4px;font-size:11px"><b>${e.tatvorwurf||'–'}</b> · ${e.typ} · ${fmtd(e.created_at)}</div>`).join('')}</div>`:''}
       <div style="margin-top:16px;text-align:right;padding-top:10px;border-top:1px solid var(--border)">
         <div style="display:inline-block;border:1px solid var(--border2);padding:6px 14px;text-align:center">
-          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:2px">Polizei Karlsruhe</div>
+          <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:2px">Karlsruhe RP Police</div>
           <div style="font-size:9px;color:var(--text3)">CopNet System · ${heute}</div>
         </div>
       </div>
@@ -2007,7 +2018,7 @@ async function renderSharedFZ(shareId){
   const sauber=!eintraege||eintraege.filter(e=>strafTypen.includes(e.typ)).length===0;
   const heute=new Date().toLocaleDateString('de-DE');
   document.body.innerHTML=`<div style="max-width:440px;margin:30px auto;padding:20px;font-family:Segoe UI,sans-serif">
-    <div style="text-align:center;border-bottom:2px solid #0078d4;padding-bottom:14px;margin-bottom:14px"><div style="font-size:36px">🚔</div><div style="font-size:18px;font-weight:700;color:#0078d4">POLIZEILICHES FÜHRUNGSZEUGNIS</div><div style="font-size:10px;color:#888;letter-spacing:2px">Polizei Karlsruhe · CopNet v3.3</div></div>
+    <div style="text-align:center;border-bottom:2px solid #0078d4;padding-bottom:14px;margin-bottom:14px"><div style="font-size:36px">🚔</div><div style="font-size:18px;font-weight:700;color:#0078d4">RP FÜHRUNGSZEUGNIS (FIKTIV)</div><div style="font-size:10px;color:#888;letter-spacing:2px">Karlsruhe RP Police · CopNet v3.3</div></div>
     <table style="width:100%;border-collapse:collapse">${[['Name',cit.name],['Roblox',cit.roblox_name||'–'],['Führerschein',cit.fs_status||'Kein FS'],['Ausgestellt',heute],['Status',sauber?'✅ Unbescholten':'⚠️ Einträge vorhanden']].map(([l,v])=>`<tr><td style="padding:6px 0;font-size:11px;color:#666;font-weight:700;text-transform:uppercase;width:40%;border-bottom:1px solid #f0f0f0">${l}</td><td style="padding:6px 0;font-size:12px;border-bottom:1px solid #f0f0f0">${v}</td></tr>`).join('')}</table>
     ${!sauber?`<div style="margin-top:10px">${eintraege.filter(e=>strafTypen.includes(e.typ)).map(e=>`<div style="padding:6px 8px;background:#fde8e8;border:1px solid #ef9a9a;margin-bottom:4px;font-size:11px"><b>${e.tatvorwurf||'–'}</b> · ${fmtd(e.created_at)}</div>`).join('')}</div>`:''}
     <div style="margin-top:16px;text-align:center"><button onclick="location.href=location.pathname" style="padding:8px 20px;background:#0078d4;color:#fff;border:none;cursor:pointer;font-size:13px">← Login</button></div>
@@ -2081,5 +2092,43 @@ async function saveCitEdit(){
   _cePhoto=null;
 }
 </script>
+
+<!-- IMPRESSUM / DISCLAIMER WINDOW -->
+<div class="win" id="win-impressum" style="left:200px;top:60px;width:600px;height:520px">
+  <div class="wintitle" onmousedown="dragStart(event,'win-impressum')"><span class="wt-ico">&#9432;</span><span class="wt-txt">Impressum &bull; Datenschutz &bull; Disclaimer</span><button class="wt-btn wt-cls" onclick="closeWin('win-impressum')">&#x2715;</button></div>
+  <div class="winbody" style="overflow:auto"><div class="wcontent" style="user-select:text;line-height:1.6;font-size:12px">
+    <div style="background:#fff3cd;border:1px solid #ffc107;padding:12px;margin-bottom:14px">
+      <strong style="font-size:13px">&#9888; WICHTIGER HINWEIS / DISCLAIMER</strong><br><br>
+      Dies ist ein <strong>fiktives Roblox Roleplay Projekt</strong> und steht in keinerlei Verbindung zu echten Beh&ouml;rden, der Polizei, dem Rettungsdienst, der Justiz oder staatlichen Stellen des Landes Baden-W&uuml;rttemberg oder der Bundesrepublik Deutschland.<br><br>
+      Alle dargestellten Inhalte, Personen, Vorf&auml;lle, Akten und Daten sind <strong>vollst&auml;ndig fiktiv</strong> und dienen ausschlie&szlig;lich dem Roleplay innerhalb einer Roblox-Spielwelt.
+    </div>
+    <h3 style="font-size:13px;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px">Impressum</h3>
+    <p>Dieses System ist ein privates Fanprojekt f&uuml;r Roblox Roleplay und dient ausschlie&szlig;lich der fiktiven Darstellung innerhalb eines Online-Rollenspiels. Es werden keine echten beh&ouml;rdlichen Daten verarbeitet.</p>
+    <p style="margin-top:6px">Betreiber: Karlsruhe RP Community &ndash; Roblox Roleplay Projekt (privat, nicht kommerziell)</p>
+    <br>
+    <h3 style="font-size:13px;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px">Disclaimer &amp; Haftungsausschluss</h3>
+    <ul style="margin-left:18px;color:#444;line-height:1.8">
+      <li>Alle Personen, Vorf&auml;lle, Akten und Daten sind <strong>vollst&auml;ndig fiktiv</strong></li>
+      <li>Logos und Bezeichnungen (CopNet, JustizNet, RettungsNet, &bdquo;KA RP&ldquo;) sind eigene Sch&ouml;pfungen &ndash; keine echten Beh&ouml;rdensymbole</li>
+      <li>Kein Bezug zu echten Polizei-, Justiz- oder Rettungsdienstbeh&ouml;rden</li>
+      <li>Der Zugang ist ausschlie&szlig;lich f&uuml;r Teilnehmer des Karlsruhe RP Roblox-Projekts bestimmt</li>
+      <li>Keine Haftung f&uuml;r den Inhalt externer Verlinkungen</li>
+    </ul>
+    <br>
+    <h3 style="font-size:13px;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px">Datenschutz</h3>
+    <p>Gespeichert werden ausschlie&szlig;lich Roblox-Nutzernamen, Discord-Nutzernamen und rollenspielbezogene Daten, die freiwillig eingegeben werden. Eine Weitergabe an Dritte findet nicht statt. S&auml;mtliche Daten k&ouml;nnen auf Anfrage gel&ouml;scht werden.</p>
+    <br>
+    <h3 style="font-size:13px;margin-bottom:6px;border-bottom:1px solid #eee;padding-bottom:4px">Fanprojekt-Erkl&auml;rung</h3>
+    <p>Dieses Projekt ist ein Fanprojekt f&uuml;r Roblox Roleplay. Es ist <strong>nicht mit Beh&ouml;rden, Polizei oder staatlichen Stellen verbunden</strong>. Alle Systemnamen und Designs sind eigenst&auml;ndig und fiktiv.</p>
+    <br>
+    <p style="font-size:10px;color:#999;border-top:1px solid #eee;padding-top:8px;text-align:center">Karlsruhe RP &bull; Roblox Roleplay Projekt &bull; Nur f&uuml;r RP-Nutzung &bull; Alle Inhalte fiktiv &bull; Kein Bezug zu echten Beh&ouml;rden</p>
+  </div></div>
+  <div class="win-resize" onmousedown="resizeStart(event,'win-impressum')"></div>
+</div>
+
+<!-- RP FOOTER BAR -->
+<div id="rp-footer" style="display:none;position:fixed;bottom:40px;left:0;right:0;height:18px;background:rgba(0,0,0,.75);color:rgba(255,255,255,.45);font-size:9px;text-align:center;line-height:18px;z-index:5999;pointer-events:none;letter-spacing:.4px">
+  Fanprojekt f&uuml;r Roblox Roleplay &ndash; Nicht mit Beh&ouml;rden, Polizei oder staatlichen Stellen verbunden &ndash; Alle Inhalte sind fiktiv
+</div>
 </body>
 </html>
